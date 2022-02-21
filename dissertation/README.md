@@ -1,10 +1,10 @@
 # Multitenant web store dissertation
-Generate the dissertation running
+Generate the dissertation pdf running
 ```console
-$ pdflatex dissertation.tex
+$ build.sh
 ```
 
-Clean the auxiliary files with the
+Clean the auxiliary files with
 ```console
-$ rm -f *.aux *.log *.out *.toc
+$ clean.sh
 ```
