@@ -1,1 +1,3 @@
-# multitenant-web-store
+# Multitenant web store
+
+Generic multitenant online shop.

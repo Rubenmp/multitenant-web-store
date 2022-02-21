@@ -1,0 +1,130 @@
+\documentclass[11pt,spanish]{article} % Idioma
+\usepackage{babel}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp, verbatim} % \begin{comment}
+\usepackage[utf8]{inputenc} % Permite acentos
+
+\usepackage{wrapfig} % Imagenes %\graphicspath{ {./imagenes/} }
+\usepackage[left=2.75cm,top=2.5cm,right=2cm,bottom=2.5cm]{geometry} % Márgenes
+\usepackage{amssymb, amsmath, amscd, amsfonts, amsthm, mathrsfs } % Símbolos matemáticos
+\usepackage{cancel} % Cancelar expresiones
+\usepackage{multirow, multicol, tabularx, booktabs, longtable} % Tablas
+\usepackage{fancyhdr, fncychap} % Encabezados
+\usepackage{algpseudocode, algorithmicx, algorithm} % Pseudo-código
+\usepackage{bbding} % Símbolos
+\usepackage{enumitem} % Enumerados a), b), c)... usando \begin{enumerate}[label=\alph*)]
+\usepackage{graphicx, xcolor, color, pstricks} % Gráficos --TikZ--
+% http://www.texample.net/tikz/examples/
+\usepackage[hidelinks]{hyperref}  % Enlaces
+\usepackage{verbatim} % Comentarios largos \begin{comment}
+\usepackage{rotating} % \begin{rotate}{30}
+\usepackage[all]{xy} % Diagramas
+\usepackage{xparse} % Entornos
+\usepackage{listings}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{magenta},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codepurple},
+	basicstyle=\footnotesize,
+	breakatwhitespace=false,
+	breaklines=true,
+	captionpos=b,
+	keepspaces=true,
+	numbers=left,
+	numbersep=5pt,
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	tabsize=2
+}
+\lstset{style=mystyle}
+
+
+% Comandos
+\newcommand{\docdate}{}
+\newcommand{\subject}{}
+\newcommand{\docauthor}{Rubén Morales Pérez}
+\newcommand{\docemail}{srmorales@correo.ugr.es}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+
+
+
+
+\usepackage[final]{pdfpages}
+
+
+\linespread{1.1}                  % Espacio entre líneas.
+\setlength\parindent{0pt}         % Indentación para párrafo.
+
+\title{  }
+\author{Rubén Morales Pérez}
+\date{\today}
+
+
+
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%					 Inicio del documento
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+\begin{document}
+
+\begin{center}
+  \includegraphics[scale=0.4]{img/logo_ugr.png}
+\end{center}
+
+\begin{center}
+  \Large TRABAJO FIN DE GRADO\\ 
+  \large Doble grado en Ingeniería Informática y Matemáticas
+  \vspace{0.7cm}
+
+  \hrule
+  \vspace{0.2cm}
+  \textbf{\LARGE MW Store: facilitador genérico para proveedores de servicios con multi-inquilinato en una infraestructura Cloud}
+  \vspace{0.2cm}
+  \hrule
+  \vspace{2cm}
+  
+  \textbf{Autor}
+
+  Rubén Morales Pérez
+
+  \vspace{2cm}
+  \textbf{Director}
+
+  Manuel Isidoro Capel Tuñón
+
+  \textit{Departamento de Lenguajes y Sistemas Informáticos}
+
+\end{center}
+
+\newpage
+
+\ 
+\thispagestyle{empty}
+
+\maketitle
+\tableofcontents % Generando el indice
+\setlength\parindent{0pt} % Quitamos la sangría
+
+\newpage
+
+\section{Infraestructura informática}
+
+\newpage
+\section{Modelado matemático}
+
+
+\end{document}
