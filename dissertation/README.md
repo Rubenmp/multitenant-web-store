@@ -1,10 +1,10 @@
 # Multitenant web store dissertation
 Generate the dissertation pdf running
 ```console
-$ build.sh
+$ make build
 ```
 
 Clean the auxiliary files with
 ```console
-$ clean.sh
+$ make clean
 ```
