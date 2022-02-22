@@ -118,12 +118,67 @@
 
 \newpage
 
-\section{Infraestructura informática}
+\section{Software infraestructure}
 
 Example \cite{example}
 
+\subsection{Functional overview}
+
+
+\subsection{Architecture}
+\subsubsection{Technological stack}
+Front end: angular (testing with karma + jasmine)
+Back end: java 17 (testing with junit)
+Database: PostgreSQL
+Continous integration and delivery: Jenkins
+Orchestration: Docker + Kubernetes
+End to end tests: Selenium
+
+\subsubsection{Dependencies}
+
+\subsection{Continuous integration and delivery}
+\subsubsection{Deployments}
+\subsubsection{Data migrations}
+
+
+\subsection{Quality}
+Feature development will be slower as the program grows. Development in youth programs is faster than development in mature programs due to code complexity and possible regressions.
+Software must be carefully designed. Higher quality standards will prevent slowdowns in the development of new features, and regressions will be caught earlier (citation needed).
+
+
+\subsubsection{Code quality}
+SonarQube
+
+\subsubsection{Automatic tests}
+Automatic tests will catch bugs before production release.
+There are several testing strategies that can be used together:
+\begin{itemize}
+	\item End to end tests: test entire workflows, involving front end, back end and database(s).
+	\item Integration tests: specific use cases involving several components.
+	\item Unit tests: test cases involving only one component, mocking other components when needed. In the back end, they don't involve the database, making them much faster.
+\end{itemize}
+
+The desired test amount proportion is described in the test pyramid:
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.275]{img/test_pyramid.png}
+  \caption{Test pyramid \cite{test-pyramid}}
+\end{figure}
+
+The inverted testing pyramid (fewer unit and integration tests, with an emphasis on automated and manual functional testing) is considered an anti-pattern, reducing the responsiveness, maintainability and reliability of the test setup \cite{test-pyramid}. 
+Unit tests help identify faults in earlier phases \cite{test-pyramid} and must be the backbone of any software product.
+
+
 \newpage
-\section{Modelado matemático}
+\section{Mathematical modelling}
+
+\subsection{Petri nets}
+\subsubsection{Reachability trees}
+
+\subsection{Performance}
+\subsubsection{Cache}
+
+\subsection{Scalability}
 
 \newpage
 
