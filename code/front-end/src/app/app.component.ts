@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -6,23 +6,11 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  @ViewChild("sideMenu") sideMenu!: ElementRef;
-
   title = 'front-end';
   sideMenuAction!: string;
 
-  openNav() {
-    console.log("openNav")
-    console.log(this.sideMenu);
-
-    this.sideMenu.nativeElement.style.width = "250px";
-    this.sideMenu.nativeElement.style.marginLeft = "0px";
-  }
-
-  closeNav() {
-    console.log("closeNav")
-
-    this.sideMenu.nativeElement.style.width = "0";
-    this.sideMenu.nativeElement.style.marginLeft= "0";
+  openSideMenu() {
+    console.log("openSideMenu");
+    this.sideMenuAction = "OPEN";
   }
 }
