@@ -7,4 +7,10 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'front-end';
+  sideMenuAction!: string;
+
+  openSideMenu() {
+    console.log("openSideMenu");
+    this.sideMenuAction = "OPEN";
+  }
 }

@@ -1,4 +1,6 @@
 <div class="toolbar" role="banner">
+  <button class="openbtn" (click)="openSideMenu()">☰ Open Sidebar</button>  
+
   <span class="header-title">Multitenant web store</span>
   <div class="spacer"></div>
   <span id="account">Account</span>
@@ -6,7 +8,7 @@
 
 
 
-<app-side-menu></app-side-menu>
+<app-side-menu [action]="sideMenuAction"></app-side-menu>
 
 
 <router-outlet></router-outlet>
