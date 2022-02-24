@@ -14,12 +14,14 @@ export class AppComponent {
     console.log("openSideMenu");
 
     this.sideMenu.nativeElement.style.width = "250px";
-    this.sideMenu.nativeElement.style.marginLeft = "0px";
+    //this.sideMenu.nativeElement.style.marginLeft = "0px";
+
+    console.log(this.sideMenu);
   }
 
   closeSideMenu() {
     console.log("closeSideMenu");
     this.sideMenu.nativeElement.style.width = "0";
-    this.sideMenu.nativeElement.style.marginLeft= "0";
+    //this.sideMenu.nativeElement.style.marginLeft= "0";
   }
 }

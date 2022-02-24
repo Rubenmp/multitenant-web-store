@@ -32,6 +32,10 @@
     margin: 0 10px;
 }
 
+.contenido {
+    margin: 40px 0px; 
+}
+
 .content {
     margin: 40px 0px; 
     background: var(--second-color);
@@ -93,7 +97,8 @@
 /* Style page content - use this if you want to push the page content to the right when you open the side navigation */
 #main {
     transition: margin-left .5s; /* If you want a transition effect */
-    padding: 20px;
+    position:absolute; 
+    right:250;
 }
 
 /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
