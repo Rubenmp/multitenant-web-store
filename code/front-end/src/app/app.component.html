@@ -1,5 +1,5 @@
 <div class="toolbar" role="banner">
-  <button class="openbtn" (click)="openSideMenu()">☰ Open Sidebar</button>  
+  <button class="openbtn" (click)="openNav()">☰</button>  
 
   <span class="header-title">Multitenant web store</span>
   <div class="spacer"></div>
@@ -7,8 +7,14 @@
 </div>
 
 
+<div id="mySidebar" class="sidebar" #sideMenu>
+  <a href="javascript:void(0)" class="closebtn" (click)="closeNav()">☰</a>
+  <a href="#">About</a>
+  <a href="#">Services</a>
+  <a href="#">Clients</a>
+  <a href="#">Contact</a>
+</div>
 
-<app-side-menu [action]="sideMenuAction"></app-side-menu>
 
 
 <router-outlet></router-outlet>
