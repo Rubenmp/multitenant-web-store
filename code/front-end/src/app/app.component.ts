@@ -11,11 +11,14 @@ export class AppComponent {
   @ViewChild("sideMenu") sideMenu!: ElementRef;
 
   openSideMenu() {
+    console.log("openSideMenu");
+
     this.sideMenu.nativeElement.style.width = "250px";
     this.sideMenu.nativeElement.style.marginLeft = "0px";
   }
 
   closeSideMenu() {
+    console.log("closeSideMenu");
     this.sideMenu.nativeElement.style.width = "0";
     this.sideMenu.nativeElement.style.marginLeft= "0";
   }
