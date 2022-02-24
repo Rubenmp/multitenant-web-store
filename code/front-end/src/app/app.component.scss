@@ -59,7 +59,7 @@
 }
 
 /* The sidebar links */
-.sidebar a {
+.sidebar .link {
     padding: 8px 8px 8px 10px;
     text-decoration: none;
     font-size: 25px;
@@ -69,8 +69,8 @@
 }
 
 /* When you mouse over the navigation links, change their color */
-.sidebar a:hover {
-    color: #f1f1f1;
+.sidebar .link:hover {
+    color: lightgray;
 }
 
 /* Position and style the close button (top right corner) */
@@ -82,7 +82,6 @@
 
 /* The button used to open the sidebar */
 .openbtn {
-    font-size: 20px;
     cursor: pointer;
     background-color: var(--main-color);
     color: white;
