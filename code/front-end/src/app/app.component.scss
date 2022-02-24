@@ -60,7 +60,7 @@
 
 /* The sidebar links */
 .sidebar a {
-    padding: 8px 8px 8px 32px;
+    padding: 8px 8px 8px 10px;
     text-decoration: none;
     font-size: 25px;
     color: #818181;
@@ -77,9 +77,8 @@
 .sidebar .closebtn {
     position: absolute;
     top: 0;
-    right: 25px;
-    font-size: 36px;
-    margin-left: 50px;
+    padding: 10px 15px;
+
 }
 
 /* The button used to open the sidebar */
