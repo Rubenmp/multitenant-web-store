@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-side-menu',
@@ -7,6 +7,9 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SideMenuComponent implements OnInit {
 
+  @ViewChild("myNameElem")
+  myNameElem!: ElementRef;
+
   constructor() { }
 
   ngOnInit(): void {
@@ -14,13 +17,17 @@ export class SideMenuComponent implements OnInit {
 
   openNav() {
   console.log("openNav")
-  //document.getElementById("mySidebar").style.width = "250px";
-  //document.getElementById("main").style.marginLeft = "250px";
+  console.log(this.myNameElem);
+
+  this.myNameElem.nativeElement.style.width = "250px";
+  this.myNameElem.nativeElement.style.marginLeft = "0px";
   }
 
   closeNav() {
-  //document.getElementById("mySidebar").style.width = "0";
-  //document.getElementById("main").style.marginLeft= "0";
+    console.log("closeNav")
+
+    this.myNameElem.nativeElement.style.width = "0";
+    this.myNameElem.nativeElement.style.marginLeft= "0";
   }
 
 }
