@@ -1,18 +1,22 @@
 # Multitenant web store front end
-Front end of a multitenant web store for any kind of product. Using [Angular CLI](https://github.com/angular/angular-cli) version 13.2.3.
+Front end of a multitenant web store for any kind of product.
 
 
 ## Development server
-### Using docker
+Run a development server using docker
 ```console
-docker build --build-arg CONFIGURATION=staging -f ./docker/DockerfileRun .
+$ docker build -f ./docker/DockerfileRun .
 ```
 
-### Using angular
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`.
+or angular
+```console
+$ ng serve
+```
+
+then navigate to `http://localhost:4200/`.
 
 
 ## Run tests
 ```console
-docker build --build-arg CONFIGURATION=staging -f ./docker/DockerfileTest .
+docker build -f ./docker/DockerfileTest .
 ```
