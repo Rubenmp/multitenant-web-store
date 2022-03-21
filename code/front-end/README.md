@@ -10,3 +10,9 @@ docker build --build-arg CONFIGURATION=staging -f ./docker/DockerfileRun .
 
 ### Using angular
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`.
+
+
+## Run tests
+```console
+docker build --build-arg CONFIGURATION=staging -f ./docker/DockerfileTest .
+```
