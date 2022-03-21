@@ -2,15 +2,16 @@
 Front end of a multitenant web store for any kind of product.
 
 
-## Development server
-Run a development server using docker
+## Run development server
+Using docker
 ```console
-$ docker build -f ./docker/DockerfileRun .
+docker build -f ./docker/DockerfileRun .
 ```
+then run the docker image.
 
-or angular
+Using npm:
 ```console
-$ ng serve
+ng serve
 ```
 
 then navigate to `http://localhost:4200/`.
