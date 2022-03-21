@@ -3,5 +3,5 @@ RUN apk add chromium
 WORKDIR /app
 ENV CHROME_BIN=/usr/bin/chromium-browser
 COPY . .
-RUN npm install
+RUN npm ci
 RUN npm run ng test
