@@ -20,6 +20,10 @@ public class UserInterface {
     @GetMapping("/create-user")
     public String createUser() {
         final User user = userService.createUser("example@email.com");
+
+        if (user == null) {
+            return "User was not created";
+        }
         return "User created with id: " + user.getId();
     }
 
