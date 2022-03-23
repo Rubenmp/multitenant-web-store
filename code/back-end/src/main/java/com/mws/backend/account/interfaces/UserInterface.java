@@ -1,4 +1,4 @@
-package com.mws.backend.account;
+package com.mws.backend.account.interfaces;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
