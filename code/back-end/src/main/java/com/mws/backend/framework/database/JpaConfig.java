@@ -1,4 +1,4 @@
-package com.mws.backend.framework;
+package com.mws.backend.framework.database;
 
 import com.mws.backend.framework.utils.StringUtils;
 import org.springframework.boot.jdbc.DataSourceBuilder;
