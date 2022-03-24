@@ -21,19 +21,16 @@ import java.time.format.DateTimeFormatter;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class IntegrationTestConfig {
-    private static final String USER_PASSWORD = "Password1";
-    private static String userToken;
     private static ObjectMapper objectMapper;
-
-    protected static final String USER_EMAIL = "email-user@test.com";
-    protected static boolean forceUserTokenRefresh = false;
+    protected static final Long USER_ID = 1L;
+    protected static final String USER_EMAIL = "user@mwstest.com";
     public static final String TEST_PROFILE = "test";
 
     @LocalServerPort
     protected int randomServerPort;
 
     @Autowired
-    private TestRestTemplate restTemplate;
+    protected TestRestTemplate restTemplate;
 
 
     public String getTestUri() {
