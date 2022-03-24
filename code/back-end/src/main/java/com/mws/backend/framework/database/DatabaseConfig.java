@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Profile;
 import javax.sql.DataSource;
 
 @Configuration
-class JpaConfig {
+class DatabaseConfig {
 
     @Bean
     @Profile("!test")
@@ -17,17 +17,6 @@ class JpaConfig {
         return DataSourceBuilder.create()
                 .driverClassName("com.mysql.cj.jdbc.Driver")
                 .url(getDataSourceUrl(false))
-                .username(getDatabaseUsername())
-                .password(getDatabasePasswordForUser())
-                .build();
-    }
-
-    @Bean
-    @Profile("test")
-    public DataSource getTestDataSource() {
-        return DataSourceBuilder.create()
-                .driverClassName("com.mysql.cj.jdbc.Driver")
-                .url(getDataSourceUrl(true))
                 .username(getDatabaseUsername())
                 .password(getDatabasePasswordForUser())
                 .build();
