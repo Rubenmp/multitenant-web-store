@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Profile;
 import javax.sql.DataSource;
 
 @Configuration
-class JpaConfig {
+class DatabaseConfig {
 
     @Bean
     @Profile("!test")

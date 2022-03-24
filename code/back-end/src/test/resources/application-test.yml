@@ -1,0 +1,17 @@
+spring:
+  jpa:
+    defer-datasource-initialization: true
+    show-sql: false
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        jdbc:
+          time_zone: UTC
+  datasource:
+    url: jdbc:mysql://localhost:3306/mws_test_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=false
+    username: mws_dev
+    password: password
+    data: classpath:/database/initial_test_data.sql
+    initialization-mode: always
