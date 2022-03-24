@@ -1,4 +1,4 @@
-package com.mws.backend.account.interfaces;
+package com.mws.backend.account.interfaces.user;
 
 import com.mws.backend.account.model.entity.User;
 import com.mws.backend.account.service.UserService;
@@ -19,12 +19,12 @@ public class UserInterface {
 
     @GetMapping("/create-user")
     public String createUser() {
-        final User user = userService.createUser("example@email.com");
+        final Long userId = userService.createUser("example@email.com");
 
-        if (user == null) {
+        if (userId == null) {
             return "User was not created";
         }
-        return "User created with id: " + user.getId();
+        return "User created with id: " + userId;
     }
 
 }
