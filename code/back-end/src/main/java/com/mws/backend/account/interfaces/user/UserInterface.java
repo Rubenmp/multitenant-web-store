@@ -5,9 +5,11 @@ import com.mws.backend.account.interfaces.user.dto.UserUpdateDto;
 import com.mws.backend.account.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
@@ -15,11 +17,6 @@ public class UserInterface {
 
     @Autowired
     private UserService userService;
-
-    @GetMapping("/")
-    public String index() {
-        return "Greetings from Spring Boot!";
-    }
 
     @PostMapping("/create-user")
     public ResponseEntity<Long> createUser(@RequestBody UserCreateDto userCreateDto) {

@@ -21,7 +21,7 @@ class JpaConfig {
                 .password(getDatabasePasswordForUser())
                 .build();
     }
-//     url: jdbc:mysql://localhost:3306/noq_test?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=false
+
     private String getDataSourceUrl() {
         return "jdbc:mysql://"
                 + getDataSourceHost() + "/"
