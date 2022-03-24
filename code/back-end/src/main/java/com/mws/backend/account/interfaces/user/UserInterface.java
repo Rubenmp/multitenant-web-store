@@ -1,6 +1,6 @@
 package com.mws.backend.account.interfaces.user;
 
-import com.mws.backend.account.interfaces.user.dto.UserCreateDto;
+import com.mws.backend.account.interfaces.user.dto.UserCreationDto;
 import com.mws.backend.account.interfaces.user.dto.UserUpdateDto;
 import com.mws.backend.account.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +19,8 @@ public class UserInterface {
     private UserService userService;
 
     @PostMapping(CREATE_USER_URL)
-    public ResponseEntity<Long> createUser(@RequestBody UserCreateDto userCreateDto) {
-        final Long userId = userService.createUser(userCreateDto);
+    public ResponseEntity<Long> createUser(@RequestBody UserCreationDto userCreationDto) {
+        final Long userId = userService.createUser(userCreationDto);
 
         return new ResponseEntity<>(userId, OK);
     }

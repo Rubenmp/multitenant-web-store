@@ -3,9 +3,10 @@ package com.mws.backend.framework.database;
 public interface GenericDao<EntityClass, Id> {
     EntityClass create(EntityClass entity);
 
-    void delete(Id id);
+    EntityClass update(EntityClass entity);
 
     EntityClass find(Id id);
 
-    EntityClass update(EntityClass entity);
+    void delete(Id id);
+
 }

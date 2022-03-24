@@ -48,8 +48,8 @@ public abstract class GenericDaoImpl<EntityClass, Id> implements GenericDao<Enti
 
     @Override
     @Transactional
-    public void delete(final Id id) {
-        this.entityManager.remove(this.entityManager.getReference(type, id));
+    public EntityClass update(final EntityClass t) {
+        return this.entityManager.merge(t);
     }
 
     @Override
@@ -59,7 +59,8 @@ public abstract class GenericDaoImpl<EntityClass, Id> implements GenericDao<Enti
 
     @Override
     @Transactional
-    public EntityClass update(final EntityClass t) {
-        return this.entityManager.merge(t);
+    public void delete(final Id id) {
+        this.entityManager.remove(this.entityManager.getReference(type, id));
     }
+
 }

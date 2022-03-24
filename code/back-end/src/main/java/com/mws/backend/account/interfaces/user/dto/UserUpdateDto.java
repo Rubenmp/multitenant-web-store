@@ -5,6 +5,6 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class UserUpdateDto extends UserCreateDto {
+public class UserUpdateDto extends UserCreationDto {
     private Long id;
 }

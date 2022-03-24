@@ -1,6 +1,6 @@
 package com.mws.backend.account.service;
 
-import com.mws.backend.account.interfaces.user.dto.UserCreateDto;
+import com.mws.backend.account.interfaces.user.dto.UserCreationDto;
 import com.mws.backend.account.interfaces.user.dto.UserUpdateDto;
 import com.mws.backend.account.model.dao.UserDao;
 import com.mws.backend.account.model.entity.User;
@@ -13,15 +13,14 @@ public class UserService {
     @Autowired
     private UserDao userDao;
 
-    public Long createUser(final UserCreateDto userCreateDto) {
+    public Long createUser(final UserCreationDto userCreationDto) {
         final User user = new User();
-        user.setEmail(userCreateDto.getEmail());
-        user.setPassword(userCreateDto.getPassword());
-        user.setFirstName(userCreateDto.getFirstName());
-        user.setLastName(userCreateDto.getLastName());
+        user.setEmail(userCreationDto.getEmail());
+        user.setPassword(userCreationDto.getPassword());
+        user.setFirstName(userCreationDto.getFirstName());
+        user.setLastName(userCreationDto.getLastName());
 
-        User createdUser = userDao.create(user);
-        return createdUser.getId();
+        return userDao.create(user).getId();
     }
 
     public void updateUser(final UserUpdateDto userUpdateDto) {
