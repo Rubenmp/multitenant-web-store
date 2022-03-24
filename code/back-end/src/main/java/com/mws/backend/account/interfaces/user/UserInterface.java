@@ -26,7 +26,7 @@ public class UserInterface {
     }
 
     @PutMapping(UPDATE_USER_URL)
-    public ResponseEntity<Long> updateUser(@RequestBody UserUpdateDto userUpdateDto) {
+    public ResponseEntity<Void> updateUser(@RequestBody UserUpdateDto userUpdateDto) {
         userService.updateUser(userUpdateDto);
 
         return new ResponseEntity<>(OK);
