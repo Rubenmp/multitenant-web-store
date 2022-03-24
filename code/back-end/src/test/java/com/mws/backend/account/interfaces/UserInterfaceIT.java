@@ -24,13 +24,13 @@ class UserInterfaceIT extends IntegrationTestConfig {
 
     @Test
     void createUser() {
-        final UserCreationDto registerRequest = createRegisterRequest("test.email@test.com");
-        final URI uri = getUriFromEndpoint(CREATE_USER_URL);
+        final UserCreationDto registerDto = createUserCreationDto("test.email@test.com");
+        final URI uri = getUri(CREATE_USER_URL);
 
         final ResponseEntity<String> responseEntity = restTemplate.exchange(
                 uri,
                 HttpMethod.POST,
-                new HttpEntity<>(registerRequest),
+                new HttpEntity<>(registerDto),
                 String.class);
 
         final Long userId = convertStringToObject(responseEntity.getBody(), Long.class);
@@ -41,8 +41,8 @@ class UserInterfaceIT extends IntegrationTestConfig {
 
     @Test
     void createUser_repeatedEmail_notPossible() {
-        final UserCreationDto registerRequest = createRegisterRequest(USER_EMAIL);
-        final URI uri = getUriFromEndpoint(CREATE_USER_URL);
+        final UserCreationDto registerRequest = createUserCreationDto(USER_EMAIL);
+        final URI uri = getUri(CREATE_USER_URL);
 
         final ResponseEntity<String> responseEntity = restTemplate.exchange(
                 uri,
@@ -53,20 +53,20 @@ class UserInterfaceIT extends IntegrationTestConfig {
         assertNotEquals(HttpStatus.OK, responseEntity.getStatusCode(), "Response status");
     }
 
-    private UserCreationDto createRegisterRequest(final String email) {
-        final UserCreationDto registerRequest = new UserCreationDto();
-        registerRequest.setFirstName("New first name");
-        registerRequest.setLastName("New last name");
-        registerRequest.setEmail(email);
-        registerRequest.setPassword("Password1");
+    private UserCreationDto createUserCreationDto(final String email) {
+        final UserCreationDto creationDto = new UserCreationDto();
+        creationDto.setFirstName("New first name");
+        creationDto.setLastName("New last name");
+        creationDto.setEmail(email);
+        creationDto.setPassword("Password1");
 
-        return registerRequest;
+        return creationDto;
     }
 
     @Test
     void updateUser() {
         final UserCreationDto registerRequest = createUserUpdateDto();
-        final URI uri = getUriFromEndpoint(CREATE_USER_URL);
+        final URI uri = getUri(CREATE_USER_URL);
 
         final ResponseEntity<String> responseEntity = restTemplate.exchange(
                 uri,
@@ -83,7 +83,7 @@ class UserInterfaceIT extends IntegrationTestConfig {
         updateRequest.setFirstName("New first name");
         updateRequest.setLastName("New last name");
         updateRequest.setEmail("new.email@test.com");
-        updateRequest.setPassword("Password1");
+        updateRequest.setPassword("Password2");
 
         return updateRequest;
     }

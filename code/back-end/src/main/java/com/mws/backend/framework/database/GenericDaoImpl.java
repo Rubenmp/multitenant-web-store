@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
-public class GenericDaoImpl<EntityClass, Id> implements GenericDao<EntityClass, Id> {
+public abstract class GenericDaoImpl<EntityClass, Id> implements GenericDao<EntityClass, Id> {
 
     @PersistenceContext
     protected EntityManager entityManager;
