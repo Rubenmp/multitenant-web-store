@@ -2,7 +2,6 @@ package com.mws.backend.account.interfaces;
 
 
 import com.mws.backend.account.interfaces.user.dto.UserCreationDto;
-import com.mws.backend.account.model.entity.User;
 import com.mws.backend.framework.IntegrationTestConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,18 +42,10 @@ class UserInterfaceIT extends IntegrationTestConfig {
                 httpEntity,
                 String.class);
 
-        final User createdUser = convertStringToObject(responseEntity.getBody(), User.class);
+        final Long userId = convertStringToObject(responseEntity.getBody(), Long.class);
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode(), "Response status");
-        checkCreatedUser(registerRequest, createdUser);
-    }
-
-        private void checkCreatedUser(final UserCreationDto registerRequest, final User createdUser) {
-        assertNotNull(createdUser, "Created user");
-        assertNotNull(createdUser.getId(), "Created user id");
-        assertEquals(registerRequest.getFirstName(), createdUser.getFirstName(), "Created user first name");
-        assertEquals(registerRequest.getLastName(), createdUser.getLastName(), "Created user last name");
-        assertEquals(registerRequest.getEmail(), createdUser.getEmail(), "Created user email");
+        assertNotNull(userId, "User id");
     }
 
     private UserCreationDto createRegisterRequest() {

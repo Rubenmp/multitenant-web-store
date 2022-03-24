@@ -18,6 +18,8 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 public class IntegrationTestConfig {
     private static final String USER_PASSWORD = "Password1";
     private static String userToken;
@@ -107,7 +109,8 @@ public class IntegrationTestConfig {
 
         try {
             object = mapper.readValue(data, valueType);
-        } catch (JsonProcessingException ignored) {
+        } catch (JsonProcessingException e) {
+            fail("It was not possible to parse object" + e);
         }
 
         return object;
