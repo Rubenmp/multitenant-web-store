@@ -5,27 +5,27 @@ import com.mws.backend.account.interfaces.user.dto.UserUpdateDto;
 import com.mws.backend.account.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 public class UserInterface {
+    private static final String BASE_USER_URL = "/user";
+    public static final String CREATE_USER_URL = BASE_USER_URL + "/" + "create";
+    public static final String UPDATE_USER_URL = BASE_USER_URL + "/" + "update";
 
     @Autowired
     private UserService userService;
 
-    @PostMapping("/create-user")
+    @PostMapping(CREATE_USER_URL)
     public ResponseEntity<Long> createUser(@RequestBody UserCreateDto userCreateDto) {
         final Long userId = userService.createUser(userCreateDto);
 
         return new ResponseEntity<>(userId, OK);
     }
 
-    @PutMapping("/update-user")
+    @PutMapping(UPDATE_USER_URL)
     public ResponseEntity<Long> updateUser(@RequestBody UserUpdateDto userUpdateDto) {
         userService.updateUser(userUpdateDto);
 
