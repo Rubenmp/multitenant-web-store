@@ -4,6 +4,7 @@ import com.mws.backend.account.interfaces.user.dto.UserCreationDto;
 import com.mws.backend.account.interfaces.user.dto.UserUpdateDto;
 import com.mws.backend.account.model.dao.UserDao;
 import com.mws.backend.account.model.entity.User;
+import com.mws.backend.framework.database.exception.EntityPersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,11 @@ public class UserService {
         user.setFirstName(userCreationDto.getFirstName());
         user.setLastName(userCreationDto.getLastName());
 
-        return userDao.create(user).getId();
+        try {
+            return userDao.create(user).getId();
+        } catch (EntityPersistenceException e) {
+            return null;
+        }
     }
 
     public void updateUser(final UserUpdateDto userUpdateDto) {

@@ -4,6 +4,7 @@ import com.mws.backend.account.interfaces.user.dto.UserCreationDto;
 import com.mws.backend.account.model.dao.UserDao;
 import com.mws.backend.account.model.entity.User;
 import com.mws.backend.framework.TestUtils;
+import com.mws.backend.framework.database.exception.EntityPersistenceException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,7 +26,7 @@ class UserServiceTest extends TestUtils {
     private UserService userService;
 
     @Test
-    void createUser() {
+    void createUser() throws EntityPersistenceException {
         final UserCreationDto registerRequest = getValidRegisterRequest();
         final User createdUser = new User();
         createdUser.setId(getRandomLong());
