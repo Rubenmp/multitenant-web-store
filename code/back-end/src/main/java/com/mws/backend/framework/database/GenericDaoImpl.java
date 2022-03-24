@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.transaction.Transactional;
 
 
 public abstract class GenericDaoImpl<T, Id> implements GenericDao<T, Id> {
@@ -27,6 +28,7 @@ public abstract class GenericDaoImpl<T, Id> implements GenericDao<T, Id> {
     }
 
     @Override
+    @Transactional
     public T create(final T t) {
         this.em.persist(t);
         return t;

@@ -6,9 +6,8 @@ import com.mws.backend.framework.database.GenericDaoImpl;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-@Component("userDao")
+@Component
 public class UserDaoImpl extends GenericDaoImpl<User, Long> implements UserDao {
-
 
 }
 
