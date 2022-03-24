@@ -1,6 +1,5 @@
-package com.mws.backend.framework;
+package com.mws.backend.framework.utils;
 
-import com.mws.backend.framework.utils.StringUtils;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;

@@ -4,21 +4,19 @@ import com.mws.backend.account.interfaces.user.dto.UserCreationDto;
 import com.mws.backend.account.model.dao.UserDao;
 import com.mws.backend.account.model.entity.User;
 import com.mws.backend.framework.TestUtils;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+
+@ExtendWith(MockitoExtension.class)
 class UserServiceTest extends TestUtils {
-    @BeforeEach
-    void init() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Mock
     private UserDao userDao;
