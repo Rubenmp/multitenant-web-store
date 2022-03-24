@@ -1,25 +1,26 @@
 package com.mws.backend.framework.database;
 
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.transaction.Transactional;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.metadata.ConstraintDescriptor;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
+// https://www.codeproject.com/Articles/251166/The-Generic-DAO-Pattern-in-Java-with-Spring-and-JP
 public abstract class GenericDaoImpl<T, Id> implements GenericDao<T, Id> {
 
     @PersistenceContext
     protected EntityManager em;
 
-    private Class<T> type;
+    private final Class<T> type;
 
     public GenericDaoImpl() {
         Type t = getClass().getGenericSuperclass();
@@ -30,8 +31,19 @@ public abstract class GenericDaoImpl<T, Id> implements GenericDao<T, Id> {
     @Override
     @Transactional
     public T create(final T t) {
+        List<String> violatedConstraintMessages = validate(t);
+
+        if (!violatedConstraintMessages.isEmpty()) {
+            throw new RuntimeException(violatedConstraintMessages.toString());
+        }
+
         this.em.persist(t);
         return t;
+    }
+
+    private List<String> validate(T t) {
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+        return validator.validate(t).stream().map(ConstraintViolation::getConstraintDescriptor).map(ConstraintDescriptor::getMessageTemplate).collect(Collectors.toList());
     }
 
     @Override
@@ -45,6 +57,7 @@ public abstract class GenericDaoImpl<T, Id> implements GenericDao<T, Id> {
     }
 
     @Override
+    @Transactional
     public T update(final T t) {
         return this.em.merge(t);
     }

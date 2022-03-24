@@ -1,9 +1,10 @@
 package com.mws.backend.account.service;
 
+import com.mws.backend.account.interfaces.user.dto.UserCreateDto;
+import com.mws.backend.account.interfaces.user.dto.UserUpdateDto;
 import com.mws.backend.account.model.dao.UserDao;
 import com.mws.backend.account.model.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import javax.validation.ConstraintViolation;
@@ -17,27 +18,31 @@ import java.util.stream.Collectors;
 public class UserService {
 
     @Autowired
-    //@Qualifier("UserDaoImpl")
     private UserDao userDao;
 
 
-    public Long createUser(final String email) {
+    public Long createUser(final UserCreateDto userCreateDto) {
         final User user = new User();
-        user.setEmail(email);
+        user.setEmail(userCreateDto.getEmail());
+        user.setPassword(userCreateDto.getPassword());
+        user.setFirstName(userCreateDto.getFirstName());
+        user.setLastName(userCreateDto.getLastName());
 
-        final List<String> violatedConstraints = validate(user);
-        if (violatedConstraints.isEmpty()) {
-            User createdUser = userDao.create(user);
-            return createdUser.getId();
-        }
-
-        throw new RuntimeException("violatedConstraints: " + violatedConstraints.size());
+        User createdUser = userDao.create(user);
+        return createdUser.getId();
     }
 
-    private List<String> validate(User user) {
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<User>> violatedConstraints = validator.validate(user);
-        return violatedConstraints.stream().map(ConstraintViolation::getMessage).collect(Collectors.toList());
+    public void updateUser(final UserUpdateDto userUpdateDto) {
+        final User user = new User();
+        user.setId(userUpdateDto.getId());
+        user.setEmail(userUpdateDto.getEmail());
+        user.setPassword(userUpdateDto.getPassword());
+        user.setFirstName(userUpdateDto.getFirstName());
+        user.setLastName(userUpdateDto.getLastName());
+
+        User createdUser = userDao.update(user);
+
+        int a = 1;
     }
 
     public User getUser(final String email) {
