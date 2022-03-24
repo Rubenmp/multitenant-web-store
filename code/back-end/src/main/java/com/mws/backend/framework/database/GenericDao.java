@@ -1,13 +1,11 @@
 package com.mws.backend.framework.database;
 
-public interface GenericDao<T, Id> {
-
-
-    T create(T t);
+public interface GenericDao<EntityClass, Id> {
+    EntityClass create(EntityClass entity);
 
     void delete(Id id);
 
-    T find(Id id);
+    EntityClass find(Id id);
 
-    T update(T t);
+    EntityClass update(EntityClass entity);
 }

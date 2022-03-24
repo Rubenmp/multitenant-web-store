@@ -14,52 +14,52 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
-// https://www.codeproject.com/Articles/251166/The-Generic-DAO-Pattern-in-Java-with-Spring-and-JP
-public abstract class GenericDaoImpl<T, Id> implements GenericDao<T, Id> {
+public abstract class GenericDaoImpl<EntityClass, Id> implements GenericDao<EntityClass, Id> {
 
     @PersistenceContext
-    protected EntityManager em;
+    protected EntityManager entityManager;
 
-    private final Class<T> type;
+    private final Class<EntityClass> type;
 
     public GenericDaoImpl() {
-        Type t = getClass().getGenericSuperclass();
-        ParameterizedType pt = (ParameterizedType) t;
-        type = (Class) pt.getActualTypeArguments()[0];
+        Type type = getClass().getGenericSuperclass();
+        ParameterizedType pt = (ParameterizedType) type;
+        this.type = (Class) pt.getActualTypeArguments()[0];
     }
 
     @Override
     @Transactional
-    public T create(final T t) {
-        List<String> violatedConstraintMessages = validate(t);
+    public EntityClass create(final EntityClass entity) {
+        final List<String> violatedConstraintMessages = getViolatedConstraints(entity);
 
         if (!violatedConstraintMessages.isEmpty()) {
             throw new RuntimeException(violatedConstraintMessages.toString());
         }
 
-        this.em.persist(t);
-        return t;
+        this.entityManager.persist(entity);
+        return entity;
     }
 
-    private List<String> validate(T t) {
+    private List<String> getViolatedConstraints(EntityClass entity) {
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        return validator.validate(t).stream().map(ConstraintViolation::getConstraintDescriptor).map(ConstraintDescriptor::getMessageTemplate).collect(Collectors.toList());
+        return validator.validate(entity).stream().map(ConstraintViolation::getConstraintDescriptor)
+                .map(ConstraintDescriptor::getMessageTemplate).collect(Collectors.toList());
     }
 
     @Override
     @Transactional
     public void delete(final Id id) {
-        this.em.remove(this.em.getReference(type, id));
+        this.entityManager.remove(this.entityManager.getReference(type, id));
     }
 
     @Override
-    public T find(final Id id) {
-        return (T) this.em.find(type, id);
+    public EntityClass find(final Id id) {
+        return (EntityClass) this.entityManager.find(type, id);
     }
 
     @Override
     @Transactional
-    public T update(final T t) {
-        return this.em.merge(t);
+    public EntityClass update(final EntityClass t) {
+        return this.entityManager.merge(t);
     }
 }
