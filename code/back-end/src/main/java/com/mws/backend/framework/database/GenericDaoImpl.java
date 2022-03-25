@@ -1,12 +1,19 @@
 package com.mws.backend.framework.database;
 
 
+import com.mws.backend.account.model.entity.User;
 import com.mws.backend.framework.exception.EntityNotFound;
 import com.mws.backend.framework.exception.EntityPersistenceException;
+import org.hibernate.Session;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -24,6 +31,7 @@ public abstract class GenericDaoImpl<EntityClass, Id> implements GenericDao<Enti
 
     @PersistenceContext
     protected EntityManager entityManager;
+    private Session session; // It can be used to create custom queries
 
     private final Class<EntityClass> type;
 
@@ -31,6 +39,21 @@ public abstract class GenericDaoImpl<EntityClass, Id> implements GenericDao<Enti
         Type type = getClass().getGenericSuperclass();
         ParameterizedType pt = (ParameterizedType) type;
         this.type = (Class) pt.getActualTypeArguments()[0];
+    }
+
+    @PostConstruct
+    public void initSession(){
+        session = (Session) entityManager.getDelegate();
+    }
+
+    private Class<EntityClass> getEntityClass() {
+        return type;
+    }
+
+    private Session getSession() {
+        if (session == null)
+            throw new IllegalStateException("Session has not been set on DAO before usage");
+        return session;
     }
 
     @Override
@@ -61,7 +84,6 @@ public abstract class GenericDaoImpl<EntityClass, Id> implements GenericDao<Enti
     public void update(final EntityClass t) throws EntityPersistenceException {
         try {
             this.entityManager.merge(t);
-            this.entityManager.flush();
         } catch (PersistenceException e) {
             throw toDatabaseException(e);
         }
@@ -89,6 +111,20 @@ public abstract class GenericDaoImpl<EntityClass, Id> implements GenericDao<Enti
     @Override
     public EntityClass findWeak(final Id id) {
         return this.entityManager.find(type, id);
+    }
+
+    @Override
+    public List<EntityClass> findBy(final String columnName, final String value) {
+        Class<EntityClass> entityClass = getEntityClass();
+        CriteriaQuery<EntityClass> criteriaQuery = getCriteriaBuilder().createQuery(entityClass);
+        Root<EntityClass> root = criteriaQuery.from(entityClass);
+        criteriaQuery.where(getCriteriaBuilder().equal(root.get(columnName), value));
+
+        return entityManager.createQuery(criteriaQuery).getResultList();
+    }
+
+    private CriteriaBuilder getCriteriaBuilder() {
+        return entityManager.getCriteriaBuilder();
     }
 
     @Override

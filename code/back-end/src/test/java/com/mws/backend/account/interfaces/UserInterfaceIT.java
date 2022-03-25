@@ -80,7 +80,7 @@ class UserInterfaceIT extends IntegrationTestConfig {
 
     @Test
     void updateUser22() {
-        final UserCreationDto registerDto = createUserCreationDto("test.email@test.com");
+        final UserCreationDto registerDto = createUserCreationDto("test.duplicateemail@test.com");
         final ResponseEntity<String> responseEntityCreate = restTemplate.exchange(
                 getUri(CREATE_USER_URL),
                 HttpMethod.POST,
@@ -101,7 +101,7 @@ class UserInterfaceIT extends IntegrationTestConfig {
                 new HttpEntity<>(registerRequest),
                 String.class);
 
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode(), "Response status");
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode(), "Response status");
     }
 
 

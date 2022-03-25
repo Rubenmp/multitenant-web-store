@@ -36,6 +36,10 @@ public class UserService {
             throw new MWSException("Entity not found");
         }
 
+        if (!userDao.findByEmail(userUpdateDto.getEmail()).isEmpty()) {
+            throw new MWSException("Duplicated email");
+        }
+
         try {
             userDao.update(user);
         } catch (EntityPersistenceException e) {
@@ -50,6 +54,7 @@ public class UserService {
         user.setPassword(userUpdateDto.getPassword());
         user.setFirstName(userUpdateDto.getFirstName());
         user.setLastName(userUpdateDto.getLastName());
+
         return user;
     }
 
