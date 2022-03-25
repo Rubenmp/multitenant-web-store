@@ -50,7 +50,7 @@ class UserInterfaceIT extends IntegrationTestConfig {
                 new HttpEntity<>(registerRequest),
                 String.class);
 
-        assertNotEquals(HttpStatus.OK, responseEntity.getStatusCode(), "Response status");
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode(), "Response status");
     }
 
     private UserCreationDto createUserCreationDto(final String email) {

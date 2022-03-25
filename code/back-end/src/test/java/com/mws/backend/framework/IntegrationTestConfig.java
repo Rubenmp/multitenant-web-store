@@ -12,7 +12,6 @@ import java.net.URI;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class IntegrationTestConfig {
-    private static ObjectMapper objectMapper;
     protected static final Long USER_ID = 1L;
     protected static final String USER_EMAIL = "user@mwstest.com";
     public static final String TEST_PROFILE = "test";

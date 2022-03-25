@@ -4,7 +4,8 @@ import com.mws.backend.account.interfaces.user.dto.UserCreationDto;
 import com.mws.backend.account.interfaces.user.dto.UserUpdateDto;
 import com.mws.backend.account.model.dao.UserDao;
 import com.mws.backend.account.model.entity.User;
-import com.mws.backend.framework.database.exception.EntityPersistenceException;
+import com.mws.backend.framework.exception.EntityPersistenceException;
+import com.mws.backend.framework.exception.MWSException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +15,7 @@ public class UserService {
     @Autowired
     private UserDao userDao;
 
-    public Long createUser(final UserCreationDto userCreationDto) {
+    public Long createUser(final UserCreationDto userCreationDto) throws MWSException {
         final User user = new User();
         user.setEmail(userCreationDto.getEmail());
         user.setPassword(userCreationDto.getPassword());
@@ -24,7 +25,7 @@ public class UserService {
         try {
             return userDao.create(user).getId();
         } catch (EntityPersistenceException e) {
-            return null;
+            throw new MWSException(e.getMessage());
         }
     }
 

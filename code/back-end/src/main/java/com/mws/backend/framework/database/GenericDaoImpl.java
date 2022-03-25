@@ -1,7 +1,8 @@
 package com.mws.backend.framework.database;
 
 
-import com.mws.backend.framework.database.exception.EntityPersistenceException;
+import com.mws.backend.framework.exception.EntityNotFound;
+import com.mws.backend.framework.exception.EntityPersistenceException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -16,7 +17,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.mws.backend.framework.database.exception.EntityPersistenceException.toDatabaseException;
+import static com.mws.backend.framework.exception.EntityPersistenceException.toDatabaseException;
 
 
 public abstract class GenericDaoImpl<EntityClass, Id> implements GenericDao<EntityClass, Id> {
@@ -61,8 +62,27 @@ public abstract class GenericDaoImpl<EntityClass, Id> implements GenericDao<Enti
         return this.entityManager.merge(t);
     }
 
+    /**
+     * Force entity search in database.
+     *
+     * Runtime exception:
+     * - EntityNotFound if there is no entity with provided id
+     */
     @Override
     public EntityClass find(final Id id) {
+        final EntityClass entity = findWeak(id);
+        if (entity == null) {
+            throw new EntityNotFound(type.toString() + " entity with id " + id + " does not exist.");
+        }
+
+        return entity;
+    }
+
+    /**
+     * Find entity in database or return null.
+     */
+    @Override
+    public EntityClass findWeak(final Id id) {
         return this.entityManager.find(type, id);
     }
 
