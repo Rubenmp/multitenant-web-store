@@ -15,6 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.net.URI;
 
 import static com.mws.backend.account.interfaces.user.UserInterface.CREATE_USER_URL;
+import static com.mws.backend.account.interfaces.user.UserInterface.UPDATE_USER_URL;
 import static com.mws.backend.framework.IntegrationTestConfig.TEST_PROFILE;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -65,17 +66,60 @@ class UserInterfaceIT extends IntegrationTestConfig {
 
     @Test
     void updateUser() {
-        final UserCreationDto registerRequest = createUserUpdateDto();
-        final URI uri = getUri(CREATE_USER_URL);
+        final UserUpdateDto registerRequest = createUserUpdateDto();
+        final URI uri = getUri(UPDATE_USER_URL);
 
         final ResponseEntity<String> responseEntity = restTemplate.exchange(
                 uri,
-                HttpMethod.POST,
+                HttpMethod.PUT,
                 new HttpEntity<>(registerRequest),
                 String.class);
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode(), "Response status");
     }
+
+    @Test
+    void updateUser22() {
+        final UserCreationDto registerDto = createUserCreationDto("test.email@test.com");
+        final ResponseEntity<String> responseEntityCreate = restTemplate.exchange(
+                getUri(CREATE_USER_URL),
+                HttpMethod.POST,
+                new HttpEntity<>(registerDto),
+                String.class);
+        final Long userId = convertStringToObject(responseEntityCreate.getBody(), Long.class);
+        assertEquals(HttpStatus.OK, responseEntityCreate.getStatusCode(), "Response status");
+        assertNotNull(userId, "User id");
+
+
+        final UserUpdateDto registerRequest = createUserUpdateDto();
+        registerRequest.setId(userId);
+        registerRequest.setEmail(USER_EMAIL);
+
+        final ResponseEntity<String> responseEntity = restTemplate.exchange(
+                getUri(UPDATE_USER_URL),
+                HttpMethod.PUT,
+                new HttpEntity<>(registerRequest),
+                String.class);
+
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode(), "Response status");
+    }
+
+
+    @Test
+    void updateUser_repeteademail_error() {
+        final UserUpdateDto registerRequest = createUserUpdateDto();
+        registerRequest.setId(2L);
+        registerRequest.setEmail(USER_EMAIL);
+
+        final ResponseEntity<String> responseEntity = restTemplate.exchange(
+                getUri(UPDATE_USER_URL),
+                HttpMethod.PUT,
+                new HttpEntity<>(registerRequest),
+                String.class);
+
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode(), "Response status");
+    }
+
 
     private UserUpdateDto createUserUpdateDto() {
         final UserUpdateDto updateRequest = new UserUpdateDto();

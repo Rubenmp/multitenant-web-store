@@ -5,7 +5,7 @@ import com.mws.backend.framework.exception.EntityPersistenceException;
 public interface GenericDao<EntityClass, Id> {
     EntityClass create(EntityClass entity) throws EntityPersistenceException;
 
-    EntityClass update(EntityClass entity);
+    void update(EntityClass entity);
 
     EntityClass find(Id id);
 

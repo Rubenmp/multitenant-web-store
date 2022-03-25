@@ -29,15 +29,28 @@ public class UserService {
         }
     }
 
-    public void updateUser(final UserUpdateDto userUpdateDto) {
+    public void updateUser(final UserUpdateDto userUpdateDto) throws MWSException {
+        final User user = toUser(userUpdateDto);
+
+        if (userDao.findWeak(user.getId()) == null) {
+            throw new MWSException("Entity not found");
+        }
+
+        try {
+            userDao.update(user);
+        } catch (EntityPersistenceException e) {
+            throw new MWSException(e.getMessage());
+        }
+    }
+
+    private User toUser(UserUpdateDto userUpdateDto) {
         final User user = new User();
         user.setId(userUpdateDto.getId());
         user.setEmail(userUpdateDto.getEmail());
         user.setPassword(userUpdateDto.getPassword());
         user.setFirstName(userUpdateDto.getFirstName());
         user.setLastName(userUpdateDto.getLastName());
-
-        userDao.update(user);
+        return user;
     }
 
 }

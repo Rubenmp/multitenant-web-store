@@ -34,7 +34,11 @@ public class UserInterface {
 
     @PutMapping(UPDATE_USER_URL)
     public ResponseEntity<Void> updateUser(@RequestBody UserUpdateDto userUpdateDto) {
-        userService.updateUser(userUpdateDto);
+        try {
+            userService.updateUser(userUpdateDto);
+        } catch (MWSException e) {
+            return new ResponseEntity<>(BAD_REQUEST);
+        }
 
         return new ResponseEntity<>(OK);
     }

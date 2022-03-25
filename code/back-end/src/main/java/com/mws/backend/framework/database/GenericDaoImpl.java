@@ -58,8 +58,13 @@ public abstract class GenericDaoImpl<EntityClass, Id> implements GenericDao<Enti
 
     @Override
     @Transactional
-    public EntityClass update(final EntityClass t) {
-        return this.entityManager.merge(t);
+    public void update(final EntityClass t) throws EntityPersistenceException {
+        try {
+            this.entityManager.merge(t);
+            this.entityManager.flush();
+        } catch (PersistenceException e) {
+            throw toDatabaseException(e);
+        }
     }
 
     /**

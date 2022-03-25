@@ -1,6 +1,8 @@
 package com.mws.backend.framework.exception;
 
 import javax.persistence.PersistenceException;
+
+import org.hibernate.PersistentObjectException;
 import org.hibernate.exception.ConstraintViolationException;
 
 import java.sql.SQLException;
@@ -26,13 +28,14 @@ public class EntityPersistenceException extends RuntimeException {
            return new EntityPersistenceException(toDuplicateEntryMessage(e), PersistenceExceptionType.DUPLICATE_KEY);
         }
 
-        throw new RuntimeException(e.getMessage());
+        throw new RuntimeException(e);
     }
 
     private static boolean isDuplicateEntry(PersistenceException e) {
         if (e == null || !(e.getCause() instanceof ConstraintViolationException)) {
             return false;
         }
+        PersistentObjectException te;
         final SQLException sqlException = ((ConstraintViolationException) e.getCause()).getSQLException();
 
         return 1062 == sqlException.getErrorCode() && "23000".equals(sqlException.getSQLState());
