@@ -1,7 +1,6 @@
 package com.mws.backend.framework.database;
 
 
-import com.mws.backend.account.model.entity.User;
 import com.mws.backend.framework.exception.EntityNotFound;
 import com.mws.backend.framework.exception.EntityPersistenceException;
 import org.hibernate.Session;
@@ -12,7 +11,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
@@ -32,7 +30,6 @@ public abstract class GenericDaoImpl<EntityClass, Id> implements GenericDao<Enti
     @PersistenceContext
     protected EntityManager entityManager;
     private Session session; // It can be used to create custom queries
-
     private final Class<EntityClass> type;
 
     public GenericDaoImpl() {

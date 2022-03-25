@@ -4,6 +4,8 @@ package com.mws.backend.account.interfaces;
 import com.mws.backend.account.interfaces.user.dto.UserCreationDto;
 import com.mws.backend.account.interfaces.user.dto.UserUpdateDto;
 import com.mws.backend.framework.IntegrationTestConfig;
+import com.mws.backend.framework.dto.WebResult;
+import com.mws.backend.framework.dto.WebResultCode;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpEntity;
@@ -35,10 +37,9 @@ class UserInterfaceIT extends IntegrationTestConfig {
                 new HttpEntity<>(registerDto),
                 String.class);
 
-        final Long userId = convertStringToObject(responseEntity.getBody(), Long.class);
-
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode(), "Response status");
-        assertNotNull(userId, "User id");
+        final WebResult<Long> result = (WebResult<Long>) toWebResult(responseEntity);
+        assertEquals(WebResultCode.SUCCESS, result.getCode(), "Result code");
     }
 
     @Test

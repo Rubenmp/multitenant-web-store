@@ -2,9 +2,11 @@ package com.mws.backend.framework;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mws.backend.framework.dto.WebResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
@@ -33,6 +35,10 @@ public class IntegrationTestConfig {
                 .build()
                 .encode()
                 .toUri();
+    }
+
+    protected WebResult<?> toWebResult(final ResponseEntity<String> responseEntity) {
+        return convertStringToObject(responseEntity.getBody(), WebResult.class);
     }
 
     // Important: We need @NoArgsConstructor in valueType class

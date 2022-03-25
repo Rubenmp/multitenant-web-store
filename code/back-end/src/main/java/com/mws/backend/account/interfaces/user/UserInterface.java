@@ -3,11 +3,13 @@ package com.mws.backend.account.interfaces.user;
 import com.mws.backend.account.interfaces.user.dto.UserCreationDto;
 import com.mws.backend.account.interfaces.user.dto.UserUpdateDto;
 import com.mws.backend.account.service.UserService;
+import com.mws.backend.framework.dto.WebResult;
 import com.mws.backend.framework.exception.MWSException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static com.mws.backend.framework.dto.WebResult.success;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -21,7 +23,7 @@ public class UserInterface {
     private UserService userService;
 
     @PostMapping(CREATE_USER_URL)
-    public ResponseEntity<Long> createUser(@RequestBody UserCreationDto userCreationDto) {
+    public ResponseEntity<WebResult<Long>> createUser(@RequestBody UserCreationDto userCreationDto) {
         final Long userId;
         try {
             userId = userService.createUser(userCreationDto);
@@ -29,7 +31,7 @@ public class UserInterface {
             return new ResponseEntity<>(BAD_REQUEST);
         }
 
-        return new ResponseEntity<>(userId, OK);
+        return new ResponseEntity<>(success(userId), OK);
     }
 
     @PutMapping(UPDATE_USER_URL)
