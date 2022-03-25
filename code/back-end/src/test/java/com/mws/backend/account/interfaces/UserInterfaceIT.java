@@ -17,14 +17,15 @@ import java.net.URI;
 import static com.mws.backend.account.interfaces.user.UserInterface.CREATE_USER_URL;
 import static com.mws.backend.account.interfaces.user.UserInterface.UPDATE_USER_URL;
 import static com.mws.backend.framework.IntegrationTestConfig.TEST_PROFILE;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ActiveProfiles(TEST_PROFILE)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UserInterfaceIT extends IntegrationTestConfig {
 
     @Test
-    void createUser() {
+    void createUser_happyPath_success() {
         final UserCreationDto registerDto = createUserCreationDto("test.email@test.com");
         final URI uri = getUri(CREATE_USER_URL);
 
@@ -41,7 +42,7 @@ class UserInterfaceIT extends IntegrationTestConfig {
     }
 
     @Test
-    void createUser_repeatedEmail_notPossible() {
+    void createUser_repeatedEmail_badRequest() {
         final UserCreationDto registerRequest = createUserCreationDto(USER_EMAIL);
         final URI uri = getUri(CREATE_USER_URL);
 
@@ -65,7 +66,7 @@ class UserInterfaceIT extends IntegrationTestConfig {
     }
 
     @Test
-    void updateUser() {
+    void updateUser_happyPath_success() {
         final UserUpdateDto registerRequest = createUserUpdateDto();
         final URI uri = getUri(UPDATE_USER_URL);
 
@@ -79,8 +80,9 @@ class UserInterfaceIT extends IntegrationTestConfig {
     }
 
     @Test
-    void updateUser22() {
-        final UserCreationDto registerDto = createUserCreationDto("test.duplicateemail@test.com");
+    void updateUser_withRepeatedEmail_badRequest() {
+        final String duplicatedEmail = "test.duplicateemail@test.com";
+        final UserCreationDto registerDto = createUserCreationDto(duplicatedEmail);
         final ResponseEntity<String> responseEntityCreate = restTemplate.exchange(
                 getUri(CREATE_USER_URL),
                 HttpMethod.POST,
@@ -90,10 +92,8 @@ class UserInterfaceIT extends IntegrationTestConfig {
         assertEquals(HttpStatus.OK, responseEntityCreate.getStatusCode(), "Response status");
         assertNotNull(userId, "User id");
 
-
         final UserUpdateDto registerRequest = createUserUpdateDto();
-        registerRequest.setId(userId);
-        registerRequest.setEmail(USER_EMAIL);
+        registerRequest.setEmail(duplicatedEmail);
 
         final ResponseEntity<String> responseEntity = restTemplate.exchange(
                 getUri(UPDATE_USER_URL),
@@ -103,23 +103,6 @@ class UserInterfaceIT extends IntegrationTestConfig {
 
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode(), "Response status");
     }
-
-
-    @Test
-    void updateUser_repeteademail_error() {
-        final UserUpdateDto registerRequest = createUserUpdateDto();
-        registerRequest.setId(2L);
-        registerRequest.setEmail(USER_EMAIL);
-
-        final ResponseEntity<String> responseEntity = restTemplate.exchange(
-                getUri(UPDATE_USER_URL),
-                HttpMethod.PUT,
-                new HttpEntity<>(registerRequest),
-                String.class);
-
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode(), "Response status");
-    }
-
 
     private UserUpdateDto createUserUpdateDto() {
         final UserUpdateDto updateRequest = new UserUpdateDto();
