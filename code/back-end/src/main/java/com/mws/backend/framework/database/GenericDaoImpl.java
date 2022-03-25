@@ -1,100 +1,88 @@
 package com.mws.backend.framework.database;
 
 
-import com.mws.backend.framework.exception.EntityNotFound;
-import com.mws.backend.framework.exception.EntityPersistenceException;
+import org.hibernate.Criteria;
+import org.hibernate.LockMode;
+import org.hibernate.Session;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Example;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceException;
-import javax.transaction.Transactional;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.metadata.ConstraintDescriptor;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.io.Serializable;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static com.mws.backend.framework.exception.EntityPersistenceException.toDatabaseException;
+public abstract class GenericDaoImpl<T, ID extends Serializable>
+        implements GenericDao<T, ID> {
 
-
-public abstract class GenericDaoImpl<EntityClass, Id> implements GenericDao<EntityClass, Id> {
-
+    private Class<T> persistentClass;
+    private Session session;
     @PersistenceContext
-    protected EntityManager entityManager;
-
-    private final Class<EntityClass> type;
+    private EntityManager em;
 
     public GenericDaoImpl() {
-        Type type = getClass().getGenericSuperclass();
-        ParameterizedType pt = (ParameterizedType) type;
-        this.type = (Class) pt.getActualTypeArguments()[0];
+        setSession((Session) em.getDelegate());
     }
 
-    @Override
-    @Transactional
-    public EntityClass create(final EntityClass entity) throws EntityPersistenceException {
-        final List<String> violatedConstraintMessages = getViolatedConstraints(entity);
-
-        if (!violatedConstraintMessages.isEmpty()) {
-            throw new RuntimeException(violatedConstraintMessages.toString());
-        }
-
-        try {
-            this.entityManager.persist(entity);
-        } catch (PersistenceException e) {
-            throw toDatabaseException(e);
-        }
-        return entity;
+    @SuppressWarnings("unchecked")
+    public void setSession(Session s) {
+        this.session = s;
     }
 
-    private List<String> getViolatedConstraints(EntityClass entity) {
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        return validator.validate(entity).stream().map(ConstraintViolation::getConstraintDescriptor)
-                .map(ConstraintDescriptor::getMessageTemplate).collect(Collectors.toList());
+    protected Session getSession() {
+        if (session == null)
+            throw new IllegalStateException("Session has not been set on DAO before usage");
+        return session;
     }
 
-    @Override
-    @Transactional
-    public void update(final EntityClass t) throws EntityPersistenceException {
-        try {
-            this.entityManager.merge(t);
-            this.entityManager.flush();
-        } catch (PersistenceException e) {
-            throw toDatabaseException(e);
-        }
+    public Class<T> getPersistentClass() {
+        return persistentClass;
     }
 
-    /**
-     * Force entity search in database.
-     *
-     * Runtime exception:
-     * - EntityNotFound if there is no entity with provided id
-     */
-    @Override
-    public EntityClass find(final Id id) {
-        final EntityClass entity = findWeak(id);
-        if (entity == null) {
-            throw new EntityNotFound(type.toString() + " entity with id " + id + " does not exist.");
-        }
+    @SuppressWarnings("unchecked")
+    public T findById(ID id, boolean lock) {
+        T entity;
+        if (lock)
+            entity = (T) getSession().load(getPersistentClass(), id, LockMode.UPGRADE);
+        else
+            entity = (T) getSession().load(getPersistentClass(), id);
 
         return entity;
     }
 
-    /**
-     * Find entity in database or return null.
-     */
-    @Override
-    public EntityClass findWeak(final Id id) {
-        return this.entityManager.find(type, id);
+    @SuppressWarnings("unchecked")
+    public List<T> findAll() {
+        return findByCriteria();
     }
 
-    @Override
-    @Transactional
-    public void delete(final Id id) {
-        this.entityManager.remove(this.entityManager.getReference(type, id));
+    @SuppressWarnings("unchecked")
+    public T makePersistent(T entity) {
+        getSession().saveOrUpdate(entity);
+        return entity;
+    }
+
+    public void makeTransient(T entity) {
+        getSession().delete(entity);
+    }
+
+    public void flush() {
+        getSession().flush();
+    }
+
+    public void clear() {
+        getSession().clear();
+    }
+
+    /**
+     * Use this inside subclasses as a convenience method.
+     */
+    @SuppressWarnings("unchecked")
+    protected List<T> findByCriteria(Criterion... criterion) {
+        Criteria crit = getSession().createCriteria(getPersistentClass());
+        for (Criterion c : criterion) {
+            crit.add(c);
+        }
+        return crit.list();
     }
 
 }

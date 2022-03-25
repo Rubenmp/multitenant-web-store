@@ -1,16 +1,15 @@
 package com.mws.backend.framework.database;
 
-import com.mws.backend.framework.exception.EntityPersistenceException;
+import java.io.Serializable;
+import java.util.List;
 
-public interface GenericDao<EntityClass, Id> {
-    EntityClass create(EntityClass entity) throws EntityPersistenceException;
 
-    void update(EntityClass entity);
+public interface GenericDao<EntityClass, ID extends Serializable> {
+    EntityClass findById(ID id, boolean lock);
 
-    EntityClass find(Id id);
+    List<EntityClass> findAll();
 
-    EntityClass findWeak(final Id id);
+    EntityClass makePersistent(EntityClass entity);
 
-    void delete(Id id);
-
+    void makeTransient(EntityClass entity);
 }
