@@ -1,15 +1,19 @@
 package com.mws.backend.framework.database;
 
 import java.io.Serializable;
-import java.util.List;
 
 
-public interface GenericDao<EntityClass, ID extends Serializable> {
-    EntityClass findById(ID id, boolean lock);
+public interface GenericDao<EntityClass, Id extends Serializable> {
 
-    List<EntityClass> findAll();
+    EntityClass create(final EntityClass entity);
 
-    EntityClass makePersistent(EntityClass entity);
+    EntityClass findById(Id id);
 
-    void makeTransient(EntityClass entity);
+    void update(final EntityClass t);
+
+    //EntityClass makePersistent(EntityClass entity);
+
+    //void makeTransient(EntityClass entity);
+
+    public void delete(final Id id);
 }

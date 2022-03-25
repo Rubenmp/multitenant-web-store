@@ -32,9 +32,9 @@ public class UserService {
     public void updateUser(final UserUpdateDto userUpdateDto) throws MWSException {
         final User user = toUser(userUpdateDto);
 
-        if (userDao.findWeak(user.getId()) == null) {
+/*        if (userDao.findWeak(user.getId()) == null) {
             throw new MWSException("Entity not found");
-        }
+        }*/
 
         try {
             userDao.update(user);
