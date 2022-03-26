@@ -20,10 +20,14 @@ import javax.validation.Validator;
 import javax.validation.metadata.ConstraintDescriptor;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.mws.backend.framework.exception.EntityPersistenceException.toDatabaseException;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 
 public abstract class GenericDaoImpl<EntityClass, Id> implements GenericDao<EntityClass, Id> {
@@ -32,6 +36,8 @@ public abstract class GenericDaoImpl<EntityClass, Id> implements GenericDao<Enti
     protected EntityManager entityManager;
     private Session session; // It can be used to create custom queries
     private final Class<EntityClass> type;
+
+    public static final String COLUMN_ID = "id";
 
     public GenericDaoImpl() {
         Type type = getClass().getGenericSuperclass();
@@ -97,6 +103,20 @@ public abstract class GenericDaoImpl<EntityClass, Id> implements GenericDao<Enti
         return entity;
     }
 
+    @Override
+    public List<EntityClass> findAll(final Collection<Id> ids) {
+        if (isEmpty(ids)) {
+            return Collections.emptyList();
+        }
+
+        Class<EntityClass> entityClass = getEntityClass();
+        CriteriaQuery<EntityClass> criteriaQuery = getCriteriaBuilder().createQuery(entityClass);
+        Root<EntityClass> root = criteriaQuery.from(entityClass);
+        criteriaQuery.where(root.get(COLUMN_ID).in(ids));
+
+        return entityManager.createQuery(criteriaQuery).getResultList();
+    }
+
     /**
      * Find entity in database or return null.
      */
@@ -111,6 +131,7 @@ public abstract class GenericDaoImpl<EntityClass, Id> implements GenericDao<Enti
         CriteriaQuery<EntityClass> criteriaQuery = getCriteriaBuilder().createQuery(entityClass);
         Root<EntityClass> root = criteriaQuery.from(entityClass);
         criteriaQuery.where(getCriteriaBuilder().equal(root.get(columnName), value));
+
         TypedQuery<EntityClass> query = entityManager.createQuery(criteriaQuery);
 
         if (maxResults != null) {
