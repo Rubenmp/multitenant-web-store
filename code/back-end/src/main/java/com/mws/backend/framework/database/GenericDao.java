@@ -5,15 +5,15 @@ import com.mws.backend.framework.exception.EntityPersistenceException;
 import java.util.Collection;
 import java.util.List;
 
-public interface GenericDao<EntityClass, Id> {
-    EntityClass create(EntityClass entity) throws EntityPersistenceException;
+public interface GenericDao<Entity, Id> {
+    Entity create(Entity entity) throws EntityPersistenceException;
 
-    void update(EntityClass entity);
+    void update(Entity entity);
 
-    EntityClass find(Id id);
-    List<EntityClass> findAll(Collection<Id> ids);
-    EntityClass findWeak(final Id id);
-    List<EntityClass> findBy(String columnName, String value, Integer maxResults);
+    Entity find(Id id);
+    List<Entity> findAll(Collection<Id> ids);
+    Entity findWeak(final Id id);
+    List<Entity> findBy(String columnName, String value, Integer maxResults);
 
     void delete(Id id);
 

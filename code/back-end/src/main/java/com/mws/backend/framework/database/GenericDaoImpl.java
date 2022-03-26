@@ -3,9 +3,7 @@ package com.mws.backend.framework.database;
 
 import com.mws.backend.framework.exception.EntityNotFound;
 import com.mws.backend.framework.exception.EntityPersistenceException;
-import org.hibernate.Session;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
@@ -20,7 +18,6 @@ import javax.validation.Validator;
 import javax.validation.metadata.ConstraintDescriptor;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -30,33 +27,27 @@ import static com.mws.backend.framework.exception.EntityPersistenceException.toD
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 
-public abstract class GenericDaoImpl<EntityClass, Id> implements GenericDao<EntityClass, Id> {
+public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, Id> {
 
     @PersistenceContext
     protected EntityManager entityManager;
-    private Session session; // It can be used to create custom queries
-    private final Class<EntityClass> type;
+    private final Class<Entity> entityClass;
 
     public static final String COLUMN_ID = "id";
 
     public GenericDaoImpl() {
         Type type = getClass().getGenericSuperclass();
         ParameterizedType pt = (ParameterizedType) type;
-        this.type = (Class) pt.getActualTypeArguments()[0];
+        this.entityClass = (Class) pt.getActualTypeArguments()[0];
     }
 
-    @PostConstruct
-    public void initSession(){
-        session = (Session) entityManager.getDelegate();
-    }
-
-    private Class<EntityClass> getEntityClass() {
-        return type;
+    private Class<Entity> getEntityClass() {
+        return entityClass;
     }
 
     @Override
     @Transactional
-    public EntityClass create(final EntityClass entity) throws EntityPersistenceException {
+    public Entity create(final Entity entity) throws EntityPersistenceException {
         final List<String> violatedConstraintMessages = getViolatedConstraints(entity);
 
         if (!violatedConstraintMessages.isEmpty()) {
@@ -71,7 +62,7 @@ public abstract class GenericDaoImpl<EntityClass, Id> implements GenericDao<Enti
         return entity;
     }
 
-    private List<String> getViolatedConstraints(EntityClass entity) {
+    private List<String> getViolatedConstraints(Entity entity) {
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
         return validator.validate(entity).stream().map(ConstraintViolation::getConstraintDescriptor)
                 .map(ConstraintDescriptor::getMessageTemplate).collect(Collectors.toList());
@@ -79,7 +70,7 @@ public abstract class GenericDaoImpl<EntityClass, Id> implements GenericDao<Enti
 
     @Override
     @Transactional
-    public void update(final EntityClass t) throws EntityPersistenceException {
+    public void update(final Entity t) throws EntityPersistenceException {
         try {
             this.entityManager.merge(t);
         } catch (PersistenceException e) {
@@ -94,24 +85,24 @@ public abstract class GenericDaoImpl<EntityClass, Id> implements GenericDao<Enti
      * - EntityNotFound if there is no entity with provided id
      */
     @Override
-    public EntityClass find(final Id id) {
-        final EntityClass entity = findWeak(id);
+    public Entity find(final Id id) {
+        final Entity entity = findWeak(id);
         if (entity == null) {
-            throw new EntityNotFound(type.toString() + " entity with id " + id + " does not exist.");
+            throw new EntityNotFound(entityClass.toString() + " entity with id " + id + " does not exist.");
         }
 
         return entity;
     }
 
     @Override
-    public List<EntityClass> findAll(final Collection<Id> ids) {
+    public List<Entity> findAll(final Collection<Id> ids) {
         if (isEmpty(ids)) {
             return Collections.emptyList();
         }
 
-        Class<EntityClass> entityClass = getEntityClass();
-        CriteriaQuery<EntityClass> criteriaQuery = getCriteriaBuilder().createQuery(entityClass);
-        Root<EntityClass> root = criteriaQuery.from(entityClass);
+        Class<Entity> entityClass = getEntityClass();
+        CriteriaQuery<Entity> criteriaQuery = getCriteriaBuilder().createQuery(entityClass);
+        Root<Entity> root = criteriaQuery.from(entityClass);
         criteriaQuery.where(root.get(COLUMN_ID).in(ids));
 
         return entityManager.createQuery(criteriaQuery).getResultList();
@@ -121,18 +112,18 @@ public abstract class GenericDaoImpl<EntityClass, Id> implements GenericDao<Enti
      * Find entity in database or return null.
      */
     @Override
-    public EntityClass findWeak(final Id id) {
-        return this.entityManager.find(type, id);
+    public Entity findWeak(final Id id) {
+        return this.entityManager.find(entityClass, id);
     }
 
     @Override
-    public List<EntityClass> findBy(final String columnName, final String value, final Integer maxResults) {
-        Class<EntityClass> entityClass = getEntityClass();
-        CriteriaQuery<EntityClass> criteriaQuery = getCriteriaBuilder().createQuery(entityClass);
-        Root<EntityClass> root = criteriaQuery.from(entityClass);
+    public List<Entity> findBy(final String columnName, final String value, final Integer maxResults) {
+        Class<Entity> entityClass = getEntityClass();
+        CriteriaQuery<Entity> criteriaQuery = getCriteriaBuilder().createQuery(entityClass);
+        Root<Entity> root = criteriaQuery.from(entityClass);
         criteriaQuery.where(getCriteriaBuilder().equal(root.get(columnName), value));
 
-        TypedQuery<EntityClass> query = entityManager.createQuery(criteriaQuery);
+        TypedQuery<Entity> query = entityManager.createQuery(criteriaQuery);
 
         if (maxResults != null) {
             return query.setMaxResults(maxResults).getResultList();
@@ -148,7 +139,7 @@ public abstract class GenericDaoImpl<EntityClass, Id> implements GenericDao<Enti
     @Override
     @Transactional
     public void delete(final Id id) {
-        this.entityManager.remove(this.entityManager.getReference(type, id));
+        this.entityManager.remove(this.entityManager.getReference(entityClass, id));
     }
 
 }
