@@ -4,6 +4,8 @@ package com.mws.backend.account.interfaces;
 import com.mws.backend.account.interfaces.user.dto.UserCreationDto;
 import com.mws.backend.account.interfaces.user.dto.UserUpdateDto;
 import com.mws.backend.framework.IntegrationTestConfig;
+import com.mws.backend.framework.dto.WebResult;
+import com.mws.backend.framework.dto.WebResultCode;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpEntity;
@@ -12,9 +14,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.io.Serializable;
 import java.net.URI;
 
 import static com.mws.backend.account.interfaces.user.UserInterface.CREATE_USER_URL;
+import static com.mws.backend.account.interfaces.user.UserInterface.UPDATE_USER_URL;
 import static com.mws.backend.framework.IntegrationTestConfig.TEST_PROFILE;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,34 +27,39 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserInterfaceIT extends IntegrationTestConfig {
 
     @Test
-    void createUser() {
+    void createUser_happyPath_success() {
         final UserCreationDto registerDto = createUserCreationDto("test.email@test.com");
         final URI uri = getUri(CREATE_USER_URL);
 
-        final ResponseEntity<String> responseEntity = restTemplate.exchange(
+        final ResponseEntity<String> response = restTemplate.exchange(
                 uri,
                 HttpMethod.POST,
                 new HttpEntity<>(registerDto),
                 String.class);
 
-        final Long userId = convertStringToObject(responseEntity.getBody(), Long.class);
-
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode(), "Response status");
-        assertNotNull(userId, "User id");
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status");
+        final WebResult<Long> result = toWebResult(response, Long.class);
+        assertEquals(WebResultCode.SUCCESS, result.getCode(), "Result code");
+        assertNotNull(result.getData(), "User id");
     }
 
     @Test
-    void createUser_repeatedEmail_notPossible() {
+    void createUser_repeatedEmail_badRequest() {
         final UserCreationDto registerRequest = createUserCreationDto(USER_EMAIL);
         final URI uri = getUri(CREATE_USER_URL);
 
-        final ResponseEntity<String> responseEntity = restTemplate.exchange(
+        final ResponseEntity<String> response = restTemplate.exchange(
                 uri,
                 HttpMethod.POST,
                 new HttpEntity<>(registerRequest),
                 String.class);
 
-        assertNotEquals(HttpStatus.OK, responseEntity.getStatusCode(), "Response status");
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode(), "Response status");
+
+        final WebResult<Long> result = toWebResult(response, Long.class);
+        assertEquals(WebResultCode.ERROR_INVALID_PARAMETER, result.getCode(), "Result code");
+        assertEquals("Duplicate entry 'user@mwstest.com'", result.getMessage(), "Result code");
+        assertNull(result.getData(), "User id");
     }
 
     private UserCreationDto createUserCreationDto(final String email) {
@@ -64,17 +73,48 @@ class UserInterfaceIT extends IntegrationTestConfig {
     }
 
     @Test
-    void updateUser() {
-        final UserCreationDto registerRequest = createUserUpdateDto();
-        final URI uri = getUri(CREATE_USER_URL);
+    void updateUser_happyPath_success() {
+        final UserUpdateDto registerRequest = createUserUpdateDto();
+        final URI uri = getUri(UPDATE_USER_URL);
 
-        final ResponseEntity<String> responseEntity = restTemplate.exchange(
+        final ResponseEntity<String> response = restTemplate.exchange(
                 uri,
-                HttpMethod.POST,
+                HttpMethod.PUT,
                 new HttpEntity<>(registerRequest),
                 String.class);
 
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode(), "Response status");
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status");
+        final WebResult<Serializable> result = toWebResult(response, Serializable.class);
+        assertEquals(WebResultCode.SUCCESS, result.getCode(), "Result code");
+    }
+
+    @Test
+    void updateUser_withRepeatedEmail_badRequest() {
+        final String duplicatedEmail = "test.duplicateemail@test.com";
+        final UserCreationDto registerDto = createUserCreationDto(duplicatedEmail);
+        final ResponseEntity<String> responseEntityCreate = restTemplate.exchange(
+                getUri(CREATE_USER_URL),
+                HttpMethod.POST,
+                new HttpEntity<>(registerDto),
+                String.class);
+
+        assertEquals(HttpStatus.OK, responseEntityCreate.getStatusCode(), "Creation status");
+        final WebResult<Long> resultCreate = toWebResult(responseEntityCreate, Long.class);
+        assertEquals(WebResultCode.SUCCESS, resultCreate.getCode(), "Create user result code");
+        assertNotNull(resultCreate.getData(), "Created user id");
+
+        final UserUpdateDto registerRequest = createUserUpdateDto();
+        registerRequest.setEmail(duplicatedEmail);
+
+        final ResponseEntity<String> responseEntityUpdate = restTemplate.exchange(
+                getUri(UPDATE_USER_URL),
+                HttpMethod.PUT,
+                new HttpEntity<>(registerRequest),
+                String.class);
+
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntityUpdate.getStatusCode(), "Update status");
+        final WebResult<Serializable> resultUpdate = toWebResult(responseEntityUpdate, Serializable.class);
+        assertEquals(WebResultCode.ERROR_INVALID_PARAMETER, resultUpdate.getCode(), "Update user result code");
     }
 
     private UserUpdateDto createUserUpdateDto() {
@@ -87,5 +127,4 @@ class UserInterfaceIT extends IntegrationTestConfig {
 
         return updateRequest;
     }
-
 }

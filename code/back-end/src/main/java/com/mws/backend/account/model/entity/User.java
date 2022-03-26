@@ -16,6 +16,8 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @NoArgsConstructor
 public class User {
+    public static final String USER_COLUMN_EMAIL = "email";
+
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;

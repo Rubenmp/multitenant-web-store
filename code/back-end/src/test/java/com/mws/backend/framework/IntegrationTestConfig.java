@@ -2,17 +2,19 @@ package com.mws.backend.framework;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mws.backend.framework.dto.WebResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.Serializable;
 import java.net.URI;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class IntegrationTestConfig {
-    private static ObjectMapper objectMapper;
     protected static final Long USER_ID = 1L;
     protected static final String USER_EMAIL = "user@mwstest.com";
     public static final String TEST_PROFILE = "test";
@@ -34,6 +36,16 @@ public class IntegrationTestConfig {
                 .build()
                 .encode()
                 .toUri();
+    }
+
+    protected <E extends Serializable> WebResult<E> toWebResult(final ResponseEntity<String> responseEntity, final Class<E> dataClass) {
+        WebResult<E> result = convertStringToObject(responseEntity.getBody(), WebResult.class);
+        if (result.getData() != null) {
+            E data = convertStringToObject(result.getData().toString(), dataClass);
+            result.setData(data);
+        }
+
+        return result;
     }
 
     // Important: We need @NoArgsConstructor in valueType class

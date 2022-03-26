@@ -1,11 +1,19 @@
 package com.mws.backend.framework.database;
 
-public interface GenericDao<EntityClass, Id> {
-    EntityClass create(EntityClass entity);
+import com.mws.backend.framework.exception.EntityPersistenceException;
 
-    EntityClass update(EntityClass entity);
+import java.util.Collection;
+import java.util.List;
 
-    EntityClass find(Id id);
+public interface GenericDao<Entity, Id> {
+    Entity create(Entity entity) throws EntityPersistenceException;
+
+    void update(Entity entity);
+
+    Entity find(Id id);
+    List<Entity> findAll(Collection<Id> ids);
+    Entity findWeak(final Id id);
+    List<Entity> findBy(String columnName, String value, Integer maxResults);
 
     void delete(Id id);
 
