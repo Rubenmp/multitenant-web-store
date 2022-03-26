@@ -6,7 +6,7 @@ public enum WebResultCode {
 
     private final String description;
 
-    WebResultCode(String description) {
+    WebResultCode(final String description) {
         this.description = description;
     }
 

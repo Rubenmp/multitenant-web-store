@@ -22,7 +22,7 @@ public class WebResult<DataClass extends Serializable> {
         return new WebResult<>(WebResultCode.SUCCESS, null, data);
     }
 
-    public static <E extends Serializable> WebResult<E> newWebResult(WebResultCode code, String message) {
+    public static <E extends Serializable> WebResult<E> newWebResult(final WebResultCode code, final String message) {
         return new WebResult<>(code, message, null);
     }
 

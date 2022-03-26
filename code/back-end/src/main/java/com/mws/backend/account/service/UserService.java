@@ -16,17 +16,21 @@ public class UserService {
     private UserDao userDao;
 
     public Long createUser(final UserCreationDto userCreationDto) throws MWSException {
+        try {
+            return userDao.create(toUser(userCreationDto)).getId();
+        } catch (EntityPersistenceException e) {
+            throw new MWSException(e.getMessage());
+        }
+    }
+
+    private User toUser(UserCreationDto userCreationDto) {
         final User user = new User();
         user.setEmail(userCreationDto.getEmail());
         user.setPassword(userCreationDto.getPassword());
         user.setFirstName(userCreationDto.getFirstName());
         user.setLastName(userCreationDto.getLastName());
 
-        try {
-            return userDao.create(user).getId();
-        } catch (EntityPersistenceException e) {
-            throw new MWSException(e.getMessage());
-        }
+        return user;
     }
 
     public void updateUser(final UserUpdateDto userUpdateDto) throws MWSException {

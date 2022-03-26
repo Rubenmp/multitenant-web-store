@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.io.Serializable;
 import java.net.URI;
 
 import static com.mws.backend.account.interfaces.user.UserInterface.CREATE_USER_URL;
@@ -83,7 +84,7 @@ class UserInterfaceIT extends IntegrationTestConfig {
                 String.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status");
-        final WebResult<Long> result = toWebResult(response, Long.class);
+        final WebResult<Serializable> result = toWebResult(response, Serializable.class);
         assertEquals(WebResultCode.SUCCESS, result.getCode(), "Result code");
     }
 
@@ -97,10 +98,10 @@ class UserInterfaceIT extends IntegrationTestConfig {
                 new HttpEntity<>(registerDto),
                 String.class);
 
-        assertEquals(HttpStatus.OK, responseEntityCreate.getStatusCode(), "Response status");
+        assertEquals(HttpStatus.OK, responseEntityCreate.getStatusCode(), "Creation status");
         final WebResult<Long> resultCreate = toWebResult(responseEntityCreate, Long.class);
-        assertEquals(WebResultCode.SUCCESS, resultCreate.getCode(), "Result code");
-        assertNotNull(resultCreate.getData(), "User id");
+        assertEquals(WebResultCode.SUCCESS, resultCreate.getCode(), "Create user result code");
+        assertNotNull(resultCreate.getData(), "Created user id");
 
         final UserUpdateDto registerRequest = createUserUpdateDto();
         registerRequest.setEmail(duplicatedEmail);
@@ -111,9 +112,9 @@ class UserInterfaceIT extends IntegrationTestConfig {
                 new HttpEntity<>(registerRequest),
                 String.class);
 
-        assertEquals(HttpStatus.BAD_REQUEST, responseEntityUpdate.getStatusCode(), "Response status");
-        final WebResult<Long> resultUpdate = toWebResult(responseEntityUpdate, Long.class);
-        assertEquals(WebResultCode.ERROR_INVALID_PARAMETER, resultUpdate.getCode(), "Result code");
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntityUpdate.getStatusCode(), "Update status");
+        final WebResult<Serializable> resultUpdate = toWebResult(responseEntityUpdate, Serializable.class);
+        assertEquals(WebResultCode.ERROR_INVALID_PARAMETER, resultUpdate.getCode(), "Update user result code");
     }
 
     private UserUpdateDto createUserUpdateDto() {
@@ -126,5 +127,4 @@ class UserInterfaceIT extends IntegrationTestConfig {
 
         return updateRequest;
     }
-
 }

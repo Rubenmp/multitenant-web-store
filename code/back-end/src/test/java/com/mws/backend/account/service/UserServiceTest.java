@@ -33,7 +33,7 @@ class UserServiceTest extends TestUtils {
         createdUser.setId(getRandomLong());
         when(userDao.create(any(User.class))).thenReturn(createdUser);
 
-        Long createdUserId = userService.createUser(registerRequest);
+        final Long createdUserId = userService.createUser(registerRequest);
 
         assertEquals(createdUser.getId(), createdUserId, "User id");
     }

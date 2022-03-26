@@ -47,12 +47,6 @@ public abstract class GenericDaoImpl<EntityClass, Id> implements GenericDao<Enti
         return type;
     }
 
-    private Session getSession() {
-        if (session == null)
-            throw new IllegalStateException("Session has not been set on DAO before usage");
-        return session;
-    }
-
     @Override
     @Transactional
     public EntityClass create(final EntityClass entity) throws EntityPersistenceException {
