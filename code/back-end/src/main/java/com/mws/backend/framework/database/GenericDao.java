@@ -11,7 +11,7 @@ public interface GenericDao<EntityClass, Id> {
 
     EntityClass find(Id id);
     EntityClass findWeak(final Id id);
-    List<EntityClass> findBy(String columnName, String value);
+    List<EntityClass> findBy(String columnName, String value, Integer maxResults);
 
     void delete(Id id);
 

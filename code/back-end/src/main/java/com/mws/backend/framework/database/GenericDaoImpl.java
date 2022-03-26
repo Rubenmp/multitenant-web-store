@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -105,13 +106,18 @@ public abstract class GenericDaoImpl<EntityClass, Id> implements GenericDao<Enti
     }
 
     @Override
-    public List<EntityClass> findBy(final String columnName, final String value) {
+    public List<EntityClass> findBy(final String columnName, final String value, final Integer maxResults) {
         Class<EntityClass> entityClass = getEntityClass();
         CriteriaQuery<EntityClass> criteriaQuery = getCriteriaBuilder().createQuery(entityClass);
         Root<EntityClass> root = criteriaQuery.from(entityClass);
         criteriaQuery.where(getCriteriaBuilder().equal(root.get(columnName), value));
+        TypedQuery<EntityClass> query = entityManager.createQuery(criteriaQuery);
 
-        return entityManager.createQuery(criteriaQuery).getResultList();
+        if (maxResults != null) {
+            return query.setMaxResults(maxResults).getResultList();
+        }
+
+        return query.getResultList();
     }
 
     private CriteriaBuilder getCriteriaBuilder() {
