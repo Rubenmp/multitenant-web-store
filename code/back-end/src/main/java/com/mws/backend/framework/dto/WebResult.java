@@ -14,8 +14,16 @@ public class WebResult<DataClass extends Serializable> {
     private String message;
     private DataClass data;
 
+    public static <E extends Serializable> WebResult<E> success() {
+        return new WebResult<>(WebResultCode.SUCCESS, null, null);
+    }
+
     public static <E extends Serializable> WebResult<E> success(final E data) {
         return new WebResult<>(WebResultCode.SUCCESS, null, data);
+    }
+
+    public static <E extends Serializable> WebResult<E> newWebResult(WebResultCode code, String message) {
+        return new WebResult<>(code, message, null);
     }
 
 }

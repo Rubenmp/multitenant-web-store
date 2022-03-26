@@ -4,12 +4,17 @@ import com.mws.backend.account.interfaces.user.dto.UserCreationDto;
 import com.mws.backend.account.interfaces.user.dto.UserUpdateDto;
 import com.mws.backend.account.service.UserService;
 import com.mws.backend.framework.dto.WebResult;
-import com.mws.backend.framework.dto.WebResultCode;
 import com.mws.backend.framework.exception.MWSException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.io.Serializable;
+
+import static com.mws.backend.framework.dto.WebResult.newWebResult;
 import static com.mws.backend.framework.dto.WebResult.success;
 import static com.mws.backend.framework.dto.WebResultCode.ERROR_INVALID_PARAMETER;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -30,21 +35,21 @@ public class UserInterface {
         try {
             userId = userService.createUser(userCreationDto);
         } catch (MWSException e) {
-            return new ResponseEntity<>(new WebResult<>(ERROR_INVALID_PARAMETER, e.getMessage(), null), BAD_REQUEST);
+            return new ResponseEntity<>(newWebResult(ERROR_INVALID_PARAMETER, e.getMessage()), BAD_REQUEST);
         }
 
         return new ResponseEntity<>(success(userId), OK);
     }
 
     @PutMapping(UPDATE_USER_URL)
-    public ResponseEntity<Void> updateUser(@RequestBody UserUpdateDto userUpdateDto) {
+    public ResponseEntity<WebResult<Serializable>> updateUser(@RequestBody UserUpdateDto userUpdateDto) {
         try {
             userService.updateUser(userUpdateDto);
         } catch (MWSException e) {
-            return new ResponseEntity<>(BAD_REQUEST);
+            return new ResponseEntity<>(newWebResult(ERROR_INVALID_PARAMETER, e.getMessage()), BAD_REQUEST);
         }
 
-        return new ResponseEntity<>(OK);
+        return new ResponseEntity<>(success(), OK);
     }
 
 }

@@ -76,13 +76,15 @@ class UserInterfaceIT extends IntegrationTestConfig {
         final UserUpdateDto registerRequest = createUserUpdateDto();
         final URI uri = getUri(UPDATE_USER_URL);
 
-        final ResponseEntity<String> responseEntity = restTemplate.exchange(
+        final ResponseEntity<String> response = restTemplate.exchange(
                 uri,
                 HttpMethod.PUT,
                 new HttpEntity<>(registerRequest),
                 String.class);
 
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode(), "Response status");
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status");
+        final WebResult<Long> result = toWebResult(response, Long.class);
+        assertEquals(WebResultCode.SUCCESS, result.getCode(), "Result code");
     }
 
     @Test
@@ -94,20 +96,24 @@ class UserInterfaceIT extends IntegrationTestConfig {
                 HttpMethod.POST,
                 new HttpEntity<>(registerDto),
                 String.class);
-        final Long userId = convertStringToObject(responseEntityCreate.getBody(), Long.class);
+
         assertEquals(HttpStatus.OK, responseEntityCreate.getStatusCode(), "Response status");
-        assertNotNull(userId, "User id");
+        final WebResult<Long> resultCreate = toWebResult(responseEntityCreate, Long.class);
+        assertEquals(WebResultCode.SUCCESS, resultCreate.getCode(), "Result code");
+        assertNotNull(resultCreate.getData(), "User id");
 
         final UserUpdateDto registerRequest = createUserUpdateDto();
         registerRequest.setEmail(duplicatedEmail);
 
-        final ResponseEntity<String> responseEntity = restTemplate.exchange(
+        final ResponseEntity<String> responseEntityUpdate = restTemplate.exchange(
                 getUri(UPDATE_USER_URL),
                 HttpMethod.PUT,
                 new HttpEntity<>(registerRequest),
                 String.class);
 
-        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode(), "Response status");
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntityUpdate.getStatusCode(), "Response status");
+        final WebResult<Long> resultUpdate = toWebResult(responseEntityUpdate, Long.class);
+        assertEquals(WebResultCode.ERROR_INVALID_PARAMETER, resultUpdate.getCode(), "Result code");
     }
 
     private UserUpdateDto createUserUpdateDto() {
