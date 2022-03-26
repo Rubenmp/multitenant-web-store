@@ -19,8 +19,7 @@ import java.net.URI;
 import static com.mws.backend.account.interfaces.user.UserInterface.CREATE_USER_URL;
 import static com.mws.backend.account.interfaces.user.UserInterface.UPDATE_USER_URL;
 import static com.mws.backend.framework.IntegrationTestConfig.TEST_PROFILE;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles(TEST_PROFILE)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -31,14 +30,14 @@ class UserInterfaceIT extends IntegrationTestConfig {
         final UserCreationDto registerDto = createUserCreationDto("test.email@test.com");
         final URI uri = getUri(CREATE_USER_URL);
 
-        final ResponseEntity<String> responseEntity = restTemplate.exchange(
+        final ResponseEntity<String> response = restTemplate.exchange(
                 uri,
                 HttpMethod.POST,
                 new HttpEntity<>(registerDto),
                 String.class);
 
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode(), "Response status");
-        final WebResult<Long> result = toWebResult(responseEntity, Long.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status");
+        final WebResult<Long> result = toWebResult(response, Long.class);
         assertEquals(WebResultCode.SUCCESS, result.getCode(), "Result code");
         assertNotNull(result.getData(), "User id");
     }
@@ -48,13 +47,18 @@ class UserInterfaceIT extends IntegrationTestConfig {
         final UserCreationDto registerRequest = createUserCreationDto(USER_EMAIL);
         final URI uri = getUri(CREATE_USER_URL);
 
-        final ResponseEntity<String> responseEntity = restTemplate.exchange(
+        final ResponseEntity<String> response = restTemplate.exchange(
                 uri,
                 HttpMethod.POST,
                 new HttpEntity<>(registerRequest),
                 String.class);
 
-        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode(), "Response status");
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode(), "Response status");
+
+        final WebResult<Long> result = toWebResult(response, Long.class);
+        assertEquals(WebResultCode.ERROR_INVALID_PARAMETER, result.getCode(), "Result code");
+        assertEquals("Duplicate entry 'user@mwstest.com'", result.getMessage(), "Result code");
+        assertNull(result.getData(), "User id");
     }
 
     private UserCreationDto createUserCreationDto(final String email) {

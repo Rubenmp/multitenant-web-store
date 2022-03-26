@@ -4,12 +4,14 @@ import com.mws.backend.account.interfaces.user.dto.UserCreationDto;
 import com.mws.backend.account.interfaces.user.dto.UserUpdateDto;
 import com.mws.backend.account.service.UserService;
 import com.mws.backend.framework.dto.WebResult;
+import com.mws.backend.framework.dto.WebResultCode;
 import com.mws.backend.framework.exception.MWSException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import static com.mws.backend.framework.dto.WebResult.success;
+import static com.mws.backend.framework.dto.WebResultCode.ERROR_INVALID_PARAMETER;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -28,7 +30,7 @@ public class UserInterface {
         try {
             userId = userService.createUser(userCreationDto);
         } catch (MWSException e) {
-            return new ResponseEntity<>(BAD_REQUEST);
+            return new ResponseEntity<>(new WebResult<>(ERROR_INVALID_PARAMETER, e.getMessage(), null), BAD_REQUEST);
         }
 
         return new ResponseEntity<>(success(userId), OK);

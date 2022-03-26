@@ -1,7 +1,8 @@
 package com.mws.backend.framework.dto;
 
 public enum WebResultCode {
-    SUCCESS("success");
+    SUCCESS("success"),
+    ERROR_INVALID_PARAMETER("error.invalid_parameter");
 
     private final String description;
 

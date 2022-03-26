@@ -40,8 +40,10 @@ public class IntegrationTestConfig {
 
     protected <E extends Serializable> WebResult<E> toWebResult(final ResponseEntity<String> responseEntity, final Class<E> dataClass) {
         WebResult<E> result = convertStringToObject(responseEntity.getBody(), WebResult.class);
-        E data = convertStringToObject(result.getData().toString(), dataClass);
-        result.setData((E) data);
+        if (result.getData() != null) {
+            E data = convertStringToObject(result.getData().toString(), dataClass);
+            result.setData(data);
+        }
 
         return result;
     }
