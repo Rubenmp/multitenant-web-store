@@ -38,8 +38,9 @@ class UserInterfaceIT extends IntegrationTestConfig {
                 String.class);
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode(), "Response status");
-        final WebResult<Long> result = (WebResult<Long>) toWebResult(responseEntity);
+        final WebResult<Long> result = toWebResult(responseEntity, Long.class);
         assertEquals(WebResultCode.SUCCESS, result.getCode(), "Result code");
+        assertNotNull(result.getData(), "User id");
     }
 
     @Test

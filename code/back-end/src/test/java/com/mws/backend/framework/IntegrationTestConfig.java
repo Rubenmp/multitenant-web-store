@@ -9,6 +9,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.Serializable;
 import java.net.URI;
 
 import static org.junit.jupiter.api.Assertions.fail;
@@ -37,8 +38,12 @@ public class IntegrationTestConfig {
                 .toUri();
     }
 
-    protected WebResult<?> toWebResult(final ResponseEntity<String> responseEntity) {
-        return convertStringToObject(responseEntity.getBody(), WebResult.class);
+    protected <E extends Serializable> WebResult<E> toWebResult(final ResponseEntity<String> responseEntity, final Class<E> dataClass) {
+        WebResult<E> result = convertStringToObject(responseEntity.getBody(), WebResult.class);
+        E data = convertStringToObject(result.getData().toString(), dataClass);
+        result.setData((E) data);
+
+        return result;
     }
 
     // Important: We need @NoArgsConstructor in valueType class
