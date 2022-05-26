@@ -17,6 +17,7 @@ public class UserService {
 
     public Long createUser(final UserCreationDto userCreationDto) throws MWSException {
         try {
+            userDao.find(1L);
             return userDao.create(toUser(userCreationDto)).getId();
         } catch (EntityPersistenceException e) {
             throw new MWSException(e.getMessage());
