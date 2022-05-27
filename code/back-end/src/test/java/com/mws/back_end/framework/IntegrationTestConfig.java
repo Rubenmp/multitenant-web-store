@@ -6,6 +6,7 @@ import com.mws.back_end.framework.dto.WebResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.data.util.Pair;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -32,9 +33,16 @@ public class IntegrationTestConfig {
     }
 
     public URI getUri(final String endpoint) {
-        return UriComponentsBuilder.fromUriString(getTestUri())
-                .path(endpoint)
-                .build()
+        return getUri(endpoint, null);
+    }
+
+    public URI getUri(final String endpoint, Pair<String, String>... params) {
+        UriComponentsBuilder path = UriComponentsBuilder.fromUriString(getTestUri())
+                .path(endpoint);
+        for (Pair<String, String> param : params) {
+            path.queryParam(param.getFirst(), param.getSecond());
+        }
+        return path.build()
                 .encode()
                 .toUri();
     }

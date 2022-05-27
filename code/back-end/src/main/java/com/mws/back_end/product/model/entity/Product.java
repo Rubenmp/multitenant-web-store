@@ -27,4 +27,6 @@ public class Product {
 
     @NotNull
     private String image;
+
+    private boolean active = true;
 }

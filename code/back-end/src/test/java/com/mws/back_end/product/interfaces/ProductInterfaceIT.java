@@ -8,6 +8,7 @@ import com.mws.back_end.product.interfaces.dto.ProductCreationDto;
 import com.mws.back_end.product.interfaces.dto.ProductUpdateDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.util.Pair;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -18,8 +19,7 @@ import java.io.Serializable;
 import java.net.URI;
 
 import static com.mws.back_end.framework.IntegrationTestConfig.TEST_PROFILE;
-import static com.mws.back_end.product.interfaces.ProductInterface.CREATE_PRODUCT_URL;
-import static com.mws.back_end.product.interfaces.ProductInterface.UPDATE_PRODUCT_URL;
+import static com.mws.back_end.product.interfaces.ProductInterface.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -76,4 +76,34 @@ class ProductInterfaceIT extends IntegrationTestConfig {
 
         return updateRequest;
     }
+
+    @Test
+    void deleteProduct_thenListAvailableProducts_withoutDeletedProduct() {
+        // Delete product step
+        final String deletedProductId = "2";
+        final URI deleteUri = getUri(DELETE_PRODUCT_URL, Pair.of("id", deletedProductId));
+
+        final ResponseEntity<String> deleteResponse = restTemplate.exchange(
+                deleteUri,
+                HttpMethod.DELETE,
+                null,
+                String.class);
+
+        assertEquals(HttpStatus.OK, deleteResponse.getStatusCode(), "Delete response status");
+        final WebResult<Serializable> deleteResult = toWebResult(deleteResponse, Serializable.class);
+        assertEquals(WebResultCode.SUCCESS, deleteResult.getCode(), "Delete result code");
+
+        // List products step
+        final URI getUri = getUri(GET_PRODUCTS_URL, Pair.of("active", "true"));
+        final ResponseEntity<String> getResponse = restTemplate.exchange(
+                getUri,
+                HttpMethod.GET,
+                null,
+                String.class);
+
+        assertEquals(HttpStatus.OK, getResponse.getStatusCode(), "Get response status");
+        final WebResult<Serializable> getResult = toWebResult(getResponse, Serializable.class);
+        assertEquals(WebResultCode.SUCCESS, getResult.getCode(), "Get result code");
+    }
+
 }

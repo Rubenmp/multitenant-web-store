@@ -6,5 +6,9 @@ INSERT INTO user(id, email, password, first_name, last_name)
 
 
 -- Product data
-INSERT INTO product(id, name, image)
-    VALUES (1,'Product name','product-image');
+INSERT INTO product(id, name, image, active)
+    VALUES (1,'Product name','product-image', true);
+
+INSERT INTO product(id, name, image, active)
+    VALUES (2,'Product to delete','product-image', true);
+
