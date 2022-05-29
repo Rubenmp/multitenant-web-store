@@ -12,3 +12,6 @@ INSERT INTO product(id, name, image, active)
 INSERT INTO product(id, name, image, active)
     VALUES (2,'Product to delete','product-image', true);
 
+INSERT INTO product(id, name, image, active)
+   VALUES (3,'Deleted product','product-image', false);
+

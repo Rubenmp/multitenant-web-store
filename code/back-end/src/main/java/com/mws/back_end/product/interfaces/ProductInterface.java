@@ -24,7 +24,7 @@ import static org.springframework.http.HttpStatus.OK;
 public class ProductInterface {
     private static final String BASE_USER_URL = "/product";
     public static final String CREATE_PRODUCT_URL = BASE_USER_URL + "/" + "create";
-    public static final String GET_PRODUCTS_URL = BASE_USER_URL + "/" + "get";
+    public static final String LIST_PRODUCTS_URL = BASE_USER_URL + "/" + "list";
     public static final String UPDATE_PRODUCT_URL = BASE_USER_URL + "/" + "update";
     public static final String DELETE_PRODUCT_URL = BASE_USER_URL + "/" + "delete";
 
@@ -44,8 +44,8 @@ public class ProductInterface {
     }
 
 
-    @GetMapping(GET_PRODUCTS_URL)
-    public ResponseEntity<WebResult<ArrayList<ProductDto>>> getProducts(@RequestParam Boolean active) {
+    @GetMapping(LIST_PRODUCTS_URL)
+    public ResponseEntity<WebResult<ArrayList<ProductDto>>> listProducts(@RequestParam Boolean active) {
         final List<ProductDto> products = productService.getProducts(active);
         return new ResponseEntity<>(success(new ArrayList<>(products)), OK);
     }

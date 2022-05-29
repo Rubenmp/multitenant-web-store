@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -40,7 +39,7 @@ public class ProductService {
     }
 
     private List<ProductDto> toProductDto(List<Product> products) {
-        return products.stream().map(this::toProductDto).collect(Collectors.toList());
+        return products.stream().map(this::toProductDto).toList();
     }
 
     private ProductDto toProductDto(Product product) {
