@@ -5,6 +5,7 @@ import com.mws.back_end.framework.IntegrationTestConfig;
 import com.mws.back_end.framework.dto.WebResult;
 import com.mws.back_end.framework.dto.WebResultCode;
 import com.mws.back_end.product.interfaces.dto.ProductCreationDto;
+import com.mws.back_end.product.interfaces.dto.ProductDto;
 import com.mws.back_end.product.interfaces.dto.ProductUpdateDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,11 +18,13 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.io.Serializable;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.mws.back_end.framework.IntegrationTestConfig.TEST_PROFILE;
 import static com.mws.back_end.product.interfaces.ProductInterface.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles(TEST_PROFILE)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -64,7 +67,7 @@ class ProductInterfaceIT extends IntegrationTestConfig {
                 String.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status");
-        final WebResult<Serializable> result = toWebResult(response, Serializable.class);
+        final WebResult<Serializable> result = toWebResult(response);
         assertEquals(WebResultCode.SUCCESS, result.getCode(), "Result code");
     }
 
@@ -90,7 +93,7 @@ class ProductInterfaceIT extends IntegrationTestConfig {
                 String.class);
 
         assertEquals(HttpStatus.OK, deleteResponse.getStatusCode(), "Delete response status");
-        final WebResult<Serializable> deleteResult = toWebResult(deleteResponse, Serializable.class);
+        final WebResult<Serializable> deleteResult = toWebResult(deleteResponse);
         assertEquals(WebResultCode.SUCCESS, deleteResult.getCode(), "Delete result code");
 
         // List products step
@@ -102,8 +105,12 @@ class ProductInterfaceIT extends IntegrationTestConfig {
                 String.class);
 
         assertEquals(HttpStatus.OK, getResponse.getStatusCode(), "Get response status");
-        final WebResult<Serializable> getResult = toWebResult(getResponse, Serializable.class);
+        WebResult<ArrayList<ProductDto>> getResult = toWebResultWithList(getResponse, ProductDto.class);
         assertEquals(WebResultCode.SUCCESS, getResult.getCode(), "Get result code");
+        List<Long> productIds = getResult.getData().stream().map(ProductDto::getId).collect(Collectors.toList());
+
+        assertTrue(productIds.contains(PRODUCT_ID), "Returned products contains id " + PRODUCT_ID);
+        assertFalse(productIds.contains(Long.valueOf(deletedProductId)), "Returned products do not contain removed product");
     }
 
 }

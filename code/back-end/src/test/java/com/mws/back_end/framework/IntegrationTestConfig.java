@@ -12,6 +12,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.Serializable;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -47,6 +51,10 @@ public class IntegrationTestConfig {
                 .toUri();
     }
 
+    protected WebResult<Serializable> toWebResult(final ResponseEntity<String> responseEntity) {
+        return toWebResult(responseEntity, Serializable.class);
+    }
+
     protected <E extends Serializable> WebResult<E> toWebResult(final ResponseEntity<String> responseEntity, final Class<E> dataClass) {
         WebResult<E> result = convertStringToObject(responseEntity.getBody(), WebResult.class);
         if (result.getData() != null) {
@@ -55,6 +63,36 @@ public class IntegrationTestConfig {
         }
 
         return result;
+    }
+
+    protected <E extends Serializable> WebResult<ArrayList<E>> toWebResultWithList(final ResponseEntity<String> responseEntity, final Class<E> dataClass) {
+        WebResult<ArrayList<E>> result = convertStringToObject(responseEntity.getBody(), WebResult.class);
+        if (result.getData() != null && result.getData() instanceof List) {
+            ArrayList<E> actualData = (ArrayList<E>) ((List<?>) result.getData()).stream().map(t -> (Map<String, Object>) t).map(this::toJson)
+                    .map(json -> convertStringToObject(json, dataClass)).collect(Collectors.toList());
+
+            result.setData(actualData);
+        }
+
+        return result;
+    }
+
+    private String toJson(Map<String, Object> properties) {
+        int i = 0;
+        final int mapSize = properties.size();
+
+        StringBuilder json = new StringBuilder("{");
+        for (Map.Entry<String, Object> entry : properties.entrySet()) {
+            json.append("\"").append(entry.getKey()).append("\":\"").append(entry.getValue().toString()).append("\"");
+
+            if (i < (mapSize - 1)) {
+                json.append(",");
+            }
+            i++;
+        }
+        json.append("}");
+
+        return json.toString();
     }
 
     // Important: We need @NoArgsConstructor in valueType class

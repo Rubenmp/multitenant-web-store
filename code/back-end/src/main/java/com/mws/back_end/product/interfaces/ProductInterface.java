@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.mws.back_end.framework.dto.WebResult.newWebResult;
@@ -45,9 +45,9 @@ public class ProductInterface {
 
 
     @GetMapping(GET_PRODUCTS_URL)
-    public ResponseEntity<WebResult<ProductDto>> getProducts(@RequestParam Boolean active) {
-        List<ProductDto> products = productService.getProducts(active);
-        return new ResponseEntity<>(success(), OK);
+    public ResponseEntity<WebResult<ArrayList<ProductDto>>> getProducts(@RequestParam Boolean active) {
+        final List<ProductDto> products = productService.getProducts(active);
+        return new ResponseEntity<>(success(new ArrayList<>(products)), OK);
     }
 
     @PutMapping(UPDATE_PRODUCT_URL)
