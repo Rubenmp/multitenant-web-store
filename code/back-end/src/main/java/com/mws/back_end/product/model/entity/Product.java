@@ -2,6 +2,7 @@ package com.mws.back_end.product.model.entity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,5 +29,7 @@ public class Product {
     @NotNull
     private String image;
 
+    @NotNull
+    @Type(type = "true_false")
     private boolean active = true;
 }

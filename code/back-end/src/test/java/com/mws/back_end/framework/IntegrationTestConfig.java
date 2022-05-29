@@ -2,6 +2,7 @@ package com.mws.back_end.framework;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mws.back_end.account.interfaces.user.dto.LoginRequest;
 import com.mws.back_end.framework.dto.WebResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -22,6 +23,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class IntegrationTestConfig {
     protected static final Long USER_ID = 1L;
     protected static final String USER_EMAIL = "user@mwstest.com";
+    private static final String USER_PASSWORD = "Password1";
+
     public static final String TEST_PROFILE = "test";
 
     @LocalServerPort
@@ -39,11 +42,14 @@ public class IntegrationTestConfig {
         return getUri(endpoint, null);
     }
 
-    public URI getUri(final String endpoint, Pair<String, String>... params) {
+    @SafeVarargs
+    public final URI getUri(final String endpoint, Pair<String, String>... params) {
         UriComponentsBuilder path = UriComponentsBuilder.fromUriString(getTestUri())
                 .path(endpoint);
-        for (Pair<String, String> param : params) {
-            path.queryParam(param.getFirst(), param.getSecond());
+        if (params != null) {
+            for (Pair<String, String> param : params) {
+                path.queryParam(param.getFirst(), param.getSecond());
+            }
         }
         return path.build()
                 .encode()
@@ -66,7 +72,7 @@ public class IntegrationTestConfig {
 
     protected <E extends Serializable> WebResult<ArrayList<E>> toWebResultWithList(final ResponseEntity<String> responseEntity, final Class<E> dataClass) {
         WebResult<ArrayList<E>> result = convertStringToObject(responseEntity.getBody(), WebResult.class);
-        if (result.getData() != null && result.getData() instanceof List) {
+        if (result.getData() != null) {
             ArrayList<E> actualData = (ArrayList<E>) ((List<?>) result.getData()).stream().map(t -> (Map<String, Object>) t).map(this::toJson)
                     .map(json -> convertStringToObject(json, dataClass)).collect(Collectors.toList());
 
@@ -106,5 +112,14 @@ public class IntegrationTestConfig {
         }
 
         return object;
+    }
+
+
+    protected LoginRequest newLoginRequestForUser() {
+        final LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setEmail(USER_EMAIL);
+        loginRequest.setPassword(USER_PASSWORD);
+
+        return loginRequest;
     }
 }

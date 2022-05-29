@@ -1,12 +1,17 @@
 package com.mws.back_end.account.interfaces;
 
 
+import com.mws.back_end.account.interfaces.user.dto.LoginRequest;
+import com.mws.back_end.account.interfaces.user.dto.UserAuthenticationResponse;
 import com.mws.back_end.account.interfaces.user.dto.UserCreationDto;
 import com.mws.back_end.account.interfaces.user.dto.UserUpdateDto;
+import com.mws.back_end.account.service.JwtProvider;
 import com.mws.back_end.framework.IntegrationTestConfig;
 import com.mws.back_end.framework.dto.WebResult;
 import com.mws.back_end.framework.dto.WebResultCode;
+import org.apache.logging.log4j.util.Strings;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -16,15 +21,19 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.io.Serializable;
 import java.net.URI;
+import java.util.Date;
+import java.util.Optional;
 
-import static com.mws.back_end.account.interfaces.user.UserInterface.CREATE_USER_URL;
-import static com.mws.back_end.account.interfaces.user.UserInterface.UPDATE_USER_URL;
+import static com.mws.back_end.account.interfaces.user.UserInterface.*;
 import static com.mws.back_end.framework.IntegrationTestConfig.TEST_PROFILE;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles(TEST_PROFILE)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UserInterfaceIT extends IntegrationTestConfig {
+
+    @Autowired
+    private JwtProvider jwtProvider;
 
     @Test
     void createUser_happyPath_success() {
@@ -126,5 +135,36 @@ class UserInterfaceIT extends IntegrationTestConfig {
         updateRequest.setPassword("Password2");
 
         return updateRequest;
+    }
+
+
+    @Test
+    void login() {
+        final LoginRequest loginRequest = newLoginRequestForUser();
+        final HttpEntity<LoginRequest> httpEntity = new HttpEntity<>(loginRequest);
+        final URI uri = getUri(LOGIN_USER_URL);
+
+        final ResponseEntity<String> response = restTemplate.exchange(
+                uri,
+                HttpMethod.POST,
+                httpEntity,
+                String.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status");
+        final UserAuthenticationResponse authenticationResponse = convertStringToObject(response.getBody(), UserAuthenticationResponse.class);
+        assertNotNull(authenticationResponse, "Authentication response");
+
+        final String token = authenticationResponse.getToken();
+        checkUserToken(token);
+    }
+
+    private void checkUserToken(final String token) {
+        assertTrue(Strings.isNotBlank(token), "Token not empty");
+        assertTrue(jwtProvider.isTokenWellFormedAndSigned(token), "Token well formed");
+        assertTrue(jwtProvider.getExpirationDateFromJwt(token).filter(d -> d.after(new Date())).isPresent(),
+                "Token expiration date after now");
+        final Optional<String> loginEmailOpt = jwtProvider.getLoginEmailFromJwt(token);
+        assertTrue(loginEmailOpt.isPresent(), "Login email is present in token");
+        assertEquals(USER_EMAIL, loginEmailOpt.get(), "User login email");
     }
 }
