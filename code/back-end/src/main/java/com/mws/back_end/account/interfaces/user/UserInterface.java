@@ -12,8 +12,10 @@ import java.io.Serializable;
 
 import static com.mws.back_end.framework.dto.WebResult.newWebResult;
 import static com.mws.back_end.framework.dto.WebResult.success;
+import static com.mws.back_end.framework.dto.WebResultCode.ERROR_AUTH;
 import static com.mws.back_end.framework.dto.WebResultCode.ERROR_INVALID_PARAMETER;
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 public class UserInterface {
@@ -61,15 +63,15 @@ public class UserInterface {
     }
 
     @PostMapping(LOGIN_USER_URL)
-    public ResponseEntity<UserAuthenticationResponse> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<WebResult<UserAuthenticationResponse>> login(@RequestBody LoginRequest loginRequest) {
         UserAuthenticationResponse authResponse;
         try {
             authResponse = userService.login(loginRequest);
         } catch (MWSException e) {
-            return ResponseEntity.status(UNAUTHORIZED).body(null);
+            return new ResponseEntity<>(newWebResult(ERROR_AUTH, "Invalid authentication"), BAD_REQUEST);
         }
 
-        return ResponseEntity.status(OK).body(authResponse);
+        return new ResponseEntity<>(success(authResponse), OK);
     }
 
 }

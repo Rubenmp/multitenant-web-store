@@ -5,11 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserAuthenticationResponse {
+public class UserAuthenticationResponse implements Serializable {
     private String firstName;
     private String lastName;
     private String token;

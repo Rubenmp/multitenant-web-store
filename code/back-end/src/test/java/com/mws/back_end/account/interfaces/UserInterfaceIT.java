@@ -139,7 +139,7 @@ class UserInterfaceIT extends IntegrationTestConfig {
 
 
     @Test
-    void login() {
+    void login_validPassword_success() {
         final LoginRequest loginRequest = newLoginRequestForUser();
         final HttpEntity<LoginRequest> httpEntity = new HttpEntity<>(loginRequest);
         final URI uri = getUri(LOGIN_USER_URL);
@@ -151,6 +151,28 @@ class UserInterfaceIT extends IntegrationTestConfig {
                 String.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status");
+        final UserAuthenticationResponse authenticationResponse = convertStringToObject(response.getBody(), UserAuthenticationResponse.class);
+        assertNotNull(authenticationResponse, "Authentication response");
+
+        final String token = authenticationResponse.getToken();
+        checkUserToken(token);
+    }
+
+
+    @Test
+    void login_invalidPassword_error() {
+        final LoginRequest loginRequest = newLoginRequestForUser();
+        loginRequest.setPassword(loginRequest.getPassword() + "error");
+        final HttpEntity<LoginRequest> httpEntity = new HttpEntity<>(loginRequest);
+        final URI uri = getUri(LOGIN_USER_URL);
+
+        final ResponseEntity<String> response = restTemplate.exchange(
+                uri,
+                HttpMethod.POST,
+                httpEntity,
+                String.class);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode(), "Response status");
         final UserAuthenticationResponse authenticationResponse = convertStringToObject(response.getBody(), UserAuthenticationResponse.class);
         assertNotNull(authenticationResponse, "Authentication response");
 

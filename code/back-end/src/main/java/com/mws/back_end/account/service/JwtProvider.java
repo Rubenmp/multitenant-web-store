@@ -137,7 +137,7 @@ public class JwtProvider {
     }
 
     private Key getSecretKey() {
-        String base64Secret = System.getenv("NOQ_SECURITY_KEY");
+        String base64Secret = System.getenv("MWS_SECURITY_KEY");
         byte[] keyBytes = Decoders.BASE64.decode(StringUtils.hasText(base64Secret) ? base64Secret : DEV_SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
     }

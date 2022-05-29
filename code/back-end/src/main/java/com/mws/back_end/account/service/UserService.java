@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -82,12 +83,17 @@ public class UserService {
         return toDto(userEntity);
     }
 
-    public UserAuthenticationResponse login(LoginRequest loginRequest) throws MWSException{
-        final Authentication authenticate = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+    public UserAuthenticationResponse login(LoginRequest loginRequest) throws MWSException {
+        Authentication authenticate;
+        try {
+            authenticate = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+        } catch (AuthenticationException e) {
+            throw new MWSException(e.getMessage());
+        }
+
         SecurityContextHolder.getContext().setAuthentication(authenticate);
         final String token = jwtProvider.generateNewToken(authenticate);
-
         return UserAuthenticationResponse.builder()
                 .token(token)
                 .build();
