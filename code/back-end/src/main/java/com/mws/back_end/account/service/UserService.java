@@ -47,10 +47,10 @@ public class UserService {
         final UserDto authenticatedUser = jwtProvider.getCurrentUser();
         if (UserRole.SUPER == userToCreate.getRole()) {
             if (authenticatedUser == null || UserRoleDto.SUPER != authenticatedUser.getRole()) {
-                throw new MWSException("It's not allowed to create an user with super role.");
+                throw new MWSException("Not allowed to create an user with super role.");
             }
         } else if (UserRole.ADMIN == userToCreate.getRole() && isAllowedToCreateAdmins(authenticatedUser)) {
-            throw new MWSException("It's not allowed to create an user with admin role.");
+            throw new MWSException("Not allowed to create an user with admin role.");
         }
     }
 
