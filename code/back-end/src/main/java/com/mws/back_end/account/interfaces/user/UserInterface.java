@@ -52,11 +52,11 @@ public class UserInterface {
     }
 
     @GetMapping(GET_USER_URL)
-    public ResponseEntity<WebResult<UserDto>> getUser(@RequestParam Long id) { // TODO TEST
+    public ResponseEntity<WebResult<UserDto>> getUser(@RequestParam Long id) {
         UserDto user = userService.getUser(id);
 
         if (user != null) {
-            return new ResponseEntity<>(success(), OK);
+            return new ResponseEntity<>(success(user), OK);
         }
 
         return new ResponseEntity<>(newWebResult(ERROR_INVALID_PARAMETER, "Invalid user id"), BAD_REQUEST);

@@ -11,13 +11,9 @@ public interface GenericDao<Entity, Id> {
     void update(Entity entity);
 
     Entity find(Id id);
-
-    List<Entity> find(Collection<Id> ids, Boolean active);
-
-    List<Entity> findAll(Collection<Id> ids);
     Entity findWeak(final Id id);
     List<Entity> findBy(String columnName, String value, Integer maxResults);
+    List<Entity> find(Collection<Id> ids, Boolean active);
 
     void delete(Id id);
-
 }

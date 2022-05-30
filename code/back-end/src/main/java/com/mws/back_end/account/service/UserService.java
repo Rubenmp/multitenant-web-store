@@ -53,7 +53,7 @@ public class UserService {
             throw new MWSException("Entity not found");
         }
 
-        if (userDao.findByEmail(userUpdateDto.getEmail()) != null) {
+        if (userDao.findByEmail(userUpdateDto.getEmail()) != null) { // TODO: fix regression (same email, different data)
             throw new MWSException("Duplicated email");
         }
 

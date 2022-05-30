@@ -18,14 +18,12 @@ import javax.validation.Validator;
 import javax.validation.metadata.ConstraintDescriptor;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.mws.back_end.framework.exception.EntityPersistenceException.toDatabaseException;
-import static org.springframework.util.CollectionUtils.isEmpty;
 
 
 public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, Id> {
@@ -37,7 +35,7 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
     public static final String DB_COLUMN_ID = "id";
     public static final String DB_COLUMN_ACTIVE = "active";
 
-    public GenericDaoImpl() {
+    protected GenericDaoImpl() {
         Type type = getClass().getGenericSuperclass();
         ParameterizedType pt = (ParameterizedType) type;
         this.entityClass = (Class) pt.getActualTypeArguments()[0];
@@ -106,7 +104,6 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
         CriteriaQuery<Entity> criteriaQuery = getCriteriaBuilder().createQuery(entityClass);
         Root<Entity> root = criteriaQuery.from(entityClass);
 
-
         if (ids != null && !ids.isEmpty()) {
             criteriaQuery.where(root.get(DB_COLUMN_ID).in(ids));
         }
@@ -114,20 +111,6 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
         if (active != null) {
             criteriaQuery.where(root.get(DB_COLUMN_ACTIVE).in(List.of(active)));
         }
-
-        return entityManager.createQuery(criteriaQuery).getResultList();
-    }
-
-    @Override
-    public List<Entity> findAll(final Collection<Id> ids) {
-        if (isEmpty(ids)) {
-            return Collections.emptyList();
-        }
-
-        Class<Entity> entityClass = getEntityClass();
-        CriteriaQuery<Entity> criteriaQuery = getCriteriaBuilder().createQuery(entityClass);
-        Root<Entity> root = criteriaQuery.from(entityClass);
-        criteriaQuery.where(root.get(DB_COLUMN_ID).in(ids));
 
         return entityManager.createQuery(criteriaQuery).getResultList();
     }

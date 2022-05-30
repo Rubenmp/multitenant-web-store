@@ -21,6 +21,8 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class IntegrationTestConfig {
+    protected static final Long TENANT_ID = 1L;
+    protected static final Long DELETED_TENANT_ID = 2L;
     protected static final Long USER_ID = 1L;
     protected static final String USER_EMAIL = "user@mwstest.com";
     private static final String USER_PASSWORD = "Password1";
@@ -60,8 +62,8 @@ public class IntegrationTestConfig {
         return toWebResult(responseEntity, Serializable.class);
     }
 
-    protected <E extends Serializable> WebResult<E> toWebResult(final ResponseEntity<String> responseEntity, final Class<E> dataClass) {
-        WebResult<E> result = convertStringToObject(responseEntity.getBody(), WebResult.class);
+    protected <E extends Serializable> WebResult<E> toWebResult(final ResponseEntity<String> response, final Class<E> dataClass) {
+        WebResult<E> result = convertStringToObject(response.getBody(), WebResult.class);
         if (result.getData() instanceof Map) {
             final String dataJson = toJson((Map<String, Object>) result.getData());
             E data = convertStringToObject(dataJson, dataClass);
@@ -74,8 +76,8 @@ public class IntegrationTestConfig {
         return result;
     }
 
-    protected <E extends Serializable> WebResult<ArrayList<E>> toWebResultWithList(final ResponseEntity<String> responseEntity, final Class<E> dataClass) {
-        WebResult<ArrayList<E>> result = convertStringToObject(responseEntity.getBody(), WebResult.class);
+    protected <E extends Serializable> WebResult<ArrayList<E>> toWebResultWithList(final ResponseEntity<String> response, final Class<E> dataClass) {
+        WebResult<ArrayList<E>> result = convertStringToObject(response.getBody(), WebResult.class);
         if (result.getData() != null) {
             ArrayList<E> actualData = (ArrayList<E>) ((List<?>) result.getData()).stream().map(t -> (Map<String, Object>) t).map(this::toJson)
                     .map(json -> convertStringToObject(json, dataClass)).collect(Collectors.toList());

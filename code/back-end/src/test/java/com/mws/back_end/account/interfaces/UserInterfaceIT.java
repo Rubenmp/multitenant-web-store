@@ -1,10 +1,7 @@
 package com.mws.back_end.account.interfaces;
 
 
-import com.mws.back_end.account.interfaces.user.dto.LoginRequest;
-import com.mws.back_end.account.interfaces.user.dto.UserAuthenticationResponse;
-import com.mws.back_end.account.interfaces.user.dto.UserCreationDto;
-import com.mws.back_end.account.interfaces.user.dto.UserUpdateDto;
+import com.mws.back_end.account.interfaces.user.dto.*;
 import com.mws.back_end.account.service.JwtProvider;
 import com.mws.back_end.framework.IntegrationTestConfig;
 import com.mws.back_end.framework.dto.WebResult;
@@ -13,6 +10,7 @@ import org.apache.logging.log4j.util.Strings;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.util.Pair;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -27,6 +25,7 @@ import java.util.Optional;
 import static com.mws.back_end.account.interfaces.user.UserInterface.*;
 import static com.mws.back_end.framework.IntegrationTestConfig.TEST_PROFILE;
 import static com.mws.back_end.framework.dto.WebResultCode.ERROR_AUTH;
+import static com.mws.back_end.framework.dto.WebResultCode.SUCCESS;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles(TEST_PROFILE)
@@ -74,7 +73,7 @@ class UserInterfaceIT extends IntegrationTestConfig {
 
         final WebResult<Long> result = toWebResult(response, Long.class);
         assertEquals(WebResultCode.ERROR_INVALID_PARAMETER, result.getCode(), "Result code");
-        assertEquals("Duplicate entry 'user@mwstest.com'", result.getMessage(), "Result code");
+        assertEquals("Duplicate entry 'user@mwstest.com'", result.getMessage(), "Result message");
         assertNull(result.getData(), "User id");
     }
 
@@ -200,5 +199,23 @@ class UserInterfaceIT extends IntegrationTestConfig {
         final Optional<String> loginEmailOpt = jwtProvider.getLoginEmailFromJwt(token);
         assertTrue(loginEmailOpt.isPresent(), "Login email is present in token");
         assertEquals(USER_EMAIL, loginEmailOpt.get(), "User login email");
+    }
+
+
+    @Test
+    void getUser_validId_success() {
+        final URI uri = getUri(GET_USER_URL, Pair.of("id", USER_ID.toString()));
+
+        final ResponseEntity<String> response = restTemplate.exchange(
+                uri,
+                HttpMethod.GET,
+                null,
+                String.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status");
+        final WebResult<UserDto> result = toWebResult(response, UserDto.class);
+        assertEquals(SUCCESS, result.getCode(), "Result code");
+        assertNotNull(result.getData(), "Data not null");
+        assertEquals(USER_ID, result.getData().getId(), "User id");
     }
 }
