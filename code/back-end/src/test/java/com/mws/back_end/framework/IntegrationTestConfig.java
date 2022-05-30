@@ -63,7 +63,8 @@ public class IntegrationTestConfig {
     protected <E extends Serializable> WebResult<E> toWebResult(final ResponseEntity<String> responseEntity, final Class<E> dataClass) {
         WebResult<E> result = convertStringToObject(responseEntity.getBody(), WebResult.class);
         if (result.getData() != null) {
-            E data = convertStringToObject(result.getData().toString(), dataClass);
+            final String dataJson = toJson((Map<String, Object>) result.getData());
+            E data = convertStringToObject(dataJson, dataClass);
             result.setData(data);
         }
 
@@ -88,7 +89,13 @@ public class IntegrationTestConfig {
 
         StringBuilder json = new StringBuilder("{");
         for (Map.Entry<String, Object> entry : properties.entrySet()) {
-            json.append("\"").append(entry.getKey()).append("\":\"").append(entry.getValue().toString()).append("\"");
+            json.append("\"").append(entry.getKey()).append("\":");
+
+            if (entry.getValue() != null) {
+                json.append("\"").append(entry.getValue().toString()).append("\"");
+            } else {
+                json.append("null");
+            }
 
             if (i < (mapSize - 1)) {
                 json.append(",");
