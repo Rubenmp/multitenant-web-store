@@ -132,7 +132,7 @@ class ProductInterfaceIT extends IntegrationTestConfig {
         List<Long> productIds = getResult.getData().stream().map(ProductDto::getId).collect(Collectors.toList());
 
         assertFalse(productIds.isEmpty(), "Returned products emptiness");
-        assertFalse(productIds.contains(PRODUCT_ID), "Returned products contains id " + PRODUCT_ID);
+        assertFalse(productIds.contains(PRODUCT_ID), "Returned products contains active product  " + PRODUCT_ID);
         assertTrue(productIds.contains(DELETED_PRODUCT_ID), "Returned products do not contain previously removed product");
     }
 

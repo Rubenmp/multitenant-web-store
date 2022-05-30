@@ -30,6 +30,7 @@ public class Product {
     private String image;
 
     @NotNull
-    @Type(type = "true_false")
+    //@Type(type = "true_false")
+    @Column(nullable = false, columnDefinition = "BOOLEAN")
     private boolean active = true;
 }

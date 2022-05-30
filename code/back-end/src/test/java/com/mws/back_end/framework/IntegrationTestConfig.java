@@ -62,9 +62,12 @@ public class IntegrationTestConfig {
 
     protected <E extends Serializable> WebResult<E> toWebResult(final ResponseEntity<String> responseEntity, final Class<E> dataClass) {
         WebResult<E> result = convertStringToObject(responseEntity.getBody(), WebResult.class);
-        if (result.getData() != null) {
+        if (result.getData() instanceof Map) {
             final String dataJson = toJson((Map<String, Object>) result.getData());
             E data = convertStringToObject(dataJson, dataClass);
+            result.setData(data);
+        } else if (result.getData() != null) {
+            E data = convertStringToObject(result.getData().toString(), dataClass);
             result.setData(data);
         }
 
