@@ -47,10 +47,16 @@ class UserInterfaceIT extends IntegrationTestConfig {
                 new HttpEntity<>(registerDto),
                 String.class);
 
+        checkUserWasCreated(response);
+    }
+
+    private Long checkUserWasCreated(ResponseEntity<String> response) {
         assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status");
         final WebResult<Long> result = toWebResult(response, Long.class);
         assertEquals(WebResultCode.SUCCESS, result.getCode(), "Result code");
         assertNotNull(result.getData(), "User id");
+
+        return result.getData();
     }
 
     @Test
@@ -84,17 +90,27 @@ class UserInterfaceIT extends IntegrationTestConfig {
 
     @Test
     void updateUser_happyPath_success() {
-        final UserUpdateDto registerRequest = createUserUpdateDto();
-        final URI uri = getUri(UPDATE_USER_URL);
+        final UserCreationDto registerDto = createUserCreationDto("updateUser_happyPath_success@test.com");
+        final URI uri = getUri(CREATE_USER_URL);
 
         final ResponseEntity<String> response = restTemplate.exchange(
                 uri,
-                HttpMethod.PUT,
-                new HttpEntity<>(registerRequest),
+                HttpMethod.POST,
+                new HttpEntity<>(registerDto),
                 String.class);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status");
-        final WebResult<Serializable> result = toWebResult(response, Serializable.class);
+        final Long createdUserId = checkUserWasCreated(response);
+
+        final UserUpdateDto updateRequest = createUserUpdateDto(createdUserId);
+        final URI updateUri = getUri(UPDATE_USER_URL);
+        final ResponseEntity<String> updateResponse = restTemplate.exchange(
+                updateUri,
+                HttpMethod.PUT,
+                new HttpEntity<>(updateRequest),
+                String.class);
+
+        assertEquals(HttpStatus.OK, updateResponse.getStatusCode(), "Response status");
+        final WebResult<Serializable> result = toWebResult(updateResponse, Serializable.class);
         assertEquals(WebResultCode.SUCCESS, result.getCode(), "Result code");
     }
 
@@ -113,7 +129,7 @@ class UserInterfaceIT extends IntegrationTestConfig {
         assertEquals(WebResultCode.SUCCESS, resultCreate.getCode(), "Create user result code");
         assertNotNull(resultCreate.getData(), "Created user id");
 
-        final UserUpdateDto registerRequest = createUserUpdateDto();
+        final UserUpdateDto registerRequest = createUserUpdateDto(USER_ID);
         registerRequest.setEmail(duplicatedEmail);
 
         final ResponseEntity<String> responseEntityUpdate = restTemplate.exchange(
@@ -127,9 +143,9 @@ class UserInterfaceIT extends IntegrationTestConfig {
         assertEquals(WebResultCode.ERROR_INVALID_PARAMETER, resultUpdate.getCode(), "Update user result code");
     }
 
-    private UserUpdateDto createUserUpdateDto() {
+    private UserUpdateDto createUserUpdateDto(final Long userId) {
         final UserUpdateDto updateRequest = new UserUpdateDto();
-        updateRequest.setId(USER_ID);
+        updateRequest.setId(userId);
         updateRequest.setFirstName("New first name");
         updateRequest.setLastName("New last name");
         updateRequest.setEmail("new.email@test.com");
