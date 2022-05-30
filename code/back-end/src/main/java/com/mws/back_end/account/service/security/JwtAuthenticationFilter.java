@@ -1,4 +1,4 @@
-package com.mws.back_end.account.service;
+package com.mws.back_end.account.service.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

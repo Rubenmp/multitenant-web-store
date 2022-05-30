@@ -2,8 +2,7 @@ package com.mws.back_end.account.interfaces;
 
 
 import com.mws.back_end.account.interfaces.user.dto.*;
-import com.mws.back_end.account.model.entity.UserRole;
-import com.mws.back_end.account.service.JwtProvider;
+import com.mws.back_end.account.service.security.JwtProvider;
 import com.mws.back_end.framework.IntegrationTestConfig;
 import com.mws.back_end.framework.dto.WebResult;
 import com.mws.back_end.framework.dto.WebResultCode;
@@ -171,6 +170,7 @@ class UserInterfaceIT extends IntegrationTestConfig {
 
         assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status");
         WebResult<UserAuthenticationResponse> authenticationResult = toWebResult(response, UserAuthenticationResponse.class);
+        assertEquals(SUCCESS, authenticationResult.getCode(), "Result code");
         final UserAuthenticationResponse authResponse = authenticationResult.getData();
         checkUserToken(authResponse.getToken());
     }

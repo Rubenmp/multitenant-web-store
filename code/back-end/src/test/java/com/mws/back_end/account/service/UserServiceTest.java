@@ -7,6 +7,7 @@ import com.mws.back_end.account.interfaces.user.dto.UserUpdateDto;
 import com.mws.back_end.account.model.dao.UserDao;
 import com.mws.back_end.account.model.entity.User;
 import com.mws.back_end.account.model.entity.UserRole;
+import com.mws.back_end.account.service.security.JwtProvider;
 import com.mws.back_end.framework.TestUtils;
 import com.mws.back_end.framework.exception.MWSException;
 import org.junit.jupiter.api.Test;

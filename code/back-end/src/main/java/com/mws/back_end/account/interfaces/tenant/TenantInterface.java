@@ -21,7 +21,7 @@ import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 public class TenantInterface {
-    private static final String BASE_TENANT_URL = "/tenant";
+    public static final String BASE_TENANT_URL = "/tenant";
     public static final String CREATE_TENANT_URL = BASE_TENANT_URL + "/" + "create";
     public static final String UPDATE_TENANT_URL = BASE_TENANT_URL + "/" + "update";
     public static final String LIST_TENANTS_URL = BASE_TENANT_URL + "/" + "list";

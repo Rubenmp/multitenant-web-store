@@ -1,4 +1,4 @@
-package com.mws.back_end.account.service;
+package com.mws.back_end.account.service.security;
 
 import java.util.Collection;
 import java.util.Optional;

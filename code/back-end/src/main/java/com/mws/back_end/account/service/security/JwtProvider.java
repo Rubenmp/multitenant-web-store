@@ -1,4 +1,4 @@
-package com.mws.back_end.account.service;
+package com.mws.back_end.account.service.security;
 
 import com.mws.back_end.account.interfaces.user.dto.UserDto;
 import com.mws.back_end.account.model.dao.UserDao;
@@ -24,7 +24,6 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.Optional;
 
-import static com.mws.back_end.account.interfaces.user.dto.UserDto.toDto;
 import static com.mws.back_end.framework.utils.DateUtils.isDateBeforeNow;
 import static io.jsonwebtoken.Jwts.parser;
 import static java.util.Date.from;

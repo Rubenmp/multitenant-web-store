@@ -3,12 +3,10 @@ package com.mws.back_end.account.interfaces;
 
 import com.mws.back_end.account.interfaces.tenant.tenant.TenantDto;
 import com.mws.back_end.account.interfaces.tenant.tenant.TenantUpdateDto;
-import com.mws.back_end.account.interfaces.user.dto.UserDto;
-import com.mws.back_end.account.service.JwtProvider;
+import com.mws.back_end.account.service.security.JwtProvider;
 import com.mws.back_end.framework.IntegrationTestConfig;
 import com.mws.back_end.framework.dto.WebResult;
 import com.mws.back_end.framework.dto.WebResultCode;
-import org.apache.logging.log4j.util.Strings;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,11 +20,8 @@ import org.springframework.test.context.ActiveProfiles;
 import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Optional;
 
 import static com.mws.back_end.account.interfaces.tenant.TenantInterface.*;
-import static com.mws.back_end.account.interfaces.user.UserInterface.GET_USER_URL;
 import static com.mws.back_end.framework.IntegrationTestConfig.TEST_PROFILE;
 import static com.mws.back_end.framework.dto.WebResultCode.SUCCESS;
 import static org.junit.jupiter.api.Assertions.*;
@@ -41,11 +36,12 @@ class TenantInterfaceIT extends IntegrationTestConfig {
     @Test
     void createTenant_happyPath_success() {
         final URI uri = getUri(CREATE_TENANT_URL, Pair.of("name", "New tenant"));
+        final HttpEntity<String> httpRequest = this.createUserHttpEntityWithBody(null);
 
         final ResponseEntity<String> response = restTemplate.exchange(
                 uri,
                 HttpMethod.POST,
-                null,
+                httpRequest,
                 String.class);
 
         checkTenantWasCreated(response);
