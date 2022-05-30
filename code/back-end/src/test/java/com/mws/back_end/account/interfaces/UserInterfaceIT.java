@@ -158,7 +158,7 @@ class UserInterfaceIT extends IntegrationTestConfig {
 
     @Test
     void login_validPassword_success() {
-        final LoginRequest loginRequest = newLoginRequestForUser();
+        final LoginRequest loginRequest = newLoginRequest(UserRoleDto.USER);
         final HttpEntity<LoginRequest> httpEntity = new HttpEntity<>(loginRequest);
         final URI uri = getUri(LOGIN_USER_URL);
 
@@ -178,7 +178,7 @@ class UserInterfaceIT extends IntegrationTestConfig {
 
     @Test
     void login_invalidPassword_error() {
-        final LoginRequest loginRequest = newLoginRequestForUser();
+        final LoginRequest loginRequest = newLoginRequest(UserRoleDto.USER);
         loginRequest.setPassword(loginRequest.getPassword() + "error");
         final HttpEntity<LoginRequest> httpEntity = new HttpEntity<>(loginRequest);
         final URI uri = getUri(LOGIN_USER_URL);

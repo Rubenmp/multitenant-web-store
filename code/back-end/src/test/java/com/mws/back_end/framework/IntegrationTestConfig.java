@@ -7,6 +7,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.mws.back_end.account.interfaces.user.dto.LoginRequest;
 import com.mws.back_end.account.interfaces.user.dto.UserAuthenticationResponse;
+import com.mws.back_end.account.interfaces.user.dto.UserRoleDto;
 import com.mws.back_end.account.service.security.JwtProvider;
 import com.mws.back_end.framework.dto.WebResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,8 @@ public class IntegrationTestConfig {
     protected static final Long DELETED_TENANT_ID = 2L;
     protected static final Long USER_ID = 1L;
     protected static final String USER_EMAIL = "user@mwstest.com";
+    protected static final String USER_ADMIN_EMAIL = "admin@mwstest.com";
+    protected static final String USER_SUPER_EMAIL = "super@mwstest.com";
     private static final String USER_PASSWORD = "Password1";
 
     public static final String TEST_PROFILE = "test";
@@ -173,9 +176,15 @@ public class IntegrationTestConfig {
     }
 
 
-    protected LoginRequest newLoginRequestForUser() {
+    protected LoginRequest newLoginRequest(final UserRoleDto role) {
         final LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setEmail(USER_EMAIL);
+        String email = USER_EMAIL;
+        if (role == UserRoleDto.ADMIN) {
+            email = USER_ADMIN_EMAIL;
+        } else if  (role == UserRoleDto.SUPER) {
+            email = USER_SUPER_EMAIL;
+        }
+        loginRequest.setEmail(email);
         loginRequest.setPassword(USER_PASSWORD);
 
         return loginRequest;
@@ -183,7 +192,7 @@ public class IntegrationTestConfig {
 
     // Token auxiliary methods
     protected HttpEntity<String> createUserHttpEntityWithBody(final String body) {
-        final HttpHeaders requestHeaders = createHttpHeadersWithAuthorization(getTokenAsUser());
+        final HttpHeaders requestHeaders = createHttpHeadersWithAuthorization(getTokenAs(UserRoleDto.USER));
 
         if (body == null) {
             return new HttpEntity<>(requestHeaders);
@@ -200,12 +209,27 @@ public class IntegrationTestConfig {
         return requestHeaders;
     }
 
-    private String getTokenAsUser() {
-        if (userToken != null && !isTokenExpired(userToken)) {
+    private String getTokenAs(final UserRoleDto role) {
+        if (role == UserRoleDto.USER && userToken != null && !isTokenExpired(userToken)) {
             return userToken;
         }
 
-        final LoginRequest loginRequest = newLoginRequestForUser();
+        final String token = loginAs(role).getToken();
+        if (role == UserRoleDto.USER) {
+            userToken = token;
+            return userToken;
+        } else if (role == UserRoleDto.ADMIN) {
+            adminToken = token;
+            return adminToken;
+        } else if (role == UserRoleDto.SUPER) {
+            superToken = token;
+            return superToken;
+        }
+        return null;
+    }
+
+    private UserAuthenticationResponse loginAs(final UserRoleDto role) {
+        final LoginRequest loginRequest = newLoginRequest(role);
         final HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.setContentType(MediaType.APPLICATION_JSON);
 
@@ -221,9 +245,7 @@ public class IntegrationTestConfig {
         assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status");
         final WebResult<UserAuthenticationResponse> authenticationResult = toWebResult(response, UserAuthenticationResponse.class);
         assertEquals(SUCCESS, authenticationResult.getCode(), "Authentication result code");
-        final UserAuthenticationResponse authResponse = authenticationResult.getData();
-        userToken = authResponse != null ? authResponse.getToken() : null;
-        return userToken;
+        return authenticationResult.getData();
     }
 
     private boolean isTokenExpired(final String userToken) {
