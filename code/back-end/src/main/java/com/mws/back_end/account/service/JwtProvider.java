@@ -119,7 +119,6 @@ public class JwtProvider {
     }
 
 
-    /*********************** Private methods ***********************/
     private String createToken(final String loginEmail) {
         final Optional<UserDto> userModelOpt = userDetailsServiceImpl.getUserByEmail(loginEmail);
         if (userModelOpt.isEmpty()) {

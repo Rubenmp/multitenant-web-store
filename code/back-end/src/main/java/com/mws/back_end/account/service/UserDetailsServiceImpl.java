@@ -33,7 +33,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new UsernameNotFoundException("No user found with login email: " + loginEmail);
         }
 
-        // Maybe save tha hardcode boolean values (accountNonExpired, credentialsNonExpired, accountNonLocked) in th DB.
         return new org.springframework.security
                 .core.userdetails.User(user.getEmail(), user.getPassword(),
                 true, true, true,

@@ -26,6 +26,7 @@ import java.util.Optional;
 
 import static com.mws.back_end.account.interfaces.user.UserInterface.*;
 import static com.mws.back_end.framework.IntegrationTestConfig.TEST_PROFILE;
+import static com.mws.back_end.framework.dto.WebResultCode.ERROR_AUTH;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles(TEST_PROFILE)
@@ -151,11 +152,9 @@ class UserInterfaceIT extends IntegrationTestConfig {
                 String.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status");
-        final UserAuthenticationResponse authenticationResponse = convertStringToObject(response.getBody(), UserAuthenticationResponse.class);
-        assertNotNull(authenticationResponse, "Authentication response");
-
-        final String token = authenticationResponse.getToken();
-        checkUserToken(token);
+        WebResult<UserAuthenticationResponse> authenticationResult = toWebResult(response, UserAuthenticationResponse.class);
+        final UserAuthenticationResponse authResponse = authenticationResult.getData();
+        checkUserToken(authResponse.getToken());
     }
 
 
@@ -173,11 +172,8 @@ class UserInterfaceIT extends IntegrationTestConfig {
                 String.class);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode(), "Response status");
-        final UserAuthenticationResponse authenticationResponse = convertStringToObject(response.getBody(), UserAuthenticationResponse.class);
-        assertNotNull(authenticationResponse, "Authentication response");
-
-        final String token = authenticationResponse.getToken();
-        checkUserToken(token);
+        WebResult<UserAuthenticationResponse> authenticationResult = toWebResult(response, UserAuthenticationResponse.class);
+        assertEquals(ERROR_AUTH, authenticationResult.getCode());
     }
 
     private void checkUserToken(final String token) {
