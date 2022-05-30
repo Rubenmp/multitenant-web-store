@@ -71,11 +71,14 @@ public class UserService {
     }
 
     public void updateUser(final UserUpdateDto userUpdateDto) throws MWSException {
-        requireNotNull(userUpdateDto, "User info must be provided");
-        final User user = toUser(userUpdateDto);
-
-        if (userDao.findWeak(user.getId()) == null) {
+        final User newUser = toUser(userUpdateDto);
+        final User previousUser = userDao.findWeak(newUser.getId());
+        if (previousUser == null) {
             throw new MWSException("Entity not found");
+        }
+
+        if (previousUser.getRole() != newUser.getRole()) {
+            throw new MWSException("It's not possible to change user role.");
         }
 
         final User userWithSameEmail = userDao.findByEmail(userUpdateDto.getEmail());
@@ -84,15 +87,19 @@ public class UserService {
         }
 
         try {
-            userDao.update(user);
+            userDao.update(newUser);
         } catch (EntityPersistenceException e) {
             throw new MWSException(e.getMessage());
         }
     }
 
     private User toUser(UserUpdateDto userUpdateDto) {
+        requireNotNull(userUpdateDto, "User info must be provided");
+        requireNotNull(userUpdateDto.getRole(), "User role must be provided");
+
         final User user = new User();
         user.setId(userUpdateDto.getId());
+        user.setRole(UserRole.valueOf(userUpdateDto.getRole().toString()));
         user.setEmail(userUpdateDto.getEmail());
         user.setPassword(userUpdateDto.getPassword());
         user.setFirstName(userUpdateDto.getFirstName());
