@@ -1,16 +1,14 @@
 package com.mws.back_end.account.model.entity;
 
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import static javax.persistence.GenerationType.IDENTITY;
+
 
 @Data
 @Entity
@@ -21,6 +19,10 @@ public class User {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
 
     @NotNull
     @Column(unique = true)

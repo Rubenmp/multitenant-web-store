@@ -3,6 +3,7 @@ package com.mws.back_end.account.service;
 import com.mws.back_end.account.interfaces.user.dto.*;
 import com.mws.back_end.account.model.dao.UserDao;
 import com.mws.back_end.account.model.entity.User;
+import com.mws.back_end.account.model.entity.UserRole;
 import com.mws.back_end.framework.exception.EntityPersistenceException;
 import com.mws.back_end.framework.exception.MWSException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import static com.mws.back_end.account.interfaces.user.dto.UserDto.toDto;
+import static com.mws.back_end.framework.utils.ExceptionUtils.require;
+import static com.mws.back_end.framework.utils.ExceptionUtils.requireNotNull;
 
 @Service
 public class UserService {
@@ -29,15 +32,36 @@ public class UserService {
 
 
     public Long createUser(final UserCreationDto userCreationDto) throws MWSException {
+        requireNotNull(userCreationDto, "User info must be provided");
+
+        final User user = toUser(userCreationDto);
+        checkPermissionsToCreateUser(user);
         try {
-            return userDao.create(toUser(userCreationDto)).getId();
+            return userDao.create(user).getId();
         } catch (EntityPersistenceException e) {
             throw new MWSException(e.getMessage());
         }
     }
 
+    private void checkPermissionsToCreateUser(final User userToCreate) throws MWSException {
+        final UserDto authenticatedUser = jwtProvider.getCurrentUser();
+        if (UserRole.SUPER == userToCreate.getRole()) {
+            if (authenticatedUser == null || UserRoleDto.SUPER != authenticatedUser.getRole()) {
+                throw new MWSException("It's not allowed to create an user with super role.");
+            }
+        } else if (UserRole.ADMIN == userToCreate.getRole() && isAllowedToCreateAdmins(authenticatedUser)) {
+            throw new MWSException("It's not allowed to create an user with admin role.");
+        }
+    }
+
+    private boolean isAllowedToCreateAdmins(UserDto authenticatedUser) {
+        return authenticatedUser == null || !(UserRoleDto.SUPER == authenticatedUser.getRole() || UserRoleDto.ADMIN == authenticatedUser.getRole());
+    }
+
     private User toUser(UserCreationDto userCreationDto) {
+        require(userCreationDto.getRole() != null, "User role must be provided");
         final User user = new User();
+        user.setRole(UserRole.valueOf(userCreationDto.getRole().toString()));
         user.setEmail(userCreationDto.getEmail());
         user.setPassword(userCreationDto.getPassword());
         user.setFirstName(userCreationDto.getFirstName());
@@ -47,6 +71,7 @@ public class UserService {
     }
 
     public void updateUser(final UserUpdateDto userUpdateDto) throws MWSException {
+        requireNotNull(userUpdateDto, "User info must be provided");
         final User user = toUser(userUpdateDto);
 
         if (userDao.findWeak(user.getId()) == null) {
@@ -85,6 +110,7 @@ public class UserService {
     }
 
     public UserAuthenticationResponse login(LoginRequest loginRequest) throws MWSException {
+        requireNotNull(loginRequest, "Login info must be provided");
         Authentication authenticate;
         try {
             authenticate = authenticationManager.authenticate(

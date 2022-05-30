@@ -65,7 +65,7 @@ public class TenantInterface {
     }
 
     @DeleteMapping(DELETE_TENANT_URL)
-    public ResponseEntity<WebResult<Serializable>> deleteTenant(@RequestParam Long id) {
+    public ResponseEntity<WebResult<Serializable>> deleteTenant(@RequestParam long id) {
         try {
             tenantService.deleteTenant(id);
         } catch (MWSException e) {

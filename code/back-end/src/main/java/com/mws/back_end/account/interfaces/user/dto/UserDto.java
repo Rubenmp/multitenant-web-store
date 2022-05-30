@@ -6,18 +6,24 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
+import static com.mws.back_end.framework.utils.ExceptionUtils.requireNotNull;
+
 @Data
 @NoArgsConstructor
 public class UserDto implements Serializable {
     private Long id;
+    private UserRoleDto role;
     private String email;
-    private String password;
     private String firstName;
     private String lastName;
 
-    public static UserDto toDto(User userEntity) {
+    public static UserDto toDto(final User userEntity) {
+        requireNotNull(userEntity, "User must be provided");
+        requireNotNull(userEntity.getRole(), "User role must be provided");
+
         final UserDto user = new UserDto();
         user.setId(userEntity.getId());
+        user.setRole(UserRoleDto.valueOf(userEntity.getRole().toString()));
         user.setEmail(userEntity.getEmail());
         user.setFirstName(userEntity.getFirstName());
         user.setLastName(userEntity.getLastName());

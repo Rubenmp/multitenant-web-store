@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.mws.back_end.framework.utils.ExceptionUtils.requireNotNull;
+
 @Service
 public class TenantService {
 
@@ -30,6 +32,8 @@ public class TenantService {
 
 
     public void updateTenant(final TenantUpdateDto tenantUpdateDto) throws MWSException {
+        requireNotNull(tenantUpdateDto, "Tenant update info must be provided");
+
         final Tenant tenant = tenantDao.findWeak(tenantUpdateDto.getId());
 
         if (tenant == null) {
@@ -57,7 +61,7 @@ public class TenantService {
         return tenantDao.find(null, active).stream().map(TenantDto::toDto).toList();
     }
 
-    public void deleteTenant(Long tenantId) throws MWSException {
+    public void deleteTenant(final long tenantId) throws MWSException {
         final Tenant tenant = tenantDao.findWeak(tenantId);
 
         if (tenant == null) {

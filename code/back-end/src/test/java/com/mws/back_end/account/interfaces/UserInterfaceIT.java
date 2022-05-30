@@ -2,6 +2,7 @@ package com.mws.back_end.account.interfaces;
 
 
 import com.mws.back_end.account.interfaces.user.dto.*;
+import com.mws.back_end.account.model.entity.UserRole;
 import com.mws.back_end.account.service.JwtProvider;
 import com.mws.back_end.framework.IntegrationTestConfig;
 import com.mws.back_end.framework.dto.WebResult;
@@ -79,6 +80,7 @@ class UserInterfaceIT extends IntegrationTestConfig {
 
     private UserCreationDto createUserCreationDto(final String email) {
         final UserCreationDto creationDto = new UserCreationDto();
+        creationDto.setRole(UserRoleDto.USER);
         creationDto.setFirstName("New first name");
         creationDto.setLastName("New last name");
         creationDto.setEmail(email);
@@ -145,6 +147,7 @@ class UserInterfaceIT extends IntegrationTestConfig {
     private UserUpdateDto createUserUpdateDto(final Long userId) {
         final UserUpdateDto updateRequest = new UserUpdateDto();
         updateRequest.setId(userId);
+        updateRequest.setRole(UserRoleDto.USER);
         updateRequest.setFirstName("New first name");
         updateRequest.setLastName("New last name");
         updateRequest.setEmail("new.email@test.com");

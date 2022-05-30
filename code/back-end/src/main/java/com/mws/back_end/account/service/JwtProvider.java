@@ -1,6 +1,7 @@
 package com.mws.back_end.account.service;
 
 import com.mws.back_end.account.interfaces.user.dto.UserDto;
+import com.mws.back_end.account.model.dao.UserDao;
 import com.mws.back_end.framework.exception.MWSException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -23,6 +24,7 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.Optional;
 
+import static com.mws.back_end.account.interfaces.user.dto.UserDto.toDto;
 import static com.mws.back_end.framework.utils.DateUtils.isDateBeforeNow;
 import static io.jsonwebtoken.Jwts.parser;
 import static java.util.Date.from;
@@ -36,6 +38,9 @@ public class JwtProvider {
 
     @Autowired
     private UserDetailsServiceImpl userDetailsServiceImpl;
+
+    @Autowired
+    private UserDao userDao;
 
     public String generateNewToken(final Authentication authentication) throws MWSException {
         User user;
@@ -70,6 +75,15 @@ public class JwtProvider {
                 !isTokenDateExpired(jwt) && isLoginEmailValid(jwt);
     }
 
+    @Transactional(readOnly = true)
+    public UserDto getCurrentUser() {
+        String token = getCurrentToken();
+        Optional<String> emailOpt = getLoginEmailFromJwt(token);
+        Optional<com.mws.back_end.account.model.entity.User> user = emailOpt.map(email -> userDao.findByEmail(email));
+
+        return user.map(UserDto::toDto).orElse(null);
+    }
+
     public boolean isTokenWellFormedAndSigned(final String jwt) {
         try {
             Key key = getSecretKey();
@@ -99,7 +113,7 @@ public class JwtProvider {
         return Optional.empty();
     }
 
-    public String getCurrentToken () {
+    private String getCurrentToken () {
         final HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         return request.getHeader(HttpHeaders.AUTHORIZATION);
     }
@@ -114,7 +128,7 @@ public class JwtProvider {
         return bearerToken;
     }
 
-    public Long getJwtExpirationInMilliseconds() {
+    private Long getJwtExpirationInMilliseconds() {
         return JWT_EXPIRATION_IN_MILLISECONDS;
     }
 
