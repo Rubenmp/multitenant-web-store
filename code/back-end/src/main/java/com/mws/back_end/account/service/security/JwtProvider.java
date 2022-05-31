@@ -22,6 +22,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.time.Instant;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.mws.back_end.framework.utils.DateUtils.isDateBeforeNow;
@@ -30,10 +32,13 @@ import static java.util.Date.from;
 
 @Service
 public class JwtProvider {
-
     private static final Long JWT_EXPIRATION_IN_MILLISECONDS = 100000000L;
     private static final String INVALID_TOKEN_IN_HTTP_HEADERS = "Invalid token provided in http request";
     private static final String DEV_SECRET_KEY = "Tk9RX3NlY3JldF9rZXlfdG9fZ2VuZXJhdGVfc2lnbmVkX3Rva2VuX2Zvcl9kZXY=";
+
+    private static final String TOKEN_CLAIM_TENANT_ID = "TENANT_ID";
+    private static final String TOKEN_CLAIM_USER_ID = "USER_ID";
+    private static final String TOKEN_CLAIM_USER_EMAIL = "USER_EMAIL";
 
     @Autowired
     private UserDetailsServiceImpl userDetailsServiceImpl;
@@ -42,7 +47,7 @@ public class JwtProvider {
     private UserDao userDao;
 
     public String generateNewToken(final Authentication authentication) throws MWSException {
-        User user;
+        final User user;
         try {
             user = (User) authentication.getPrincipal();
         } catch (Exception e) {
@@ -83,21 +88,28 @@ public class JwtProvider {
         return user.map(UserDto::toDto).orElse(null);
     }
 
+    public UserDto getUser(final String token) {
+        if (token == null) {
+            return null;
+        }
+        final Long userId = (Long) getTokenClaims(token).get(TOKEN_CLAIM_USER_ID);
+        com.mws.back_end.account.model.entity.User user = userDao.findWeak(userId);
+        return user == null ? null : UserDto.toDto(user);
+    }
+
     public boolean isTokenWellFormedAndSigned(final String jwt) {
         try {
-            Key key = getSecretKey();
-            parser().setSigningKey(key).parseClaimsJws(jwt);
+            final Claims claims = getTokenClaims(jwt);
+            return claims.containsKey(TOKEN_CLAIM_TENANT_ID) && claims.containsKey(TOKEN_CLAIM_USER_ID);
         } catch (RuntimeException re) {
             return false;
         }
-
-        return true;
     }
 
     public Optional<String> getLoginEmailFromJwt(final String token) {
         if (isTokenWellFormedAndSigned(token)) {
             final Claims claims = getTokenClaims(token);
-            return Optional.of(claims.getSubject());
+            return Optional.of(String.valueOf(claims.get(TOKEN_CLAIM_USER_EMAIL)));
         }
 
         return Optional.empty();
@@ -138,14 +150,21 @@ public class JwtProvider {
             return null;
         }
 
-        Key key = getSecretKey();
-
         return Jwts.builder()
-                .setSubject(loginEmail)
+                .setClaims(toClaims(userModelOpt.get()))
                 .setIssuedAt(from(Instant.now()))
                 .setExpiration(from(Instant.now().plusMillis(getJwtExpirationInMilliseconds())))
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(getSecretKey(), SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    private Map<String, Object> toClaims(UserDto userDto) {
+        final Map<String, Object> claims = new HashMap<>();
+
+        claims.put(TOKEN_CLAIM_USER_ID, userDto.getId());
+        claims.put(TOKEN_CLAIM_TENANT_ID, userDto.getTenantId());
+        claims.put(TOKEN_CLAIM_USER_EMAIL, userDto.getEmail());
+        return claims;
     }
 
     private Key getSecretKey() {
@@ -169,10 +188,8 @@ public class JwtProvider {
     }
 
     private Claims getTokenClaims(final String token) {
-        Key key = getSecretKey();
-
         return parser()
-                .setSigningKey(key)
+                .setSigningKey(getSecretKey())
                 .parseClaimsJws(token)
                 .getBody();
     }

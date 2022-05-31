@@ -85,11 +85,22 @@ public class UserService {
     }
 
     public void updateUser(final UserUpdateDto userUpdateDto) throws MWSException {
+        final User newUser = checkUserToUpdate(userUpdateDto);
+
+        try {
+            userDao.update(newUser);
+        } catch (EntityPersistenceException e) {
+            throw new MWSException(e.getMessage());
+        }
+    }
+
+    private User checkUserToUpdate(final UserUpdateDto userUpdateDto) throws MWSException {
         final User newUser = toUser(userUpdateDto);
         final User previousUser = userDao.findWeak(newUser.getId());
         if (previousUser == null) {
             throw new MWSException("Entity not found");
         }
+        newUser.setTenantId(previousUser.getTenantId());
 
         if (previousUser.getRole() != newUser.getRole()) {
             throw new MWSException("It's not possible to change user role.");
@@ -99,15 +110,10 @@ public class UserService {
         if (userWithSameEmail != null && !userWithSameEmail.getId().equals(userUpdateDto.getId())) {
             throw new MWSException("Duplicated email");
         }
-
-        try {
-            userDao.update(newUser);
-        } catch (EntityPersistenceException e) {
-            throw new MWSException(e.getMessage());
-        }
+        return newUser;
     }
 
-    private User toUser(UserUpdateDto userUpdateDto) {
+    private User toUser(final UserUpdateDto userUpdateDto) {
         requireNotNull(userUpdateDto, "User info must be provided");
         requireNotNull(userUpdateDto.getRole(), "User role must be provided");
 
@@ -130,9 +136,9 @@ public class UserService {
         return toDto(userEntity);
     }
 
-    public UserAuthenticationResponse login(LoginRequest loginRequest) throws MWSException {
+    public UserAuthenticationResponse login(final LoginRequest loginRequest) throws MWSException {
         requireNotNull(loginRequest, "Login info must be provided");
-        Authentication authenticate;
+        final Authentication authenticate;
         try {
             authenticate = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));

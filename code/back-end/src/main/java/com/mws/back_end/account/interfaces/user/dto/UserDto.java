@@ -11,6 +11,7 @@ import static com.mws.back_end.framework.utils.ExceptionUtils.requireNotNull;
 @Data
 @NoArgsConstructor
 public class UserDto implements Serializable {
+    private Long tenantId;
     private Long id;
     private UserRoleDto role;
     private String email;
@@ -22,6 +23,7 @@ public class UserDto implements Serializable {
         requireNotNull(userEntity.getRole(), "User role must be provided");
 
         final UserDto user = new UserDto();
+        user.setTenantId(userEntity.getTenantId());
         user.setId(userEntity.getId());
         user.setRole(UserRoleDto.valueOf(userEntity.getRole().toString()));
         user.setEmail(userEntity.getEmail());
