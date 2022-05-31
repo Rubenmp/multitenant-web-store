@@ -58,7 +58,7 @@ class TenantInterfaceIT extends IntegrationTestConfig {
 
     @Test
     void createTenant_repeatedName_badRequest() {
-        final URI uri = getUri(CREATE_TENANT_URL, Pair.of("name", "Tenant"));
+        final URI uri = getUri(CREATE_TENANT_URL, Pair.of("name", "MWS Tenant"));
 
         final ResponseEntity<String> response = restTemplate.exchange(
                 uri,
@@ -70,7 +70,7 @@ class TenantInterfaceIT extends IntegrationTestConfig {
 
         final WebResult<Long> result = toWebResult(response, Long.class);
         assertEquals(WebResultCode.ERROR_INVALID_PARAMETER, result.getCode(), "Result code");
-        assertEquals("Duplicate entry 'Tenant'", result.getMessage(), "Result message");
+        assertEquals("Duplicate entry 'MWS Tenant'", result.getMessage(), "Result message");
         assertNull(result.getData(), "Tenant id");
     }
 
