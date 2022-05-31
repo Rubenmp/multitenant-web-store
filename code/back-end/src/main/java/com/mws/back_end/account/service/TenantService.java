@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.mws.back_end.account.interfaces.tenant.tenant.TenantDto.toDto;
 import static com.mws.back_end.framework.utils.ExceptionUtils.requireNotNull;
 
 @Service
@@ -56,6 +57,9 @@ public class TenantService {
         }
     }
 
+    public TenantDto getTenant(final Long tenantId) {
+        return toDto(tenantDao.findWeak(tenantId));
+    }
 
     public List<TenantDto> listTenants(final Boolean active) {
         return tenantDao.find(null, active).stream().map(TenantDto::toDto).toList();

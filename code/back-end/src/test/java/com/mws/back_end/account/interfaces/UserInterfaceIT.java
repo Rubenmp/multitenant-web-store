@@ -79,6 +79,7 @@ class UserInterfaceIT extends IntegrationTestConfig {
 
     private UserCreationDto createUserCreationDto(final String email) {
         final UserCreationDto creationDto = new UserCreationDto();
+        creationDto.setTenantId(TENANT_ID);
         creationDto.setRole(UserRoleDto.USER);
         creationDto.setFirstName("New first name");
         creationDto.setLastName("New last name");

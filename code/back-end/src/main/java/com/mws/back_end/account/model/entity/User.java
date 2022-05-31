@@ -1,11 +1,11 @@
 package com.mws.back_end.account.model.entity;
 
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -15,6 +15,9 @@ import static javax.persistence.GenerationType.IDENTITY;
 @NoArgsConstructor
 public class User {
     public static final String USER_COLUMN_EMAIL = "email";
+
+    @NotNull
+    private Long tenantId;
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -36,5 +39,5 @@ public class User {
 
     @NotNull
     private String lastName;
-}
 
+}

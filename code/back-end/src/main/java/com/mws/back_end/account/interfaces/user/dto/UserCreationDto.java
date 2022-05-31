@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class UserCreationDto {
+    private Long tenantId;
     private UserRoleDto role;
     private String email;
     private String password;

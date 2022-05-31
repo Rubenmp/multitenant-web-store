@@ -2,6 +2,7 @@ package com.mws.back_end.account.service;
 
 import com.mws.back_end.account.interfaces.user.dto.*;
 import com.mws.back_end.account.model.dao.UserDao;
+import com.mws.back_end.account.model.entity.Tenant;
 import com.mws.back_end.account.model.entity.User;
 import com.mws.back_end.account.model.entity.UserRole;
 import com.mws.back_end.account.service.security.JwtProvider;
@@ -31,17 +32,26 @@ public class UserService {
     @Autowired
     private JwtProvider jwtProvider;
 
+    @Autowired
+    private TenantService tenantService;
 
     public Long createUser(final UserCreationDto userCreationDto) throws MWSException {
         requireNotNull(userCreationDto, "User info must be provided");
 
         final User user = toUser(userCreationDto);
-        checkPermissionsToCreateUser(user);
+        checkUserToCreate(user);
         try {
             return userDao.create(user).getId();
         } catch (EntityPersistenceException e) {
             throw new MWSException(e.getMessage());
         }
+    }
+
+    private void checkUserToCreate(final User user) throws MWSException {
+        if (tenantService.getTenant(user.getTenantId()) == null) {
+            throw new MWSException("Invalid tenant id.");
+        }
+        checkPermissionsToCreateUser(user);
     }
 
     private void checkPermissionsToCreateUser(final User userToCreate) throws MWSException {
@@ -59,9 +69,12 @@ public class UserService {
         return authenticatedUser == null || !(UserRoleDto.SUPER == authenticatedUser.getRole() || UserRoleDto.ADMIN == authenticatedUser.getRole());
     }
 
-    private User toUser(UserCreationDto userCreationDto) {
+    private User toUser(final UserCreationDto userCreationDto) {
         require(userCreationDto.getRole() != null, "User role must be provided");
+        require(userCreationDto.getTenantId() != null, "Tenant id must be provided");
+
         final User user = new User();
+        user.setTenantId(userCreationDto.getTenantId());
         user.setRole(UserRole.valueOf(userCreationDto.getRole().toString()));
         user.setEmail(userCreationDto.getEmail());
         user.setPassword(userCreationDto.getPassword());
