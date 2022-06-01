@@ -3,7 +3,7 @@ package com.mws.back_end.account.interfaces;
 
 import com.mws.back_end.account.interfaces.tenant.tenant.TenantDto;
 import com.mws.back_end.account.interfaces.tenant.tenant.TenantUpdateDto;
-import com.mws.back_end.account.service.security.JwtProvider;
+import com.mws.back_end.account.service.security.JwtCipher;
 import com.mws.back_end.framework.IntegrationTestConfig;
 import com.mws.back_end.framework.dto.WebResult;
 import com.mws.back_end.framework.dto.WebResultCode;
@@ -32,7 +32,7 @@ class TenantInterfaceIT extends IntegrationTestConfig {
     protected static final Long DELETED_TENANT_ID = 2L;
 
     @Autowired
-    private JwtProvider jwtProvider;
+    private JwtCipher jwtCipher;
 
     @Test
     void createTenant_happyPath_success() {

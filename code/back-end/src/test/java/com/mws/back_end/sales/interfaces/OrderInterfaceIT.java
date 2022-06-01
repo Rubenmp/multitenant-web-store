@@ -1,7 +1,7 @@
 package com.mws.back_end.sales.interfaces;
 
 
-import com.mws.back_end.account.service.security.JwtProvider;
+import com.mws.back_end.account.service.security.JwtCipher;
 import com.mws.back_end.framework.IntegrationTestConfig;
 import com.mws.back_end.framework.dto.WebResult;
 import com.mws.back_end.framework.dto.WebResultCode;
@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class OrderInterfaceIT extends IntegrationTestConfig {
 
     @Autowired
-    private JwtProvider jwtProvider;
+    private JwtCipher jwtCipher;
 
     @Test
     void createOrder_thenListThem_success() {

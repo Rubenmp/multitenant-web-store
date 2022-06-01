@@ -8,7 +8,7 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.mws.back_end.account.interfaces.user.dto.LoginRequest;
 import com.mws.back_end.account.interfaces.user.dto.UserAuthenticationResponse;
 import com.mws.back_end.account.interfaces.user.dto.UserRoleDto;
-import com.mws.back_end.account.service.security.JwtProvider;
+import com.mws.back_end.account.service.security.JwtCipher;
 import com.mws.back_end.framework.dto.WebResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -53,7 +53,7 @@ public class IntegrationTestConfig {
     protected TestRestTemplate restTemplate;
 
     @Autowired
-    private JwtProvider jwtProvider;
+    private JwtCipher jwtCipher;
 
 
     public String getTestUri() {
@@ -265,7 +265,7 @@ public class IntegrationTestConfig {
     }
 
     private boolean isTokenExpired(final String userToken) {
-        final Optional<Date> expirationDate = jwtProvider.getExpirationDateFromJwt(userToken);
+        final Optional<Date> expirationDate = jwtCipher.getExpirationDateFromJwt(userToken);
         if (expirationDate.isEmpty()) {
             return true;
         }

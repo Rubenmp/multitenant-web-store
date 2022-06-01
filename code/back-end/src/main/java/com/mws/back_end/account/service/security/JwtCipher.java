@@ -1,16 +1,12 @@
 package com.mws.back_end.account.service.security;
 
 import com.mws.back_end.account.interfaces.user.dto.UserDto;
-import com.mws.back_end.framework.exception.MWSException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -30,49 +26,18 @@ import static io.jsonwebtoken.Jwts.parser;
 import static java.util.Date.from;
 
 @Service
-public class JwtProvider {
-    private static final Long JWT_EXPIRATION_IN_MILLISECONDS = 100000000L;
-    private static final String INVALID_TOKEN_IN_HTTP_HEADERS = "Invalid token provided in http request";
+public class JwtCipher {
     private static final String DEV_SECRET_KEY = "Tk9RX3NlY3JldF9rZXlfdG9fZ2VuZXJhdGVfc2lnbmVkX3Rva2VuX2Zvcl9kZXY=";
+    private static final Long JWT_EXPIRATION_IN_MILLISECONDS = 100000000L;
 
     private static final String TOKEN_CLAIM_TENANT_ID = "TENANT_ID";
     private static final String TOKEN_CLAIM_USER_ID = "USER_ID";
     private static final String TOKEN_CLAIM_USER_EMAIL = "USER_EMAIL";
 
-    @Autowired
-    private UserDetailsServiceImpl userDetailsServiceImpl;
-
-    public String generateNewToken(final Authentication authentication) throws MWSException {
-        final User user;
-        try {
-            user = (User) authentication.getPrincipal();
-        } catch (Exception e) {
-            throw new MWSException("Invalid authentication");
-        }
-
-        return createToken(user.getUsername());
-    }
-
-    @Transactional(readOnly = true)
-    public String refreshToken() throws MWSException {
-        final String currentToken = getCurrentToken();
-
-        if (!isTokenWellFormedAndSigned(currentToken)) {
-            throw new MWSException(INVALID_TOKEN_IN_HTTP_HEADERS);
-        }
-
-        final Optional<String> emailOpt = getLoginEmailFromJwt(currentToken);
-        if (emailOpt.isEmpty() || !isLoginEmailValid(currentToken)) {
-            throw new MWSException(INVALID_TOKEN_IN_HTTP_HEADERS);
-        }
-
-        return createToken(emailOpt.get());
-    }
-
     @Transactional(readOnly = true)
     public boolean isValidToken(final String jwt) {
         return jwt != null && isTokenWellFormedAndSigned(jwt) &&
-                !isTokenDateExpired(jwt) && isLoginEmailValid(jwt);
+                !isTokenDateExpired(jwt);
     }
 
     public boolean isTokenWellFormedAndSigned(final String jwt) {
@@ -102,7 +67,7 @@ public class JwtProvider {
         return Optional.empty();
     }
 
-    private String getCurrentToken() {
+    public String getCurrentToken() {
         final HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         return request.getHeader(HttpHeaders.AUTHORIZATION);
     }
@@ -135,35 +100,7 @@ public class JwtProvider {
         return bearerToken;
     }
 
-    private Long getJwtExpirationInMilliseconds() {
-        return JWT_EXPIRATION_IN_MILLISECONDS;
-    }
-
-
-    private String createToken(final String loginEmail) {
-        final Optional<UserDto> userModelOpt = userDetailsServiceImpl.getUserByEmail(loginEmail);
-        if (userModelOpt.isEmpty()) {
-            return null;
-        }
-
-        return Jwts.builder()
-                .setClaims(toClaims(userModelOpt.get()))
-                .setIssuedAt(from(Instant.now()))
-                .setExpiration(from(Instant.now().plusMillis(getJwtExpirationInMilliseconds())))
-                .signWith(getSecretKey(), SignatureAlgorithm.HS256)
-                .compact();
-    }
-
-    private Map<String, Object> toClaims(UserDto userDto) {
-        final Map<String, Object> claims = new HashMap<>();
-
-        claims.put(TOKEN_CLAIM_TENANT_ID, userDto.getTenantId());
-        claims.put(TOKEN_CLAIM_USER_ID, userDto.getId());
-        claims.put(TOKEN_CLAIM_USER_EMAIL, userDto.getEmail());
-        return claims;
-    }
-
-    private Key getSecretKey() {
+    public Key getSecretKey() {
         String base64Secret = System.getenv("MWS_SECURITY_KEY");
         byte[] keyBytes = Decoders.BASE64.decode(StringUtils.hasText(base64Secret) ? base64Secret : DEV_SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
@@ -174,19 +111,31 @@ public class JwtProvider {
         return expirationDateOpt.isEmpty() || isDateBeforeNow(expirationDateOpt.get());
     }
 
-    private boolean isLoginEmailValid(final String jwt) {
-        final Optional<String> loginEmailOpt = getLoginEmailFromJwt(jwt);
-        return loginEmailOpt.isPresent() && isUsernameAllowedToAuthenticate(loginEmailOpt.get());
-    }
-
-    private boolean isUsernameAllowedToAuthenticate(final String loginEmail) {
-        return userDetailsServiceImpl.getUserByEmail(loginEmail).isPresent();
-    }
-
     private Claims getTokenClaims(final String token) {
         return parser()
                 .setSigningKey(getSecretKey())
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    public Map<String, Object> toClaims(final UserDto userDto) {
+        final Map<String, Object> claims = new HashMap<>();
+
+        claims.put(TOKEN_CLAIM_TENANT_ID, userDto.getTenantId());
+        claims.put(TOKEN_CLAIM_USER_ID, userDto.getId());
+        claims.put(TOKEN_CLAIM_USER_EMAIL, userDto.getEmail());
+        return claims;
+    }
+    private Long getJwtExpirationInMilliseconds() {
+        return JWT_EXPIRATION_IN_MILLISECONDS;
+    }
+
+    public String createToken(UserDto userModel) {
+        return Jwts.builder()
+                .setClaims(toClaims(userModel))
+                .setIssuedAt(from(Instant.now()))
+                .setExpiration(from(Instant.now().plusMillis(getJwtExpirationInMilliseconds())))
+                .signWith(getSecretKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
 }

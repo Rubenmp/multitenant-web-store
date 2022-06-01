@@ -4,7 +4,7 @@ import com.mws.back_end.account.interfaces.user.dto.*;
 import com.mws.back_end.account.model.dao.UserDao;
 import com.mws.back_end.account.model.entity.User;
 import com.mws.back_end.account.model.entity.UserRole;
-import com.mws.back_end.account.service.security.JwtProvider;
+import com.mws.back_end.account.service.security.JwtService;
 import com.mws.back_end.framework.exception.EntityPersistenceException;
 import com.mws.back_end.framework.exception.MWSException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ public class UserService {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private JwtProvider jwtProvider;
+    private JwtService jwtService;
 
     @Autowired
     private TenantService tenantService;
@@ -147,7 +147,7 @@ public class UserService {
         }
 
         SecurityContextHolder.getContext().setAuthentication(authenticate);
-        final String token = jwtProvider.generateNewToken(authenticate);
+        final String token = jwtService.generateNewToken(authenticate);
         return UserAuthenticationResponse.builder()
                 .token(token)
                 .build();
@@ -155,7 +155,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public UserDto getCurrentUser() {
-        final Long userId = jwtProvider.getCurrentUserId();
+        final Long userId = jwtService.getCurrentUserId();
         if (userId == null) {
             return null;
         }

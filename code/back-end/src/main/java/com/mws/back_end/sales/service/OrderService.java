@@ -1,7 +1,7 @@
 package com.mws.back_end.sales.service;
 
 import com.mws.back_end.account.service.UserService;
-import com.mws.back_end.account.service.security.JwtProvider;
+import com.mws.back_end.account.service.security.JwtCipher;
 import com.mws.back_end.framework.exception.MWSException;
 import com.mws.back_end.sales.interfaces.dto.OrderCreationDto;
 import com.mws.back_end.sales.interfaces.dto.OrderDto;
@@ -21,7 +21,7 @@ public class OrderService {
     private OrderDao orderDao;
 
     @Autowired
-    private JwtProvider jwtProvider;
+    private JwtCipher jwtCipher;
 
     @Autowired
     private UserService userService;
@@ -38,7 +38,7 @@ public class OrderService {
 
     private Order toOrder(final OrderCreationDto orderCreationDto) throws MWSException {
         final Order order = new Order();
-        final Long tenantId = jwtProvider.getCurrentTenantId();
+        final Long tenantId = jwtCipher.getCurrentTenantId();
         order.setTenantId(tenantId);
         if (tenantId == null) {
             throw new MWSException("Tenant id must be in the request context.");

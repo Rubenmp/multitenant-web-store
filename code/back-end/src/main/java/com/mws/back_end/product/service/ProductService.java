@@ -3,7 +3,7 @@ package com.mws.back_end.product.service;
 import com.mws.back_end.account.interfaces.user.dto.UserDto;
 import com.mws.back_end.account.interfaces.user.dto.UserRoleDto;
 import com.mws.back_end.account.service.UserService;
-import com.mws.back_end.account.service.security.JwtProvider;
+import com.mws.back_end.account.service.security.JwtCipher;
 import com.mws.back_end.framework.exception.EntityPersistenceException;
 import com.mws.back_end.framework.exception.MWSException;
 import com.mws.back_end.product.interfaces.dto.ProductCreationDto;
@@ -26,7 +26,7 @@ public class ProductService {
     private ProductDao productDao;
 
     @Autowired
-    private JwtProvider jwtProvider;
+    private JwtCipher jwtCipher;
 
     @Autowired
     private UserService userService;
@@ -56,7 +56,7 @@ public class ProductService {
 
     private Product toProduct(final ProductCreationDto productCreationDto) throws MWSException {
         final Product product = new Product();
-        final Long tenantId = jwtProvider.getCurrentTenantId();
+        final Long tenantId = jwtCipher.getCurrentTenantId();
         product.setTenantId(tenantId);
         if (tenantId == null) {
             throw new MWSException("Tenant id must be in the request context.");

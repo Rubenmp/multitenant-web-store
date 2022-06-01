@@ -2,7 +2,7 @@ package com.mws.back_end.account.interfaces;
 
 
 import com.mws.back_end.account.interfaces.user.dto.*;
-import com.mws.back_end.account.service.security.JwtProvider;
+import com.mws.back_end.account.service.security.JwtCipher;
 import com.mws.back_end.framework.IntegrationTestConfig;
 import com.mws.back_end.framework.dto.WebResult;
 import com.mws.back_end.framework.dto.WebResultCode;
@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserInterfaceIT extends IntegrationTestConfig {
 
     @Autowired
-    private JwtProvider jwtProvider;
+    private JwtCipher jwtCipher;
 
     @Test
     void createUser_happyPath_success() {
@@ -197,10 +197,10 @@ class UserInterfaceIT extends IntegrationTestConfig {
 
     private void checkUserToken(final String token) {
         assertTrue(Strings.isNotBlank(token), "Token not empty");
-        assertTrue(jwtProvider.isTokenWellFormedAndSigned(token), "Token well formed");
-        assertTrue(jwtProvider.getExpirationDateFromJwt(token).filter(d -> d.after(new Date())).isPresent(),
+        assertTrue(jwtCipher.isTokenWellFormedAndSigned(token), "Token well formed");
+        assertTrue(jwtCipher.getExpirationDateFromJwt(token).filter(d -> d.after(new Date())).isPresent(),
                 "Token expiration date after now");
-        final Optional<String> loginEmailOpt = jwtProvider.getLoginEmailFromJwt(token);
+        final Optional<String> loginEmailOpt = jwtCipher.getLoginEmailFromJwt(token);
         assertTrue(loginEmailOpt.isPresent(), "Login email is present in token");
         assertEquals(USER_EMAIL, loginEmailOpt.get(), "User login email");
     }

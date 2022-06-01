@@ -19,7 +19,7 @@ import java.util.Optional;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
-    private JwtProvider jwtProvider;
+    private JwtCipher jwtCipher;
 
     @Autowired
     private UserDetailsServiceImpl userDetailsServiceImpl;
@@ -27,11 +27,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
                                     FilterChain filterChain) throws ServletException, IOException {
-        final String jwtToken = jwtProvider.getJwtFromRequest(httpServletRequest);
+        final String jwtToken = jwtCipher.getJwtFromRequest(httpServletRequest);
         boolean validToken = false;
 
-        if (jwtProvider.isValidToken(jwtToken)) {
-            Optional<String> loginEmail = jwtProvider.getLoginEmailFromJwt(jwtToken);
+        if (jwtCipher.isValidToken(jwtToken)) {
+            Optional<String> loginEmail = jwtCipher.getLoginEmailFromJwt(jwtToken);
 
             if (loginEmail.isPresent()) {
                 final UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(loginEmail.get());
