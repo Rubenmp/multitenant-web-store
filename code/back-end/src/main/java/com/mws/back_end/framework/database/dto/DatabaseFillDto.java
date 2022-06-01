@@ -8,5 +8,5 @@ import lombok.NoArgsConstructor;
 public class DatabaseFillDto {
     private Long numberOfTenants;
     private Long usersPerTenant;
-    private Long productsPerTenant;
+    private Long numberOfProducts;
 }

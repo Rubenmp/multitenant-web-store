@@ -3,12 +3,10 @@ package com.mws.back_end.account.interfaces;
 
 import com.mws.back_end.account.interfaces.tenant.tenant.TenantDto;
 import com.mws.back_end.account.interfaces.tenant.tenant.TenantUpdateDto;
-import com.mws.back_end.account.service.security.JwtCipher;
 import com.mws.back_end.framework.IntegrationTestConfig;
 import com.mws.back_end.framework.dto.WebResult;
 import com.mws.back_end.framework.dto.WebResultCode;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.util.Pair;
 import org.springframework.http.HttpEntity;
@@ -30,9 +28,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class TenantInterfaceIT extends IntegrationTestConfig {
     protected static final Long DELETED_TENANT_ID = 2L;
-
-    @Autowired
-    private JwtCipher jwtCipher;
 
     @Test
     void createTenant_happyPath_success() {

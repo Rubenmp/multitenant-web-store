@@ -1,14 +1,12 @@
 package com.mws.back_end.sales.interfaces;
 
 
-import com.mws.back_end.account.service.security.JwtCipher;
 import com.mws.back_end.framework.IntegrationTestConfig;
 import com.mws.back_end.framework.dto.WebResult;
 import com.mws.back_end.framework.dto.WebResultCode;
 import com.mws.back_end.sales.interfaces.dto.OrderCreationDto;
 import com.mws.back_end.sales.interfaces.dto.OrderDto;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.util.Pair;
 import org.springframework.http.HttpEntity;
@@ -29,9 +27,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles(TEST_PROFILE)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class OrderInterfaceIT extends IntegrationTestConfig {
-
-    @Autowired
-    private JwtCipher jwtCipher;
 
     @Test
     void createOrder_thenListThem_success() {

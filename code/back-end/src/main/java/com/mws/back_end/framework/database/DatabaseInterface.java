@@ -51,7 +51,7 @@ public class DatabaseInterface {
             checkLimits(databaseFillDto);
             final List<Long> tenantIds = createTenants(databaseFillDto.getNumberOfTenants());
             createUsers(tenantIds, databaseFillDto.getUsersPerTenant());
-            createProducts(tenantIds, databaseFillDto.getProductsPerTenant());
+            createProducts(databaseFillDto.getNumberOfProducts());
         } catch (MWSRException e) {
             return new ResponseEntity<>(newWebResult(ERROR_INVALID_PARAMETER, e.getMessage()), BAD_REQUEST);
         }
@@ -59,16 +59,16 @@ public class DatabaseInterface {
         return new ResponseEntity<>(success(), OK);
     }
 
-    private void createProducts(final List<Long> tenantIds, final Long productsPerTenant) {
-        tenantIds.forEach(tenantId -> LongStream.range(0, productsPerTenant).forEach(productIndex -> {
+    private void createProducts(final Long numberOfProducts) {
+        LongStream.range(0, numberOfProducts).forEach(productIndex -> {
             ResponseEntity<WebResult<Long>> response = productInterface.createProduct(newProductCreationDto(productIndex));
-            checkOkResponse(response, "It was not possible to create product [tenant_id=" + tenantId + ", product_number=" + productIndex + "]");
-        }));
+            checkOkResponse(response, "It was not possible to create product [product_number=" + productIndex + "]");
+        });
     }
 
     private ProductCreationDto newProductCreationDto(long productIndex) {
         final ProductCreationDto productCreationDto = new ProductCreationDto();
-        productCreationDto.setName("Product " + (productIndex + 1));
+        productCreationDto.setName("[auto] Product " + (productIndex + 1));
         productCreationDto.setImage("image");
         return productCreationDto;
     }
@@ -82,9 +82,9 @@ public class DatabaseInterface {
         requireNotNull(usersPerTenant, "Number of users per tenant must be provided");
         require(0 <= usersPerTenant && usersPerTenant <= 1000, "Number of users per tenant is limited [0, 1.000]");
 
-        final Long productsPerTenant = databaseFillDto.getProductsPerTenant();
-        requireNotNull(productsPerTenant, "Number of products per tenant must be provided");
-        require(0 <= productsPerTenant && productsPerTenant <= 1000, "Number of products per tenant is limited [0, 1.000]");
+        final Long numberOfProducts = databaseFillDto.getNumberOfProducts();
+        requireNotNull(numberOfProducts, "Number of products per tenant must be provided");
+        require(0 <= numberOfProducts && numberOfProducts <= 1000, "Number of products per tenant is limited [0, 1.000]");
     }
 
     private void createUsers(final List<Long> tenantIds, final Long usersPerTenant) {
