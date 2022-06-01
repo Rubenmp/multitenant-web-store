@@ -2,6 +2,7 @@ package com.mws.back_end.product.service;
 
 import com.mws.back_end.account.interfaces.user.dto.UserDto;
 import com.mws.back_end.account.interfaces.user.dto.UserRoleDto;
+import com.mws.back_end.account.service.UserService;
 import com.mws.back_end.account.service.security.JwtProvider;
 import com.mws.back_end.framework.exception.EntityPersistenceException;
 import com.mws.back_end.framework.exception.MWSException;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.mws.back_end.framework.utils.ExceptionUtils.require;
 import static com.mws.back_end.framework.utils.ExceptionUtils.requireNotNull;
 
 @Service
@@ -26,17 +28,26 @@ public class ProductService {
     @Autowired
     private JwtProvider jwtProvider;
 
+    @Autowired
+    private UserService userService;
+
     public Long createProduct(final ProductCreationDto productCreationDto) throws MWSException {
         try {
-            checkProductPermissions();
+            checkProductCreation(productCreationDto);
             return productDao.create(toProduct(productCreationDto)).getId();
         } catch (EntityPersistenceException e) {
             throw new MWSException(e.getMessage());
         }
     }
 
+    private void checkProductCreation(final ProductCreationDto productCreationDto) throws MWSException {
+        requireNotNull(productCreationDto, "Product info must be provided");
+        require(productCreationDto.getName() != null && !productCreationDto.getName().isBlank(), "Product name must be provided.");
+        checkProductPermissions();
+    }
+
     private void checkProductPermissions() throws MWSException {
-        final UserDto user = jwtProvider.getCurrentUser();
+        final UserDto user = userService.getCurrentUser();
         final UserRoleDto role = user == null ? null : user.getRole();
         if (role != UserRoleDto.SUPER && role != UserRoleDto.ADMIN) {
             throw new MWSException("Not allowed to create product(s).");
@@ -45,7 +56,7 @@ public class ProductService {
 
     private Product toProduct(final ProductCreationDto productCreationDto) throws MWSException {
         final Product product = new Product();
-        final Long tenantId = jwtProvider.getTenantIdFromRequest();
+        final Long tenantId = jwtProvider.getCurrentTenantId();
         product.setTenantId(tenantId);
         if (tenantId == null) {
             throw new MWSException("Tenant id must be in the request context.");
@@ -60,11 +71,11 @@ public class ProductService {
         return toProductDto(productDao.find(null, active));
     }
 
-    private List<ProductDto> toProductDto(List<Product> products) {
+    private List<ProductDto> toProductDto(final List<Product> products) {
         return products.stream().map(this::toProductDto).toList();
     }
 
-    private ProductDto toProductDto(Product product) {
+    private ProductDto toProductDto(final Product product) {
         final ProductDto productDto = new ProductDto();
         productDto.setId(product.getId());
         productDto.setName(product.getName());
@@ -74,6 +85,7 @@ public class ProductService {
 
     public void updateProduct(final ProductUpdateDto productUpdateDto) throws MWSException {
         requireNotNull(productUpdateDto, "Product info must be provided.");
+        require(productUpdateDto.getName() != null && !productUpdateDto.getName().isBlank(), "Product name must be provided.");
         checkProductPermissions();
 
         final Product productToUpdate = productDao.findWeak(productUpdateDto.getId());
@@ -96,9 +108,9 @@ public class ProductService {
     }
 
     public void deleteProduct(final long productId) throws MWSException {
-        final Product product = productDao.findWeak(productId);
         checkProductPermissions();
 
+        final Product product = productDao.findWeak(productId);
         if (product == null) {
             throw new MWSException("Product not found");
         }

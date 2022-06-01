@@ -1,5 +1,6 @@
 package com.mws.back_end.sales.service;
 
+import com.mws.back_end.account.service.UserService;
 import com.mws.back_end.account.service.security.JwtProvider;
 import com.mws.back_end.framework.exception.MWSException;
 import com.mws.back_end.sales.interfaces.dto.OrderCreationDto;
@@ -22,6 +23,9 @@ public class OrderService {
     @Autowired
     private JwtProvider jwtProvider;
 
+    @Autowired
+    private UserService userService;
+
 
     public Long createOrder(final OrderCreationDto orderCreationDto) throws MWSException {
         requireNotNull(orderCreationDto, "Order info must be provided");
@@ -32,9 +36,9 @@ public class OrderService {
         return orderDao.create(order).getId();
     }
 
-    private Order toOrder(OrderCreationDto orderCreationDto) throws MWSException {
+    private Order toOrder(final OrderCreationDto orderCreationDto) throws MWSException {
         final Order order = new Order();
-        final Long tenantId = jwtProvider.getTenantIdFromRequest();
+        final Long tenantId = jwtProvider.getCurrentTenantId();
         order.setTenantId(tenantId);
         if (tenantId == null) {
             throw new MWSException("Tenant id must be in the request context.");
@@ -46,7 +50,7 @@ public class OrderService {
         return order;
     }
 
-    public List<OrderDto> listOrders(Long userId) {
+    public List<OrderDto> listOrders(final Long userId) {
         final List<Order> orders = orderDao.findByUser(userId);
         return orders.stream().map(Order::toDto).toList();
     }

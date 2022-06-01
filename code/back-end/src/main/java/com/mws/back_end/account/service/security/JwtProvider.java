@@ -1,7 +1,6 @@
 package com.mws.back_end.account.service.security;
 
 import com.mws.back_end.account.interfaces.user.dto.UserDto;
-import com.mws.back_end.account.model.dao.UserDao;
 import com.mws.back_end.framework.exception.MWSException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -43,9 +42,6 @@ public class JwtProvider {
     @Autowired
     private UserDetailsServiceImpl userDetailsServiceImpl;
 
-    @Autowired
-    private UserDao userDao;
-
     public String generateNewToken(final Authentication authentication) throws MWSException {
         final User user;
         try {
@@ -77,24 +73,6 @@ public class JwtProvider {
     public boolean isValidToken(final String jwt) {
         return jwt != null && isTokenWellFormedAndSigned(jwt) &&
                 !isTokenDateExpired(jwt) && isLoginEmailValid(jwt);
-    }
-
-    @Transactional(readOnly = true)
-    public UserDto getCurrentUser() {
-        String token = getCurrentToken();
-        Optional<String> emailOpt = getLoginEmailFromJwt(token);
-        Optional<com.mws.back_end.account.model.entity.User> user = emailOpt.map(email -> userDao.findByEmail(email));
-
-        return user.map(UserDto::toDto).orElse(null);
-    }
-
-    public UserDto getUser(final String token) {
-        if (token == null) {
-            return null;
-        }
-        final Long userId = (Long) getTokenClaims(token).get(TOKEN_CLAIM_USER_ID);
-        com.mws.back_end.account.model.entity.User user = userDao.findWeak(userId);
-        return user == null ? null : UserDto.toDto(user);
     }
 
     public boolean isTokenWellFormedAndSigned(final String jwt) {
@@ -129,9 +107,19 @@ public class JwtProvider {
         return request.getHeader(HttpHeaders.AUTHORIZATION);
     }
 
-    public Long getTenantIdFromRequest() {
+    public Long getCurrentUserId() {
         final String token = getCurrentToken();
-        if (token !=     null) {
+        if (token == null) {
+            return null;
+        }
+
+        return Long.valueOf(String.valueOf(getTokenClaims(token).get(TOKEN_CLAIM_USER_ID)));
+    }
+
+
+    public Long getCurrentTenantId() {
+        final String token = getCurrentToken();
+        if (token != null) {
             return Long.valueOf(String.valueOf(getTokenClaims(token).get(TOKEN_CLAIM_TENANT_ID)));
         }
         return null;

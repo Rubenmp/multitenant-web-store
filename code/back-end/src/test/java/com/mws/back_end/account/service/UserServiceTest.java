@@ -2,7 +2,6 @@ package com.mws.back_end.account.service;
 
 import com.mws.back_end.account.interfaces.tenant.tenant.TenantDto;
 import com.mws.back_end.account.interfaces.user.dto.UserCreationDto;
-import com.mws.back_end.account.interfaces.user.dto.UserDto;
 import com.mws.back_end.account.interfaces.user.dto.UserRoleDto;
 import com.mws.back_end.account.interfaces.user.dto.UserUpdateDto;
 import com.mws.back_end.account.model.dao.UserDao;
@@ -55,7 +54,10 @@ class UserServiceTest extends TestUtils {
         final UserCreationDto registerRequest = getValidRegisterRequest(UserRoleDto.SUPER);
         final User createdUser = newUser();
         when(userDao.create(any(User.class))).thenReturn(createdUser);
-        when(jwtProvider.getCurrentUser()).thenReturn(userDtoWithRole(UserRoleDto.SUPER));
+
+        final User currentUser = userWithRole(UserRole.SUPER);
+        when(jwtProvider.getCurrentUserId()).thenReturn(currentUser.getId());
+        when(userDao.findWeak(currentUser.getId())).thenReturn(currentUser);
         when(tenantService.getTenant(TENANT_ID)).thenReturn(new TenantDto());
 
         final Long createdUserId = userService.createUser(registerRequest);
@@ -66,7 +68,9 @@ class UserServiceTest extends TestUtils {
     @Test
     void createUser_withRoleSuperUsingAdmin_notAllowed() {
         final UserCreationDto registerRequest = getValidRegisterRequest(UserRoleDto.SUPER);
-        when(jwtProvider.getCurrentUser()).thenReturn(userDtoWithRole(UserRoleDto.ADMIN));
+        final User currentUser = userWithRole(UserRole.ADMIN);
+        when(jwtProvider.getCurrentUserId()).thenReturn(currentUser.getId());
+        when(userDao.findWeak(currentUser.getId())).thenReturn(currentUser);
         when(tenantService.getTenant(TENANT_ID)).thenReturn(new TenantDto());
 
         boolean exceptionThrown = false;
@@ -83,7 +87,7 @@ class UserServiceTest extends TestUtils {
     @Test
     void createUser_withRoleSuperUsingUser_notAllowed() {
         final UserCreationDto registerRequest = getValidRegisterRequest(UserRoleDto.SUPER);
-        when(jwtProvider.getCurrentUser()).thenReturn(userDtoWithRole(UserRoleDto.USER));
+        when(jwtProvider.getCurrentUserId()).thenReturn(null);
         when(tenantService.getTenant(TENANT_ID)).thenReturn(new TenantDto());
 
         boolean exceptionThrown = false;
@@ -100,7 +104,7 @@ class UserServiceTest extends TestUtils {
     @Test
     void createUser_withRoleSuperWithoutAuthenticatedUser_notAllowed() {
         final UserCreationDto registerRequest = getValidRegisterRequest(UserRoleDto.SUPER);
-        when(jwtProvider.getCurrentUser()).thenReturn(null);
+        when(jwtProvider.getCurrentUserId()).thenReturn(null);
         when(tenantService.getTenant(TENANT_ID)).thenReturn(new TenantDto());
 
         boolean exceptionThrown = false;
@@ -119,7 +123,9 @@ class UserServiceTest extends TestUtils {
         final UserCreationDto registerRequest = getValidRegisterRequest(UserRoleDto.ADMIN);
         final User createdUser = newUser();
         when(userDao.create(any(User.class))).thenReturn(createdUser);
-        when(jwtProvider.getCurrentUser()).thenReturn(userDtoWithRole(UserRoleDto.SUPER));
+        final User currentUser = userWithRole(UserRole.SUPER);
+        when(jwtProvider.getCurrentUserId()).thenReturn(currentUser.getId());
+        when(userDao.findWeak(currentUser.getId())).thenReturn(currentUser);
         when(tenantService.getTenant(TENANT_ID)).thenReturn(new TenantDto());
 
         final Long createdUserId = userService.createUser(registerRequest);
@@ -133,7 +139,9 @@ class UserServiceTest extends TestUtils {
         final UserCreationDto registerRequest = getValidRegisterRequest(UserRoleDto.ADMIN);
         final User createdUser = newUser();
         when(userDao.create(any(User.class))).thenReturn(createdUser);
-        when(jwtProvider.getCurrentUser()).thenReturn(userDtoWithRole(UserRoleDto.ADMIN));
+        final User currentUser = userWithRole(UserRole.ADMIN);
+        when(jwtProvider.getCurrentUserId()).thenReturn(currentUser.getId());
+        when(userDao.findWeak(currentUser.getId())).thenReturn(currentUser);
         when(tenantService.getTenant(TENANT_ID)).thenReturn(new TenantDto());
 
         final Long createdUserId = userService.createUser(registerRequest);
@@ -145,7 +153,9 @@ class UserServiceTest extends TestUtils {
     @Test
     void createUser_withRoleAdminUsingUser_notAllowed() {
         final UserCreationDto registerRequest = getValidRegisterRequest(UserRoleDto.ADMIN);
-        when(jwtProvider.getCurrentUser()).thenReturn(userDtoWithRole(UserRoleDto.USER));
+        final User currentUser = userWithRole(UserRole.USER);
+        when(jwtProvider.getCurrentUserId()).thenReturn(currentUser.getId());
+        when(userDao.findWeak(currentUser.getId())).thenReturn(currentUser);
         when(tenantService.getTenant(TENANT_ID)).thenReturn(new TenantDto());
 
         boolean exceptionThrown = false;
@@ -162,7 +172,7 @@ class UserServiceTest extends TestUtils {
     @Test
     void createUser_withRoleAdminWithoutAuthenticatedUser_notAllowed() {
         final UserCreationDto registerRequest = getValidRegisterRequest(UserRoleDto.ADMIN);
-        when(jwtProvider.getCurrentUser()).thenReturn(null);
+        when(jwtProvider.getCurrentUserId()).thenReturn(null);
         when(tenantService.getTenant(TENANT_ID)).thenReturn(new TenantDto());
 
         boolean exceptionThrown = false;
@@ -181,7 +191,9 @@ class UserServiceTest extends TestUtils {
         final UserCreationDto registerRequest = getValidRegisterRequest(UserRoleDto.USER);
         final User createdUser = newUser();
         when(userDao.create(any(User.class))).thenReturn(createdUser);
-        when(jwtProvider.getCurrentUser()).thenReturn(userDtoWithRole(UserRoleDto.SUPER));
+        final User currentUser = userWithRole(UserRole.SUPER);
+        when(jwtProvider.getCurrentUserId()).thenReturn(currentUser.getId());
+        when(userDao.findWeak(currentUser.getId())).thenReturn(currentUser);
         when(tenantService.getTenant(TENANT_ID)).thenReturn(new TenantDto());
 
         final Long createdUserId = userService.createUser(registerRequest);
@@ -194,7 +206,9 @@ class UserServiceTest extends TestUtils {
         final UserCreationDto registerRequest = getValidRegisterRequest(UserRoleDto.USER);
         final User createdUser = newUser();
         when(userDao.create(any(User.class))).thenReturn(createdUser);
-        when(jwtProvider.getCurrentUser()).thenReturn(userDtoWithRole(UserRoleDto.ADMIN));
+        final User currentUser = userWithRole(UserRole.ADMIN);
+        when(jwtProvider.getCurrentUserId()).thenReturn(currentUser.getId());
+        when(userDao.findWeak(currentUser.getId())).thenReturn(currentUser);
         when(tenantService.getTenant(TENANT_ID)).thenReturn(new TenantDto());
 
         final Long createdUserId = userService.createUser(registerRequest);
@@ -207,7 +221,9 @@ class UserServiceTest extends TestUtils {
         final UserCreationDto registerRequest = getValidRegisterRequest(UserRoleDto.USER);
         final User createdUser = newUser();
         when(userDao.create(any(User.class))).thenReturn(createdUser);
-        when(jwtProvider.getCurrentUser()).thenReturn(userDtoWithRole(UserRoleDto.USER));
+        final User currentUser = userWithRole(UserRole.USER);
+        when(jwtProvider.getCurrentUserId()).thenReturn(currentUser.getId());
+        when(userDao.findWeak(currentUser.getId())).thenReturn(currentUser);
         when(tenantService.getTenant(TENANT_ID)).thenReturn(new TenantDto());
 
         final Long createdUserId = userService.createUser(registerRequest);
@@ -220,7 +236,7 @@ class UserServiceTest extends TestUtils {
         final UserCreationDto registerRequest = getValidRegisterRequest(UserRoleDto.USER);
         final User createdUser = newUser();
         when(userDao.create(any(User.class))).thenReturn(createdUser);
-        when(jwtProvider.getCurrentUser()).thenReturn(null);
+        when(jwtProvider.getCurrentUserId()).thenReturn(null);
         when(tenantService.getTenant(TENANT_ID)).thenReturn(new TenantDto());
 
         final Long createdUserId = userService.createUser(registerRequest);
@@ -237,16 +253,10 @@ class UserServiceTest extends TestUtils {
 
     private User userWithRole(final UserRole role) {
         final User user = new User();
+        user.setId(getRandomLong());
         user.setRole(role);
         return user;
     }
-
-    private UserDto userDtoWithRole(final UserRoleDto role) {
-        final UserDto user = new UserDto();
-        user.setRole(role);
-        return user;
-    }
-
 
     private UserCreationDto getValidRegisterRequest(final UserRoleDto role) {
         final UserCreationDto registerRequest = new UserCreationDto();
@@ -268,7 +278,7 @@ class UserServiceTest extends TestUtils {
 
         try {
             userService.updateUser(updateDto);
-        } catch (MWSException e){
+        } catch (MWSException e) {
             fail(e.getMessage());
         }
     }
@@ -280,7 +290,7 @@ class UserServiceTest extends TestUtils {
 
         try {
             userService.updateUser(updateDto);
-        } catch (MWSException e){
+        } catch (MWSException e) {
             fail(e.getMessage());
         }
     }
@@ -292,7 +302,7 @@ class UserServiceTest extends TestUtils {
 
         try {
             userService.updateUser(updateDto);
-        } catch (MWSException e){
+        } catch (MWSException e) {
             fail(e.getMessage());
         }
     }

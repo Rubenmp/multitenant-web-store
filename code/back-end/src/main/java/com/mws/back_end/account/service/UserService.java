@@ -2,7 +2,6 @@ package com.mws.back_end.account.service;
 
 import com.mws.back_end.account.interfaces.user.dto.*;
 import com.mws.back_end.account.model.dao.UserDao;
-import com.mws.back_end.account.model.entity.Tenant;
 import com.mws.back_end.account.model.entity.User;
 import com.mws.back_end.account.model.entity.UserRole;
 import com.mws.back_end.account.service.security.JwtProvider;
@@ -15,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.mws.back_end.account.interfaces.user.dto.UserDto.toDto;
 import static com.mws.back_end.framework.utils.ExceptionUtils.require;
@@ -55,7 +55,7 @@ public class UserService {
     }
 
     private void checkPermissionsToCreateUser(final User userToCreate) throws MWSException {
-        final UserDto authenticatedUser = jwtProvider.getCurrentUser();
+        final UserDto authenticatedUser = getCurrentUser();
         if (UserRole.SUPER == userToCreate.getRole()) {
             if (authenticatedUser == null || UserRoleDto.SUPER != authenticatedUser.getRole()) {
                 throw new MWSException("Not allowed to create an user with super role.");
@@ -151,5 +151,16 @@ public class UserService {
         return UserAuthenticationResponse.builder()
                 .token(token)
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    public UserDto getCurrentUser() {
+        final Long userId = jwtProvider.getCurrentUserId();
+        if (userId == null) {
+            return null;
+        }
+        final User user = userDao.findWeak(userId);
+
+        return user == null ? null : toDto(user);
     }
 }
