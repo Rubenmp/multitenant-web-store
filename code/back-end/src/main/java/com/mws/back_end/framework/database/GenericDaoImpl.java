@@ -1,8 +1,10 @@
 package com.mws.back_end.framework.database;
 
 
+import com.mws.back_end.account.service.security.JwtCipher;
 import com.mws.back_end.framework.exception.EntityNotFound;
 import com.mws.back_end.framework.exception.EntityPersistenceException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -21,7 +23,6 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.mws.back_end.framework.exception.EntityPersistenceException.toDatabaseException;
 
@@ -65,7 +66,7 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
     private List<String> getViolatedConstraints(Entity entity) {
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
         return validator.validate(entity).stream().map(ConstraintViolation::getConstraintDescriptor)
-                .map(ConstraintDescriptor::getMessageTemplate).collect(Collectors.toList());
+                .map(ConstraintDescriptor::getMessageTemplate).toList();
     }
 
     @Override
