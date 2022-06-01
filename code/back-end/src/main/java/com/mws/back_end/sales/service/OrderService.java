@@ -1,8 +1,8 @@
 package com.mws.back_end.sales.service;
 
-import com.mws.back_end.account.service.UserService;
 import com.mws.back_end.account.service.security.JwtCipher;
 import com.mws.back_end.framework.exception.MWSException;
+import com.mws.back_end.product.service.ProductService;
 import com.mws.back_end.sales.interfaces.dto.OrderCreationDto;
 import com.mws.back_end.sales.interfaces.dto.OrderDto;
 import com.mws.back_end.sales.model.dao.OrderDao;
@@ -24,13 +24,16 @@ public class OrderService {
     private JwtCipher jwtCipher;
 
     @Autowired
-    private UserService userService;
+    private ProductService productService;
 
 
     public Long createOrder(final OrderCreationDto orderCreationDto) throws MWSException {
         requireNotNull(orderCreationDto, "Order info must be provided");
         requireNotNull(orderCreationDto.getProductId(), "Product must be provided");
         requireNotNull(orderCreationDto.getUserId(), "User must be provided");
+        if (productService.getActiveProduct(orderCreationDto.getProductId()) == null) {
+            throw new MWSException("Invalid product id.");
+        }
 
         final Order order = toOrder(orderCreationDto);
         return orderDao.create(order).getId();

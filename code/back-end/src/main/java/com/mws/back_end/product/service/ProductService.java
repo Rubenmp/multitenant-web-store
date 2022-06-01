@@ -12,6 +12,7 @@ import com.mws.back_end.product.model.entity.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 import static com.mws.back_end.framework.utils.ExceptionUtils.require;
@@ -59,6 +60,10 @@ public class ProductService {
         product.setImage(productCreationDto.getImage());
 
         return product;
+    }
+
+    public ProductDto getActiveProduct(final Long id) {
+        return toProductDto(productDao.find(Collections.singleton(id), true)).stream().findFirst().orElse(null);
     }
 
     public List<ProductDto> getProducts(final Boolean active) {
