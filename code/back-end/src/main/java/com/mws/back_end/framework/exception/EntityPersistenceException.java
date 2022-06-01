@@ -19,6 +19,11 @@ public class EntityPersistenceException extends RuntimeException {
         type = null;
     }
 
+    public EntityPersistenceException(final String message) {
+        super(message);
+        type = null;
+    }
+
     public EntityPersistenceException(final String message, final PersistenceExceptionType type) {
         super(message);
         this.type = type;

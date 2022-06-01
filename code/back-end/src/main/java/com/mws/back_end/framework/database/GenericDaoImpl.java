@@ -1,6 +1,7 @@
 package com.mws.back_end.framework.database;
 
 
+import com.mws.back_end.account.model.entity.Tenant;
 import com.mws.back_end.account.service.security.JwtCipher;
 import com.mws.back_end.framework.exception.EntityNotFound;
 import com.mws.back_end.framework.exception.EntityPersistenceException;
@@ -19,6 +20,8 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.metadata.ConstraintDescriptor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
@@ -77,13 +80,33 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
 
     @Override
     @Transactional
-    public void update(final Entity t) throws EntityPersistenceException {
-        final Long tenantId = jwtCipher.getCurrentTenantId();
-        requireNotNull(tenantId, "Tenant info must be provided");
+    public void update(final Entity entity) throws EntityPersistenceException {
+        checkTenantPermissionsToUpdateEntity(entity);
         try {
-            this.entityManager.merge(t);
+            this.entityManager.merge(entity);
         } catch (PersistenceException e) {
             throw toDatabaseException(e);
+        }
+    }
+
+    private void checkTenantPermissionsToUpdateEntity(final Entity entity) {
+        final Long tokenTenantId = jwtCipher.getCurrentTenantId();
+        requireNotNull(tokenTenantId, "Tenant info must be provided");
+
+        if (!(entity instanceof Tenant)) {
+            final Long entityTenantId = getTenantId(entity);
+            if (entityTenantId == null || !entityTenantId.equals(tokenTenantId)) {
+                throw new EntityPersistenceException("It's not possible to update entity in other tenants.");
+            }
+        }
+    }
+
+    private Long getTenantId(final Entity t) {
+        try {
+            final Method method = t.getClass().getMethod("getTenantId");
+            return (Long) method.invoke(t);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            return null;
         }
     }
 
@@ -182,9 +205,9 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
     @Override
     @Transactional
     public void delete(final Id id) {
-        final Long tenantId = jwtCipher.getCurrentTenantId();
-        requireNotNull(tenantId, "Tenant info must be provided");
-        this.entityManager.remove(this.entityManager.getReference(entityClass, id));
+        final Entity reference = this.entityManager.getReference(entityClass, id);
+        checkTenantPermissionsToUpdateEntity(reference);
+        this.entityManager.remove(reference);
     }
 
 }
