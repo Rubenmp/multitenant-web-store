@@ -12,6 +12,7 @@ import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
@@ -25,6 +26,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.mws.back_end.framework.exception.EntityPersistenceException.toDatabaseException;
+import static com.mws.back_end.framework.utils.ExceptionUtils.requireNotNull;
 
 
 public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, Id> {
@@ -33,8 +35,12 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
     protected EntityManager entityManager;
     private final Class<Entity> entityClass;
 
+    public static final String DB_COLUMN_TENANT_ID = "tenantId";
     public static final String DB_COLUMN_ID = "id";
     public static final String DB_COLUMN_ACTIVE = "active";
+
+    @Autowired
+    private JwtCipher jwtCipher;
 
     protected GenericDaoImpl() {
         Type type = getClass().getGenericSuperclass();
@@ -72,6 +78,8 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
     @Override
     @Transactional
     public void update(final Entity t) throws EntityPersistenceException {
+        final Long tenantId = jwtCipher.getCurrentTenantId();
+        requireNotNull(tenantId, "Tenant info must be provided");
         try {
             this.entityManager.merge(t);
         } catch (PersistenceException e) {
@@ -81,7 +89,7 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
 
     /**
      * Force entity search in database.
-     *
+     * <p>
      * Runtime exception:
      * - EntityNotFound if there is no entity with provided id
      */
@@ -104,17 +112,25 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
         Class<Entity> entityClass = getEntityClass();
         CriteriaQuery<Entity> criteriaQuery = getCriteriaBuilder().createQuery(entityClass);
         Root<Entity> root = criteriaQuery.from(entityClass);
+        Predicate predicate = getCriteriaBuilder().conjunction();
 
         if (ids != null && !ids.isEmpty()) {
-            criteriaQuery.where(root.get(DB_COLUMN_ID).in(ids));
+            predicate = getCriteriaBuilder().and(predicate, root.get(DB_COLUMN_ID).in(ids));
         }
 
         if (active != null) {
-            criteriaQuery.where(root.get(DB_COLUMN_ACTIVE).in(List.of(active)));
+            predicate = getCriteriaBuilder().and(predicate, root.get(DB_COLUMN_ACTIVE).in(List.of(active)));
         }
+
+        final Long tenantId = jwtCipher.getCurrentTenantId();
+        if (tenantId != null) {
+            predicate = getCriteriaBuilder().and(predicate, getCriteriaBuilder().equal(root.get(DB_COLUMN_TENANT_ID), tenantId));
+        }
+        criteriaQuery.where(predicate);
 
         return entityManager.createQuery(criteriaQuery).getResultList();
     }
+
 
     /**
      * Find entity in database or return null.
@@ -122,6 +138,23 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
     @Override
     public Entity findWeak(final Id id) {
         return this.entityManager.find(entityClass, id);
+        /*
+
+               Class<Entity> entityClass = getEntityClass();
+        CriteriaQuery<Entity> criteriaQuery = getCriteriaBuilder().createQuery(entityClass);
+        Root<Entity> root = criteriaQuery.from(entityClass);
+        Predicate predicate = getCriteriaBuilder().conjunction();
+
+        final Long tenantId = jwtCipher.getCurrentTenantId();
+        if (tenantId != null) {
+            predicate = getCriteriaBuilder().and(predicate, getCriteriaBuilder().equal(root.get(DB_COLUMN_TENANT_ID), tenantId));
+        }
+        predicate = getCriteriaBuilder().and(predicate, getCriteriaBuilder().equal(root.get(DB_COLUMN_ID), id));
+
+        criteriaQuery.where(predicate);
+
+        return entityManager.createQuery(criteriaQuery).getResultList().stream().findFirst().orElse(null);
+        */
     }
 
     @Override
@@ -129,10 +162,16 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
         Class<Entity> entityClass = getEntityClass();
         CriteriaQuery<Entity> criteriaQuery = getCriteriaBuilder().createQuery(entityClass);
         Root<Entity> root = criteriaQuery.from(entityClass);
-        criteriaQuery.where(getCriteriaBuilder().equal(root.get(columnName), value));
+
+        Predicate predicate = getCriteriaBuilder().conjunction();
+        final Long tenantId = jwtCipher.getCurrentTenantId();
+        if (tenantId != null) {
+            predicate = getCriteriaBuilder().and(predicate, getCriteriaBuilder().equal(root.get(DB_COLUMN_TENANT_ID), tenantId));
+        }
+        predicate = getCriteriaBuilder().and(predicate, getCriteriaBuilder().equal(root.get(columnName), value));
+        criteriaQuery.where(predicate);
 
         TypedQuery<Entity> query = entityManager.createQuery(criteriaQuery);
-
         if (maxResults != null) {
             return query.setMaxResults(maxResults).getResultList();
         }

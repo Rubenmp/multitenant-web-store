@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 public class TenantDto implements Serializable {
-    private Long id;
+    private Long tenantId;
 
     @NotNull
     private String name;
@@ -18,7 +18,7 @@ public class TenantDto implements Serializable {
 
     public static TenantDto toDto(Tenant entity) {
         final TenantDto tenant = new TenantDto();
-        tenant.setId(entity.getId());
+        tenant.setTenantId(entity.getTenantId());
         tenant.setName(entity.getName());
         tenant.setActive(entity.isActive());
 

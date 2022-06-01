@@ -2,10 +2,13 @@ package com.mws.back_end.account.service;
 
 import com.mws.back_end.account.interfaces.tenant.tenant.TenantDto;
 import com.mws.back_end.account.interfaces.tenant.tenant.TenantUpdateDto;
+import com.mws.back_end.account.interfaces.user.dto.UserRoleDto;
 import com.mws.back_end.account.model.dao.TenantDao;
 import com.mws.back_end.account.model.entity.Tenant;
+import com.mws.back_end.account.service.security.JwtCipher;
 import com.mws.back_end.framework.exception.EntityPersistenceException;
 import com.mws.back_end.framework.exception.MWSException;
+import com.mws.back_end.framework.exception.MWSRException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,12 +23,16 @@ public class TenantService {
     @Autowired
     private TenantDao tenantDao;
 
+    @Autowired
+    private JwtCipher jwtCipher;
+
 
     public Long createTenant(final String tenantName) throws MWSException {
+        checkSuperPermissions();
         final Tenant tenant = new Tenant();
         tenant.setName(tenantName);
         try {
-            return tenantDao.create(tenant).getId();
+            return tenantDao.create(tenant).getTenantId();
         } catch (EntityPersistenceException e) {
             throw new MWSException(e.getMessage());
         }
@@ -34,6 +41,7 @@ public class TenantService {
 
     public void updateTenant(final TenantUpdateDto tenantUpdateDto) throws MWSException {
         requireNotNull(tenantUpdateDto, "Tenant update info must be provided");
+        checkSuperPermissions();
 
         final Tenant tenant = tenantDao.findWeak(tenantUpdateDto.getId());
 
@@ -66,7 +74,9 @@ public class TenantService {
     }
 
     public void deleteTenant(final long tenantId) throws MWSException {
+        tenantDao.findBy("tenantId", String.valueOf(tenantId), 1);
         final Tenant tenant = tenantDao.findWeak(tenantId);
+        checkSuperPermissions();
 
         if (tenant == null) {
             throw new MWSException("Entity not found");
@@ -74,5 +84,12 @@ public class TenantService {
 
         tenant.setActive(false);
         tenantDao.update(tenant);
+    }
+
+    private void checkSuperPermissions() {
+        final UserRoleDto currentUserRole = jwtCipher.getCurrentUserRole();
+        if (!UserRoleDto.SUPER.equals(currentUserRole)) {
+            throw new MWSRException("Not allowed to handle tenants.");
+        }
     }
 }

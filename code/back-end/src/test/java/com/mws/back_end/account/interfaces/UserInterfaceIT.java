@@ -107,7 +107,7 @@ class UserInterfaceIT extends IntegrationTestConfig {
         final ResponseEntity<String> updateResponse = restTemplate.exchange(
                 updateUri,
                 HttpMethod.PUT,
-                new HttpEntity<>(updateRequest),
+                createUserHttpEntity(toJson(updateRequest)),
                 String.class);
 
         assertEquals(HttpStatus.OK, updateResponse.getStatusCode(), "Response status");

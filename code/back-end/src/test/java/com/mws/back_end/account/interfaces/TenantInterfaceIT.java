@@ -37,7 +37,7 @@ class TenantInterfaceIT extends IntegrationTestConfig {
     @Test
     void createTenant_happyPath_success() {
         final URI uri = getUri(CREATE_TENANT_URL, Pair.of("name", "New tenant"));
-        final HttpEntity<String> httpRequest = this.createUserHttpEntity();
+        final HttpEntity<String> httpRequest = createSuperHttpEntity();
 
         final ResponseEntity<String> response = restTemplate.exchange(
                 uri,
@@ -64,7 +64,7 @@ class TenantInterfaceIT extends IntegrationTestConfig {
         final ResponseEntity<String> response = restTemplate.exchange(
                 uri,
                 HttpMethod.POST,
-                null,
+                createSuperHttpEntity(),
                 String.class);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode(), "Response status");
@@ -82,7 +82,7 @@ class TenantInterfaceIT extends IntegrationTestConfig {
         final ResponseEntity<String> response = restTemplate.exchange(
                 uri,
                 HttpMethod.POST,
-                null,
+                createSuperHttpEntity(),
                 String.class);
 
         final Long createdTenantId = checkTenantWasCreated(response);
@@ -92,7 +92,7 @@ class TenantInterfaceIT extends IntegrationTestConfig {
         final ResponseEntity<String> updateResponse = restTemplate.exchange(
                 updateUri,
                 HttpMethod.PUT,
-                new HttpEntity<>(updateRequest),
+                createSuperHttpEntity(toJson(updateRequest)),
                 String.class);
 
         assertEquals(HttpStatus.OK, updateResponse.getStatusCode(), "Response status");
@@ -124,8 +124,8 @@ class TenantInterfaceIT extends IntegrationTestConfig {
         WebResult<ArrayList<TenantDto>> authenticationResult = toWebResultWithList(response, TenantDto.class);
         final ArrayList<TenantDto> tenants = authenticationResult.getData();
         assertFalse(tenants.isEmpty(), "Tenant emptiness");
-        assertTrue(tenants.stream().anyMatch(t -> TENANT_ID.equals(t.getId())), "Tenants contains tenant with id " + TENANT_ID);
-        assertFalse(tenants.stream().anyMatch(t -> DELETED_TENANT_ID.equals(t.getId())), "Tenants does not contain deleted tenant " + DELETED_TENANT_ID);
+        assertTrue(tenants.stream().anyMatch(t -> TENANT_ID.equals(t.getTenantId())), "Tenants contains tenant with id " + TENANT_ID);
+        assertFalse(tenants.stream().anyMatch(t -> DELETED_TENANT_ID.equals(t.getTenantId())), "Tenants does not contain deleted tenant " + DELETED_TENANT_ID);
         assertEquals(0, tenants.stream().filter(t -> !t.isActive()).count(), "Number of inactive tenants");
     }
 
@@ -137,7 +137,7 @@ class TenantInterfaceIT extends IntegrationTestConfig {
         final ResponseEntity<String> response = restTemplate.exchange(
                 uri,
                 HttpMethod.DELETE,
-                null,
+                createSuperHttpEntity(),
                 String.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status");

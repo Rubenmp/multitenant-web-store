@@ -3,9 +3,9 @@ USE `mws_test_db`;
 --- Account data
 ------------------
 -- Tenant
-INSERT INTO tenant(id, name, active) VALUES (1,'MWS Tenant', true);
-INSERT INTO tenant(id, name, active) VALUES (2,'Deleted tenant', false);
-INSERT INTO tenant(id, name, active) VALUES (3,'Tenant to delete', true);
+INSERT INTO tenant(tenant_id, name, active) VALUES (1,'MWS Tenant', true);
+INSERT INTO tenant(tenant_id, name, active) VALUES (2,'Deleted tenant', false);
+INSERT INTO tenant(tenant_id, name, active) VALUES (3,'Tenant to delete', true);
 
 -- User
 INSERT INTO user(tenant_id, id, role, email, password, first_name, last_name)

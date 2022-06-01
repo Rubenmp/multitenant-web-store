@@ -152,7 +152,7 @@ public class IntegrationTestConfig {
     }
 
 
-    protected String convertToJson(final Object objectToConvert) {
+    protected String toJson(final Object objectToConvert) {
         String convertedObject = "{}";
         try {
             convertedObject = getObjectMapper().writeValueAsString(objectToConvert);
@@ -191,6 +191,14 @@ public class IntegrationTestConfig {
     }
 
     // Token auxiliary methods
+    protected HttpEntity<String> createSuperHttpEntity() {
+        return createSuperHttpEntity(null);
+    }
+
+    protected HttpEntity<String> createSuperHttpEntity(final String body) {
+        return createHttpEntityInternal(UserRoleDto.SUPER, body);
+    }
+
     protected HttpEntity<String> createAdminHttpEntity() {
         return createAdminHttpEntity(null);
     }
@@ -249,7 +257,7 @@ public class IntegrationTestConfig {
         final HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.setContentType(MediaType.APPLICATION_JSON);
 
-        final HttpEntity<String> httpEntity = new HttpEntity<>(convertToJson(loginRequest), requestHeaders);
+        final HttpEntity<String> httpEntity = new HttpEntity<>(toJson(loginRequest), requestHeaders);
         final URI uri = getUri(LOGIN_USER_URL);
 
         final ResponseEntity<String> response = restTemplate.exchange(

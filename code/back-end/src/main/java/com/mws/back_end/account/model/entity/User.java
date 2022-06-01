@@ -15,7 +15,6 @@ import static javax.persistence.GenerationType.IDENTITY;
 @NoArgsConstructor
 public class User {
     public static final String USER_COLUMN_EMAIL = "email";
-
     @NotNull
     private Long tenantId;
 

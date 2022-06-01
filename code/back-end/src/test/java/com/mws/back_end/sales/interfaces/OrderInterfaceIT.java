@@ -38,7 +38,7 @@ class OrderInterfaceIT extends IntegrationTestConfig {
         final OrderCreationDto creationDto = new OrderCreationDto();
         creationDto.setUserId(USER_ID);
         creationDto.setProductId(PRODUCT_ID);
-        final HttpEntity<String> createHttpEntity = createUserHttpEntity(convertToJson(creationDto));
+        final HttpEntity<String> createHttpEntity = createUserHttpEntity(toJson(creationDto));
         final URI createUri = getUri(CREATE_ORDER_URL);
 
         final ResponseEntity<String> createResponse = restTemplate.exchange(

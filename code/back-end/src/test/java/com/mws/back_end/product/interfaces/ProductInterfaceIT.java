@@ -35,7 +35,7 @@ class ProductInterfaceIT extends IntegrationTestConfig {
     @Test
     void createProduct_happyPath_success() {
         final ProductCreationDto registerDto = createUserCreationDto("test.email@test.com");
-        final HttpEntity<String> httpEntity = createAdminHttpEntity(convertToJson(registerDto));
+        final HttpEntity<String> httpEntity = createAdminHttpEntity(toJson(registerDto));
         final URI uri = getUri(CREATE_PRODUCT_URL);
 
         final ResponseEntity<String> response = restTemplate.exchange(
@@ -61,7 +61,7 @@ class ProductInterfaceIT extends IntegrationTestConfig {
     @Test
     void updateProduct_happyPath_success() {
         final ProductUpdateDto productUpdateDto = createProductUpdateDto();
-        final HttpEntity<String> httpEntity = createAdminHttpEntity(convertToJson(productUpdateDto));
+        final HttpEntity<String> httpEntity = createAdminHttpEntity(toJson(productUpdateDto));
 
         final URI uri = getUri(UPDATE_PRODUCT_URL);
 
@@ -106,7 +106,7 @@ class ProductInterfaceIT extends IntegrationTestConfig {
         final ResponseEntity<String> getResponse = restTemplate.exchange(
                 getUri,
                 HttpMethod.GET,
-                null,
+                createAdminHttpEntity(),
                 String.class);
 
         assertEquals(HttpStatus.OK, getResponse.getStatusCode(), "Get response status");

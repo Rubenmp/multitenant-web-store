@@ -1,6 +1,7 @@
 package com.mws.back_end.account.service.security;
 
 import com.mws.back_end.account.interfaces.user.dto.UserDto;
+import com.mws.back_end.account.interfaces.user.dto.UserRoleDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -33,6 +34,7 @@ public class JwtCipher {
     private static final String TOKEN_CLAIM_TENANT_ID = "TENANT_ID";
     private static final String TOKEN_CLAIM_USER_ID = "USER_ID";
     private static final String TOKEN_CLAIM_USER_EMAIL = "USER_EMAIL";
+    private static final String TOKEN_CLAIM_USER_ROLE = "USER_ROLE";
 
     @Transactional(readOnly = true)
     public boolean isValidToken(final String jwt) {
@@ -90,6 +92,14 @@ public class JwtCipher {
         return null;
     }
 
+    public UserRoleDto getCurrentUserRole() {
+        final String token = getCurrentToken();
+        if (token != null) {
+            return UserRoleDto.valueOf(String.valueOf(getTokenClaims(token).get(TOKEN_CLAIM_USER_ROLE)));
+        }
+        return null;
+    }
+
     public String getJwtFromRequest(final HttpServletRequest httpServletRequest) {
         String bearerToken = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
 
@@ -124,6 +134,7 @@ public class JwtCipher {
         claims.put(TOKEN_CLAIM_TENANT_ID, userDto.getTenantId());
         claims.put(TOKEN_CLAIM_USER_ID, userDto.getId());
         claims.put(TOKEN_CLAIM_USER_EMAIL, userDto.getEmail());
+        claims.put(TOKEN_CLAIM_USER_ROLE, userDto.getRole().toString());
         return claims;
     }
     private Long getJwtExpirationInMilliseconds() {
