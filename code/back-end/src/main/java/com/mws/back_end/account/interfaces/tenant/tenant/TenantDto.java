@@ -4,12 +4,15 @@ import com.mws.back_end.account.model.entity.Tenant;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Data
 @NoArgsConstructor
 public class TenantDto implements Serializable {
     private Long id;
+
+    @NotNull
     private String name;
     private boolean active;
 

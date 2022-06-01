@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles(TEST_PROFILE)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class TenantInterfaceIT extends IntegrationTestConfig {
+    protected static final Long DELETED_TENANT_ID = 2L;
 
     @Autowired
     private JwtProvider jwtProvider;

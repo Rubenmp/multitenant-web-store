@@ -131,7 +131,7 @@ public class JwtProvider {
 
     public Long getTenantIdFromRequest() {
         final String token = getCurrentToken();
-        if (token != null) {
+        if (token !=     null) {
             return Long.valueOf(String.valueOf(getTokenClaims(token).get(TOKEN_CLAIM_TENANT_ID)));
         }
         return null;

@@ -32,8 +32,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public class IntegrationTestConfig {
     protected static final Long TENANT_ID = 1L;
-    protected static final Long DELETED_TENANT_ID = 2L;
     protected static final Long USER_ID = 1L;
+    protected static final Long PRODUCT_ID = 1L;
     protected static final String USER_EMAIL = "user@mwstest.com";
     protected static final String USER_ADMIN_EMAIL = "admin@mwstest.com";
     protected static final String USER_SUPER_EMAIL = "super@mwstest.com";
@@ -200,7 +200,11 @@ public class IntegrationTestConfig {
     }
 
     protected HttpEntity<String> createUserHttpEntity() {
-        return createHttpEntityInternal(UserRoleDto.USER, null);
+        return createUserHttpEntity(null);
+    }
+
+    protected HttpEntity<String> createUserHttpEntity(final String body) {
+        return createHttpEntityInternal(UserRoleDto.USER, body);
     }
 
     private HttpEntity<String> createHttpEntityInternal(final UserRoleDto role, final String body) {
