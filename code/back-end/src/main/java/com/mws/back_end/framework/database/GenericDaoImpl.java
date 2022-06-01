@@ -1,7 +1,10 @@
 package com.mws.back_end.framework.database;
 
 
+import com.mws.back_end.account.interfaces.user.dto.UserRoleDto;
 import com.mws.back_end.account.model.entity.Tenant;
+import com.mws.back_end.account.model.entity.User;
+import com.mws.back_end.account.model.entity.UserRole;
 import com.mws.back_end.account.service.security.JwtCipher;
 import com.mws.back_end.framework.exception.EntityNotFound;
 import com.mws.back_end.framework.exception.EntityPersistenceException;
@@ -64,6 +67,7 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
             throw new RuntimeException(violatedConstraintMessages.toString());
         }
 
+        checkTenantPermissionsToCreateEntity(entity);
         try {
             this.entityManager.persist(entity);
         } catch (PersistenceException e) {
@@ -77,6 +81,29 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
         return validator.validate(entity).stream().map(ConstraintViolation::getConstraintDescriptor)
                 .map(ConstraintDescriptor::getMessageTemplate).toList();
     }
+
+    private void checkTenantPermissionsToCreateEntity(final Entity entity) {
+        if (entity instanceof Tenant) {
+            if (UserRoleDto.SUPER != jwtCipher.getCurrentUserRole()) {
+                throw new EntityPersistenceException("It's not possible to create tenants.");
+            }
+        } else if (entity instanceof User userToCreate) {
+            final UserRoleDto userRole = jwtCipher.getCurrentUserRole();
+            if ((UserRole.SUPER == userToCreate.getRole() && UserRoleDto.SUPER != userRole)
+                    || (UserRole.ADMIN == userToCreate.getRole() && (UserRoleDto.SUPER != userRole && UserRoleDto.ADMIN != userRole))) {
+                throw new EntityPersistenceException("It's not possible to create user.");
+            }
+        } else {
+            final Long tokenTenantId = jwtCipher.getCurrentTenantId();
+            requireNotNull(tokenTenantId, "Tenant info must be provided");
+
+            final Long entityTenantId = getTenantId(entity);
+            if (entityTenantId == null || !entityTenantId.equals(tokenTenantId)) {
+                throw new EntityPersistenceException("It's not possible to update entity in other tenants.");
+            }
+        }
+    }
+
 
     @Override
     @Transactional
