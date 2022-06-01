@@ -31,10 +31,13 @@ public class JwtCipher {
     private static final String DEV_SECRET_KEY = "Tk9RX3NlY3JldF9rZXlfdG9fZ2VuZXJhdGVfc2lnbmVkX3Rva2VuX2Zvcl9kZXY=";
     private static final Long JWT_EXPIRATION_IN_MILLISECONDS = 100000000L;
 
+    private static final int TOTAL_NUMBER_OF_TOKEN_CLAIMS = 6;
     private static final String TOKEN_CLAIM_TENANT_ID = "TENANT_ID";
     private static final String TOKEN_CLAIM_USER_ID = "USER_ID";
     private static final String TOKEN_CLAIM_USER_EMAIL = "USER_EMAIL";
     private static final String TOKEN_CLAIM_USER_ROLE = "USER_ROLE";
+    private static final String TOKEN_CLAIM_ISSUED_AT = "iat";
+    private static final String TOKEN_CLAIM_EXPIRATION_TIME = "exp";
 
     @Transactional(readOnly = true)
     public boolean isValidToken(final String jwt) {
@@ -45,10 +48,20 @@ public class JwtCipher {
     public boolean isTokenWellFormedAndSigned(final String jwt) {
         try {
             final Claims claims = getTokenClaims(jwt);
-            return claims.containsKey(TOKEN_CLAIM_TENANT_ID) && claims.containsKey(TOKEN_CLAIM_USER_ID);
+            return claims.size() == TOTAL_NUMBER_OF_TOKEN_CLAIMS
+                    && Long.valueOf(String.valueOf(claims.get(TOKEN_CLAIM_TENANT_ID))) != null
+                    && Long.valueOf(String.valueOf(claims.get(TOKEN_CLAIM_USER_ID))) != null
+                    && !String.valueOf(claims.get(TOKEN_CLAIM_USER_EMAIL)).isBlank()
+                    && UserRoleDto.valueOf(String.valueOf(claims.get(TOKEN_CLAIM_USER_ROLE))) != null
+                    && Long.valueOf(String.valueOf(claims.get(TOKEN_CLAIM_ISSUED_AT))) != null
+                    && Long.valueOf(String.valueOf(claims.get(TOKEN_CLAIM_EXPIRATION_TIME))) != null;
         } catch (RuntimeException re) {
             return false;
         }
+    }
+
+    private Long getTenantId(final Claims claims) {
+        return Long.valueOf(String.valueOf(claims.get(TOKEN_CLAIM_TENANT_ID)));
     }
 
     public Optional<String> getLoginEmailFromJwt(final String token) {
@@ -70,6 +83,11 @@ public class JwtCipher {
     }
 
     public String getCurrentToken() {
+        final String token = getCurrentTokenWithoutValidation();
+        return isTokenWellFormedAndSigned(token) ? token : null;
+    }
+
+    private String getCurrentTokenWithoutValidation() {
         final HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         return request.getHeader(HttpHeaders.AUTHORIZATION);
     }
@@ -87,7 +105,7 @@ public class JwtCipher {
     public Long getCurrentTenantId() {
         final String token = getCurrentToken();
         if (token != null) {
-            return Long.valueOf(String.valueOf(getTokenClaims(token).get(TOKEN_CLAIM_TENANT_ID)));
+            return getTenantId(getTokenClaims(token));
         }
         return null;
     }

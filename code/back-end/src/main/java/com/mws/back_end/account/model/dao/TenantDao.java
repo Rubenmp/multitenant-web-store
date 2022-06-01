@@ -8,6 +8,10 @@ import static com.mws.back_end.account.model.entity.Tenant.TENANT_COLUMN_NAME;
 
 @Component
 public class TenantDao extends GenericDaoImpl<Tenant, Long> {
+    // WARNING: generic dao methods contain extra tenantId security
+    // Any method finding tenants in database must be overridden otherwise
+    // the jwt token tenant filter will be added, leading to zero results in the queries.
+
     @Override
     public Tenant findWeak(final Long id) {
         if (id == null) {
