@@ -11,7 +11,9 @@ Back end services for the project.
     ```
     ```roomsql
     CREATE USER 'mws_dev' IDENTIFIED BY 'password';
+    DROP DATABASE IF EXISTS mws_db;
     CREATE DATABASE mws_db;
+    DROP DATABASE IF EXISTS mws_test_db;
     CREATE DATABASE mws_test_db;
     GRANT ALL PRIVILEGES ON mws_db.* TO 'mws_dev';
     GRANT ALL PRIVILEGES ON mws_test_db.* TO 'mws_dev';

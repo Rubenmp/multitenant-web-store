@@ -17,10 +17,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.time.Instant;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static com.mws.back_end.framework.utils.DateUtils.isDateBeforeNow;
 import static io.jsonwebtoken.Jwts.parser;
@@ -28,9 +25,9 @@ import static java.util.Date.from;
 
 @Service
 public class JwtCipher {
+    public static final boolean USE_JWT_RESTRICTIONS = false;
     private static final String DEV_SECRET_KEY = "Tk9RX3NlY3JldF9rZXlfdG9fZ2VuZXJhdGVfc2lnbmVkX3Rva2VuX2Zvcl9kZXY=";
     private static final Long JWT_EXPIRATION_IN_MILLISECONDS = 100000000L;
-
     private static final int TOTAL_NUMBER_OF_TOKEN_CLAIMS = 6;
     private static final String TOKEN_CLAIM_TENANT_ID = "TENANT_ID";
     private static final String TOKEN_CLAIM_USER_ID = "USER_ID";
@@ -39,8 +36,15 @@ public class JwtCipher {
     private static final String TOKEN_CLAIM_ISSUED_AT = "iat";
     private static final String TOKEN_CLAIM_EXPIRATION_TIME = "exp";
 
+    public boolean jwtRestrictionsEnabled() {
+        return USE_JWT_RESTRICTIONS;
+    }
+
     @Transactional(readOnly = true)
     public boolean isValidToken(final String jwt) {
+        if (!USE_JWT_RESTRICTIONS) {
+            return true;
+        }
         return jwt != null && isTokenWellFormedAndSigned(jwt) &&
                 !isTokenDateExpired(jwt);
     }
@@ -74,12 +78,23 @@ public class JwtCipher {
     }
 
     public Optional<Date> getExpirationDateFromJwt(final String token) {
+        if (!USE_JWT_RESTRICTIONS) {
+            return Optional.of(getDateInFuture());
+        }
         if (isTokenWellFormedAndSigned(token)) {
             final Claims claims = getTokenClaims(token);
             return Optional.of(claims.getExpiration());
         }
 
         return Optional.empty();
+    }
+
+    private Date getDateInFuture() {
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date());
+        c.add(Calendar.DATE, 150); // Adds 150 days
+
+        return c.getTime();
     }
 
     public String getCurrentToken() {
@@ -111,6 +126,9 @@ public class JwtCipher {
     }
 
     public UserRoleDto getCurrentUserRole() {
+        if (!USE_JWT_RESTRICTIONS) {
+            return UserRoleDto.SUPER;
+        }
         final String token = getCurrentToken();
         if (token != null) {
             return UserRoleDto.valueOf(String.valueOf(getTokenClaims(token).get(TOKEN_CLAIM_USER_ROLE)));
@@ -135,6 +153,9 @@ public class JwtCipher {
     }
 
     private boolean isTokenDateExpired(final String jwt) {
+        if (!USE_JWT_RESTRICTIONS) {
+            return false;
+        }
         final Optional<Date> expirationDateOpt = getExpirationDateFromJwt(jwt);
         return expirationDateOpt.isEmpty() || isDateBeforeNow(expirationDateOpt.get());
     }
@@ -159,7 +180,7 @@ public class JwtCipher {
         return JWT_EXPIRATION_IN_MILLISECONDS;
     }
 
-    public String createToken(UserDto userModel) {
+    public String createToken(final UserDto userModel) {
         return Jwts.builder()
                 .setClaims(toClaims(userModel))
                 .setIssuedAt(from(Instant.now()))

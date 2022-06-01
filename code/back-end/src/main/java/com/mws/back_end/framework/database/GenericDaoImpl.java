@@ -83,6 +83,9 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
     }
 
     private void checkTenantPermissionsToCreateEntity(final Entity entity) {
+        if (!jwtCipher.jwtRestrictionsEnabled()) {
+            return;
+        }
         if (entity instanceof Tenant) {
             if (UserRoleDto.SUPER != jwtCipher.getCurrentUserRole()) {
                 throw new EntityPersistenceException("It's not possible to create tenants.");
@@ -117,6 +120,9 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
     }
 
     private void checkTenantPermissionsToUpdateEntity(final Entity entity) {
+        if (!jwtCipher.jwtRestrictionsEnabled()) {
+            return;
+        }
         final Long tokenTenantId = jwtCipher.getCurrentTenantId();
         requireNotNull(tokenTenantId, "Tenant info must be provided");
 
@@ -173,7 +179,7 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
         }
 
         final Long tenantId = jwtCipher.getCurrentTenantId();
-        if (tenantId != null) {
+        if (tenantId != null && jwtCipher.jwtRestrictionsEnabled()) {
             predicate = getCriteriaBuilder().and(predicate, getCriteriaBuilder().equal(root.get(DB_COLUMN_TENANT_ID), tenantId));
         }
         criteriaQuery.where(predicate);
@@ -193,7 +199,7 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
         Predicate predicate = getCriteriaBuilder().conjunction();
 
         final Long tenantId = jwtCipher.getCurrentTenantId();
-        if (tenantId != null) {
+        if (tenantId != null && jwtCipher.jwtRestrictionsEnabled()) {
             predicate = getCriteriaBuilder().and(predicate, getCriteriaBuilder().equal(root.get(DB_COLUMN_TENANT_ID), tenantId));
         }
         predicate = getCriteriaBuilder().and(predicate, getCriteriaBuilder().equal(root.get(DB_COLUMN_ID), id));
@@ -211,7 +217,7 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
 
         Predicate predicate = getCriteriaBuilder().conjunction();
         final Long tenantId = jwtCipher.getCurrentTenantId();
-        if (tenantId != null) {
+        if (tenantId != null && jwtCipher.jwtRestrictionsEnabled()) {
             predicate = getCriteriaBuilder().and(predicate, getCriteriaBuilder().equal(root.get(DB_COLUMN_TENANT_ID), tenantId));
         }
         predicate = getCriteriaBuilder().and(predicate, getCriteriaBuilder().equal(root.get(columnName), value));

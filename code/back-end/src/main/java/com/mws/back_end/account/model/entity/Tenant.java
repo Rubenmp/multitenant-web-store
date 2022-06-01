@@ -1,8 +1,10 @@
 package com.mws.back_end.account.model.entity;
 
 
-import lombok.*;
-import org.hibernate.annotations.Formula;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,9 +21,6 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 public class Tenant {
     public static final String TENANT_COLUMN_NAME = "name";
-
-    //@Formula("tenantId")
-    //private Long id;
 
     @Id
     @GeneratedValue(strategy = IDENTITY)

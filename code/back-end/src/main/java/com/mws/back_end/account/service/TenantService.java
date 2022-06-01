@@ -8,7 +8,6 @@ import com.mws.back_end.account.model.entity.Tenant;
 import com.mws.back_end.account.service.security.JwtCipher;
 import com.mws.back_end.framework.exception.EntityPersistenceException;
 import com.mws.back_end.framework.exception.MWSException;
-import com.mws.back_end.framework.exception.MWSRException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -86,10 +85,10 @@ public class TenantService {
         tenantDao.update(tenant);
     }
 
-    private void checkSuperPermissions() {
+    private void checkSuperPermissions() throws MWSException {
         final UserRoleDto currentUserRole = jwtCipher.getCurrentUserRole();
         if (!UserRoleDto.SUPER.equals(currentUserRole)) {
-            throw new MWSRException("Not allowed to handle tenants.");
+            throw new MWSException("Not allowed to handle tenants.");
         }
     }
 }
