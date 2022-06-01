@@ -35,9 +35,9 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
     protected EntityManager entityManager;
     private final Class<Entity> entityClass;
 
-    public static final String DB_COLUMN_TENANT_ID = "tenantId";
-    public static final String DB_COLUMN_ID = "id";
-    public static final String DB_COLUMN_ACTIVE = "active";
+    protected static final String DB_COLUMN_TENANT_ID = "tenantId";
+    protected static final String DB_COLUMN_ID = "id";
+    protected static final String DB_COLUMN_ACTIVE = "active";
 
     @Autowired
     private JwtCipher jwtCipher;
@@ -137,10 +137,7 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
      */
     @Override
     public Entity findWeak(final Id id) {
-        return this.entityManager.find(entityClass, id);
-        /*
-
-               Class<Entity> entityClass = getEntityClass();
+        Class<Entity> entityClass = getEntityClass();
         CriteriaQuery<Entity> criteriaQuery = getCriteriaBuilder().createQuery(entityClass);
         Root<Entity> root = criteriaQuery.from(entityClass);
         Predicate predicate = getCriteriaBuilder().conjunction();
@@ -154,7 +151,6 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
         criteriaQuery.where(predicate);
 
         return entityManager.createQuery(criteriaQuery).getResultList().stream().findFirst().orElse(null);
-        */
     }
 
     @Override
