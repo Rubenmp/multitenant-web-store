@@ -35,12 +35,13 @@ class ProductInterfaceIT extends IntegrationTestConfig {
     @Test
     void createProduct_happyPath_success() {
         final ProductCreationDto registerDto = createUserCreationDto("test.email@test.com");
+        final HttpEntity<String> httpEntity = createAdminHttpEntity(convertToJson(registerDto));
         final URI uri = getUri(CREATE_PRODUCT_URL);
 
         final ResponseEntity<String> response = restTemplate.exchange(
                 uri,
                 HttpMethod.POST,
-                new HttpEntity<>(registerDto),
+                httpEntity,
                 String.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status");
@@ -59,13 +60,15 @@ class ProductInterfaceIT extends IntegrationTestConfig {
 
     @Test
     void updateProduct_happyPath_success() {
-        final ProductUpdateDto registerRequest = createProductUpdateDto();
+        final ProductUpdateDto productUpdateDto = createProductUpdateDto();
+        final HttpEntity<String> httpEntity = createAdminHttpEntity(convertToJson(productUpdateDto));
+
         final URI uri = getUri(UPDATE_PRODUCT_URL);
 
         final ResponseEntity<String> response = restTemplate.exchange(
                 uri,
                 HttpMethod.PUT,
-                new HttpEntity<>(registerRequest),
+                httpEntity,
                 String.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status");
@@ -91,7 +94,7 @@ class ProductInterfaceIT extends IntegrationTestConfig {
         final ResponseEntity<String> deleteResponse = restTemplate.exchange(
                 deleteUri,
                 HttpMethod.DELETE,
-                null,
+                createAdminHttpEntity(),
                 String.class);
 
         assertEquals(HttpStatus.OK, deleteResponse.getStatusCode(), "Delete response status");

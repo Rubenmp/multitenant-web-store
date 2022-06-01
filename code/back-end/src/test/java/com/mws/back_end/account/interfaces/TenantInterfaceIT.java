@@ -36,7 +36,7 @@ class TenantInterfaceIT extends IntegrationTestConfig {
     @Test
     void createTenant_happyPath_success() {
         final URI uri = getUri(CREATE_TENANT_URL, Pair.of("name", "New tenant"));
-        final HttpEntity<String> httpRequest = this.createUserHttpEntityWithBody(null);
+        final HttpEntity<String> httpRequest = this.createUserHttpEntity();
 
         final ResponseEntity<String> response = restTemplate.exchange(
                 uri,

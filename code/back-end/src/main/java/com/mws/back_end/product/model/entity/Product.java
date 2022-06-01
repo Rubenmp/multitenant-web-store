@@ -17,6 +17,9 @@ import static javax.persistence.GenerationType.IDENTITY;
 public class Product {
     public static final String PRODUCT_COLUMN_NAME = "name";
 
+    @NotNull
+    private Long tenantId;
+
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;

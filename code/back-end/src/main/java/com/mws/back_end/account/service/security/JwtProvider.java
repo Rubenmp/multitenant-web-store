@@ -124,13 +124,21 @@ public class JwtProvider {
         return Optional.empty();
     }
 
-    private String getCurrentToken () {
+    private String getCurrentToken() {
         final HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         return request.getHeader(HttpHeaders.AUTHORIZATION);
     }
 
+    public Long getTenantIdFromRequest() {
+        final String token = getCurrentToken();
+        if (token != null) {
+            return Long.valueOf(String.valueOf(getTokenClaims(token).get(TOKEN_CLAIM_TENANT_ID)));
+        }
+        return null;
+    }
+
     public String getJwtFromRequest(final HttpServletRequest httpServletRequest) {
-        String bearerToken = httpServletRequest.getHeader("Authorization");
+        String bearerToken = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
 
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
@@ -161,8 +169,8 @@ public class JwtProvider {
     private Map<String, Object> toClaims(UserDto userDto) {
         final Map<String, Object> claims = new HashMap<>();
 
-        claims.put(TOKEN_CLAIM_USER_ID, userDto.getId());
         claims.put(TOKEN_CLAIM_TENANT_ID, userDto.getTenantId());
+        claims.put(TOKEN_CLAIM_USER_ID, userDto.getId());
         claims.put(TOKEN_CLAIM_USER_EMAIL, userDto.getEmail());
         return claims;
     }

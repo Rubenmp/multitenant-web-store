@@ -152,7 +152,7 @@ public class IntegrationTestConfig {
     }
 
 
-    protected String convertObjectToString(final Object objectToConvert) {
+    protected String convertToJson(final Object objectToConvert) {
         String convertedObject = "{}";
         try {
             convertedObject = getObjectMapper().writeValueAsString(objectToConvert);
@@ -191,8 +191,20 @@ public class IntegrationTestConfig {
     }
 
     // Token auxiliary methods
-    protected HttpEntity<String> createUserHttpEntityWithBody(final String body) {
-        final HttpHeaders requestHeaders = createHttpHeadersWithAuthorization(getTokenAs(UserRoleDto.USER));
+    protected HttpEntity<String> createAdminHttpEntity() {
+        return createAdminHttpEntity(null);
+    }
+
+    protected HttpEntity<String> createAdminHttpEntity(final String body) {
+        return createHttpEntityInternal(UserRoleDto.ADMIN, body);
+    }
+
+    protected HttpEntity<String> createUserHttpEntity() {
+        return createHttpEntityInternal(UserRoleDto.USER, null);
+    }
+
+    private HttpEntity<String> createHttpEntityInternal(final UserRoleDto role, final String body) {
+        final HttpHeaders requestHeaders = createHttpHeadersWithAuthorization(getTokenAs(role));
 
         if (body == null) {
             return new HttpEntity<>(requestHeaders);
@@ -233,7 +245,7 @@ public class IntegrationTestConfig {
         final HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.setContentType(MediaType.APPLICATION_JSON);
 
-        final HttpEntity<String> httpEntity = new HttpEntity<>(convertObjectToString(loginRequest), requestHeaders);
+        final HttpEntity<String> httpEntity = new HttpEntity<>(convertToJson(loginRequest), requestHeaders);
         final URI uri = getUri(LOGIN_USER_URL);
 
         final ResponseEntity<String> response = restTemplate.exchange(

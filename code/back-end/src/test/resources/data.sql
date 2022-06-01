@@ -18,10 +18,10 @@ INSERT INTO user(tenant_id, id, role, email, password, first_name, last_name)
 
 -- Product data
 ------------------
-INSERT INTO product(id, name, image, active)
-    VALUES (1,'Product name','product-image', true);
-INSERT INTO product(id, name, image, active)
-    VALUES (2,'Product to delete','product-image', true);
-INSERT INTO product(id, name, image, active)
-   VALUES (3,'Deleted product','product-image', false);
+INSERT INTO product(tenant_id, id, name, image, active)
+    VALUES (1,1,'Product name','product-image', true);
+INSERT INTO product(tenant_id, id, name, image, active)
+    VALUES (1,2,'Product to delete','product-image', true);
+INSERT INTO product(tenant_id, id, name, image, active)
+   VALUES (1,3,'Deleted product','product-image', false);
 
