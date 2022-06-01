@@ -182,6 +182,8 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
     @Override
     @Transactional
     public void delete(final Id id) {
+        final Long tenantId = jwtCipher.getCurrentTenantId();
+        requireNotNull(tenantId, "Tenant info must be provided");
         this.entityManager.remove(this.entityManager.getReference(entityClass, id));
     }
 
