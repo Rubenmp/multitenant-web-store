@@ -1,8 +1,6 @@
 package com.mws.back_end.product.service;
 
-import com.mws.back_end.account.interfaces.user.dto.UserDto;
 import com.mws.back_end.account.interfaces.user.dto.UserRoleDto;
-import com.mws.back_end.account.service.UserService;
 import com.mws.back_end.account.service.security.JwtCipher;
 import com.mws.back_end.framework.exception.EntityPersistenceException;
 import com.mws.back_end.framework.exception.MWSException;
@@ -28,9 +26,6 @@ public class ProductService {
     @Autowired
     private JwtCipher jwtCipher;
 
-    @Autowired
-    private UserService userService;
-
     public Long createProduct(final ProductCreationDto productCreationDto) throws MWSException {
         try {
             checkProductCreation(productCreationDto);
@@ -47,9 +42,8 @@ public class ProductService {
     }
 
     private void checkProductPermissions() throws MWSException {
-        final UserDto user = userService.getCurrentUser();
-        final UserRoleDto role = user == null ? null : user.getRole();
-        if (role != UserRoleDto.SUPER && role != UserRoleDto.ADMIN) {
+        final UserRoleDto userRole = jwtCipher.getCurrentUserRole();
+        if (userRole != UserRoleDto.SUPER && userRole != UserRoleDto.ADMIN) {
             throw new MWSException("Not allowed to create product(s).");
         }
     }

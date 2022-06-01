@@ -14,7 +14,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import static com.mws.back_end.account.interfaces.user.dto.UserDto.toDto;
 import static com.mws.back_end.framework.utils.ExceptionUtils.require;
@@ -38,7 +37,7 @@ public class UserService {
     public Long createUser(final UserCreationDto userCreationDto) throws MWSException {
         requireNotNull(userCreationDto, "User info must be provided");
 
-        final User user = toUser(userCreationDto);
+        final User user = updatePreviousUserData(userCreationDto);
         checkUserToCreate(user);
         try {
             return userDao.create(user).getId();
@@ -55,21 +54,17 @@ public class UserService {
     }
 
     private void checkPermissionsToCreateUser(final User userToCreate) throws MWSException {
-        final UserDto authenticatedUser = getCurrentUser();
+        final UserRoleDto loggedUserRole = jwtService.getCurrentUserRole();
         if (UserRole.SUPER == userToCreate.getRole()) {
-            if (authenticatedUser == null || UserRoleDto.SUPER != authenticatedUser.getRole()) {
+            if (UserRoleDto.SUPER != loggedUserRole) {
                 throw new MWSException("Not allowed to create an user with super role.");
             }
-        } else if (UserRole.ADMIN == userToCreate.getRole() && isAllowedToCreateAdmins(authenticatedUser)) {
+        } else if (UserRole.ADMIN == userToCreate.getRole() && !(UserRoleDto.SUPER == loggedUserRole || UserRoleDto.ADMIN == loggedUserRole)) {
             throw new MWSException("Not allowed to create an user with admin role.");
         }
     }
 
-    private boolean isAllowedToCreateAdmins(UserDto authenticatedUser) {
-        return authenticatedUser == null || !(UserRoleDto.SUPER == authenticatedUser.getRole() || UserRoleDto.ADMIN == authenticatedUser.getRole());
-    }
-
-    private User toUser(final UserCreationDto userCreationDto) {
+    private User updatePreviousUserData(final UserCreationDto userCreationDto) {
         require(userCreationDto.getRole() != null, "User role must be provided");
         require(userCreationDto.getTenantId() != null, "Tenant id must be provided");
 
@@ -95,15 +90,10 @@ public class UserService {
     }
 
     private User checkUserToUpdate(final UserUpdateDto userUpdateDto) throws MWSException {
+        requireNotNull(userUpdateDto.getId(), "User id is required.");
         final User newUser = toUser(userUpdateDto);
-        final User previousUser = userDao.findWeak(newUser.getId());
-        if (previousUser == null) {
+        if (newUser == null) {
             throw new MWSException("Entity not found");
-        }
-        newUser.setTenantId(previousUser.getTenantId());
-
-        if (previousUser.getRole() != newUser.getRole()) {
-            throw new MWSException("It's not possible to change user role.");
         }
 
         final User userWithSameEmail = userDao.findByEmail(userUpdateDto.getEmail());
@@ -115,11 +105,12 @@ public class UserService {
 
     private User toUser(final UserUpdateDto userUpdateDto) {
         requireNotNull(userUpdateDto, "User info must be provided");
-        requireNotNull(userUpdateDto.getRole(), "User role must be provided");
+        final User user = userDao.findWeak(userUpdateDto.getId());
 
-        final User user = new User();
-        user.setId(userUpdateDto.getId());
-        user.setRole(UserRole.valueOf(userUpdateDto.getRole().toString()));
+        if (user == null) {
+            return null;
+        }
+
         user.setEmail(userUpdateDto.getEmail());
         user.setPassword(userUpdateDto.getPassword());
         user.setFirstName(userUpdateDto.getFirstName());
@@ -151,16 +142,5 @@ public class UserService {
         return UserAuthenticationResponse.builder()
                 .token(token)
                 .build();
-    }
-
-    @Transactional(readOnly = true)
-    public UserDto getCurrentUser() {
-        final Long userId = jwtService.getCurrentUserId();
-        if (userId == null) {
-            return null;
-        }
-        final User user = userDao.findWeak(userId);
-
-        return user == null ? null : toDto(user);
     }
 }

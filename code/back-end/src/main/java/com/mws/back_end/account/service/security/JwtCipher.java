@@ -25,7 +25,7 @@ import static java.util.Date.from;
 
 @Service
 public class JwtCipher {
-    public static final boolean USE_JWT_RESTRICTIONS = false;
+    public static final boolean USE_JWT_RESTRICTIONS = true;
     private static final String DEV_SECRET_KEY = "Tk9RX3NlY3JldF9rZXlfdG9fZ2VuZXJhdGVfc2lnbmVkX3Rva2VuX2Zvcl9kZXY=";
     private static final Long JWT_EXPIRATION_IN_MILLISECONDS = 100000000L;
     private static final int TOTAL_NUMBER_OF_TOKEN_CLAIMS = 6;
@@ -42,7 +42,7 @@ public class JwtCipher {
 
     @Transactional(readOnly = true)
     public boolean isValidToken(final String jwt) {
-        if (!USE_JWT_RESTRICTIONS) {
+        if (!jwtRestrictionsEnabled()) {
             return true;
         }
         return jwt != null && isTokenWellFormedAndSigned(jwt) &&
@@ -78,7 +78,7 @@ public class JwtCipher {
     }
 
     public Optional<Date> getExpirationDateFromJwt(final String token) {
-        if (!USE_JWT_RESTRICTIONS) {
+        if (!jwtRestrictionsEnabled()) {
             return Optional.of(getDateInFuture());
         }
         if (isTokenWellFormedAndSigned(token)) {
@@ -121,12 +121,14 @@ public class JwtCipher {
         final String token = getCurrentToken();
         if (token != null) {
             return getTenantId(getTokenClaims(token));
+        } else if (!jwtRestrictionsEnabled()) {
+            return 1L;
         }
         return null;
     }
 
     public UserRoleDto getCurrentUserRole() {
-        if (!USE_JWT_RESTRICTIONS) {
+        if (!jwtRestrictionsEnabled()) {
             return UserRoleDto.SUPER;
         }
         final String token = getCurrentToken();
@@ -153,7 +155,7 @@ public class JwtCipher {
     }
 
     private boolean isTokenDateExpired(final String jwt) {
-        if (!USE_JWT_RESTRICTIONS) {
+        if (!jwtRestrictionsEnabled()) {
             return false;
         }
         final Optional<Date> expirationDateOpt = getExpirationDateFromJwt(jwt);

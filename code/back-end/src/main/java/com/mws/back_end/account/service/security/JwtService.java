@@ -1,6 +1,7 @@
 package com.mws.back_end.account.service.security;
 
 import com.mws.back_end.account.interfaces.user.dto.UserDto;
+import com.mws.back_end.account.interfaces.user.dto.UserRoleDto;
 import com.mws.back_end.framework.exception.MWSException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -47,8 +48,8 @@ public class JwtService {
         return createToken(emailOpt.get());
     }
 
-    public Long getCurrentUserId() {
-        return jwtCipher.getCurrentUserId();
+    public UserRoleDto getCurrentUserRole() {
+        return jwtCipher.getCurrentUserRole();
     }
 
     private String createToken(final String loginEmail) {

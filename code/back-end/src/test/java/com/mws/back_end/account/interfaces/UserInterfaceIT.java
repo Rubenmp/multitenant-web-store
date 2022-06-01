@@ -147,7 +147,6 @@ class UserInterfaceIT extends IntegrationTestConfig {
     private UserUpdateDto createUserUpdateDto(final Long userId) {
         final UserUpdateDto updateRequest = new UserUpdateDto();
         updateRequest.setId(userId);
-        updateRequest.setRole(UserRoleDto.USER);
         updateRequest.setFirstName("New first name");
         updateRequest.setLastName("New last name");
         updateRequest.setEmail("new.email@test.com");
