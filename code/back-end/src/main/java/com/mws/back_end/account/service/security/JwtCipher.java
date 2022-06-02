@@ -45,8 +45,7 @@ public class JwtCipher {
         if (!jwtRestrictionsEnabled()) {
             return true;
         }
-        return jwt != null && isTokenWellFormedAndSigned(jwt) &&
-                !isTokenDateExpired(jwt);
+        return jwt != null && isTokenWellFormedAndSigned(jwt) && !isTokenDateExpired(jwt);
     }
 
     public boolean isTokenWellFormedAndSigned(final String jwt) {
@@ -104,16 +103,16 @@ public class JwtCipher {
         return null;
     }
 
-    private Optional<Date> getExpirationDateFromJwt(final String token) {
+    protected Date getExpirationDateFromJwt(final String token) {
         if (!jwtRestrictionsEnabled()) {
-            return Optional.of(getDateInFuture());
+            return getDateInFuture();
         }
         if (isTokenWellFormedAndSigned(token)) {
             final Claims claims = getTokenClaims(token);
-            return Optional.of(claims.getExpiration());
+            return claims.getExpiration();
         }
 
-        return Optional.empty();
+        return null;
     }
 
     private Date getDateInFuture() {
@@ -129,7 +128,7 @@ public class JwtCipher {
         return isTokenWellFormedAndSigned(token) ? token : null;
     }
 
-    private String getCurrentTokenWithoutValidation() {
+    String getCurrentTokenWithoutValidation() {
         final HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         return request.getHeader(HttpHeaders.AUTHORIZATION);
     }
@@ -185,8 +184,8 @@ public class JwtCipher {
         if (!jwtRestrictionsEnabled()) {
             return false;
         }
-        final Optional<Date> expirationDateOpt = getExpirationDateFromJwt(jwt);
-        return expirationDateOpt.isEmpty() || isDateBeforeNow(expirationDateOpt.get());
+        final Date expirationDate = getExpirationDateFromJwt(jwt);
+        return expirationDate == null || isDateBeforeNow(expirationDate);
     }
 
     private Claims getTokenClaims(final String token) {

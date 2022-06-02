@@ -114,31 +114,37 @@ class ProductInterfaceIT extends IntegrationTestConfig {
         assertEquals(HttpStatus.OK, getResponse.getStatusCode(), "Get response status");
         WebResult<ArrayList<ProductDto>> getResult = toWebResultWithList(getResponse, ProductDto.class);
         assertEquals(WebResultCode.SUCCESS, getResult.getCode(), "Get result code");
-        List<Long> productIds = getResult.getData().stream().map(ProductDto::getId).collect(Collectors.toList());
+        final List<Long> productIds = getResult.getData().stream().map(ProductDto::getId).collect(Collectors.toList());
 
         assertFalse(productIds.isEmpty(), "Returned products emptiness");
-        assertTrue(productIds.contains(PRODUCT_ID), "Returned products contains id " + PRODUCT_ID);
+        assertTrue(productIds.contains(PRODUCT_ID), "Returned products contain id " + PRODUCT_ID);
         assertFalse(productIds.contains(Long.valueOf(deletedProductId)), "Returned products do not contain removed product");
         assertFalse(productIds.contains(DELETED_PRODUCT_ID), "Returned products do not contain previously removed product");
     }
 
     @Test
-    void listProducts_doNotContainDeletedProduct() {
-        final URI getUri = getUri(LIST_PRODUCTS_URL, Pair.of("active", "false"));
-        final ResponseEntity<String> getResponse = restTemplate.exchange(
-                getUri,
+    void listProducts_deleted() {
+        final URI uri = getUri(LIST_PRODUCTS_URL, Pair.of("active", "false"));
+        final ResponseEntity<String> response = restTemplate.exchange(
+                uri,
                 HttpMethod.GET,
                 null,
                 String.class);
 
-        assertEquals(HttpStatus.OK, getResponse.getStatusCode(), "Get response status");
-        WebResult<ArrayList<ProductDto>> getResult = toWebResultWithList(getResponse, ProductDto.class);
-        assertEquals(WebResultCode.SUCCESS, getResult.getCode(), "Get result code");
-        List<Long> productIds = getResult.getData().stream().map(ProductDto::getId).collect(Collectors.toList());
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Get response status");
+        WebResult<ArrayList<ProductDto>> result = toWebResultWithList(response, ProductDto.class);
+        assertEquals(WebResultCode.SUCCESS, result.getCode(), "Get result code");
+        List<Long> productIds = result.getData().stream().map(ProductDto::getId).collect(Collectors.toList());
 
         assertFalse(productIds.isEmpty(), "Returned products emptiness");
-        assertFalse(productIds.contains(PRODUCT_ID), "Returned products contains active product  " + PRODUCT_ID);
-        assertTrue(productIds.contains(DELETED_PRODUCT_ID), "Returned products do not contain previously removed product");
+        assertTrue(productIds.contains(DELETED_PRODUCT_ID), "Returned products contain previously removed product");
+        assertFalse(productIds.contains(PRODUCT_ID), "Returned products do not contain active product  " + PRODUCT_ID);
+
+        final ProductDto product = result.getData().stream().filter(p -> DELETED_PRODUCT_ID.equals(p.getId())).findFirst().orElse(null);
+        assertNotNull(product, "Product");
+        assertEquals("Deleted product", product.getName(), "Product name");
+        assertEquals("image3", product.getImage(), "Product image");
+        assertEquals("desc.3", product.getDescription(), "Product description");
     }
 
 }

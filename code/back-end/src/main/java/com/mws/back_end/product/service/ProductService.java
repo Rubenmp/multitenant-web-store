@@ -81,6 +81,8 @@ public class ProductService {
         productDto.setId(product.getId());
         productDto.setName(product.getName());
         productDto.setImage(product.getImage());
+        productDto.setDescription(product.getDescription());
+
         return productDto;
     }
 
