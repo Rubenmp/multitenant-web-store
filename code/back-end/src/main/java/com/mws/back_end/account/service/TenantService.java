@@ -1,6 +1,5 @@
 package com.mws.back_end.account.service;
 
-import com.mws.back_end.account.interfaces.tenant.TenantInterface;
 import com.mws.back_end.account.interfaces.tenant.tenant.TenantDto;
 import com.mws.back_end.account.interfaces.tenant.tenant.TenantUpdateDto;
 import com.mws.back_end.account.interfaces.user.dto.UserRoleDto;

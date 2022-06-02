@@ -8,6 +8,7 @@ import com.mws.back_end.account.model.entity.UserRole;
 import com.mws.back_end.account.service.security.JwtCipher;
 import com.mws.back_end.framework.exception.EntityNotFound;
 import com.mws.back_end.framework.exception.EntityPersistenceException;
+import com.mws.back_end.framework.exception.MWSRException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityManager;
@@ -64,7 +65,7 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
         final List<String> violatedConstraintMessages = getViolatedConstraints(entity);
 
         if (!violatedConstraintMessages.isEmpty()) {
-            throw new RuntimeException(violatedConstraintMessages.toString());
+            throw new MWSRException(violatedConstraintMessages.toString());
         }
 
         checkTenantPermissionsToCreateEntity(entity);
@@ -165,9 +166,8 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
             return Collections.emptyList();
         }
 
-        Class<Entity> entityClass = getEntityClass();
-        CriteriaQuery<Entity> criteriaQuery = getCriteriaBuilder().createQuery(entityClass);
-        Root<Entity> root = criteriaQuery.from(entityClass);
+        CriteriaQuery<Entity> criteriaQuery = getCriteriaBuilder().createQuery(getEntityClass());
+        Root<Entity> root = criteriaQuery.from(getEntityClass());
         Predicate predicate = getCriteriaBuilder().conjunction();
 
         if (ids != null && !ids.isEmpty()) {
@@ -193,9 +193,8 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
      */
     @Override
     public Entity findWeak(final Id id) {
-        Class<Entity> entityClass = getEntityClass();
-        CriteriaQuery<Entity> criteriaQuery = getCriteriaBuilder().createQuery(entityClass);
-        Root<Entity> root = criteriaQuery.from(entityClass);
+        CriteriaQuery<Entity> criteriaQuery = getCriteriaBuilder().createQuery(getEntityClass());
+        Root<Entity> root = criteriaQuery.from(getEntityClass());
         Predicate predicate = getCriteriaBuilder().conjunction();
 
         final Long tenantId = jwtCipher.getCurrentTenantId();
@@ -211,9 +210,8 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
 
     @Override
     public List<Entity> findBy(final String columnName, final String value, final Integer maxResults) {
-        Class<Entity> entityClass = getEntityClass();
-        CriteriaQuery<Entity> criteriaQuery = getCriteriaBuilder().createQuery(entityClass);
-        Root<Entity> root = criteriaQuery.from(entityClass);
+        CriteriaQuery<Entity> criteriaQuery = getCriteriaBuilder().createQuery(getEntityClass());
+        Root<Entity> root = criteriaQuery.from(getEntityClass());
 
         Predicate predicate = getCriteriaBuilder().conjunction();
         final Long tenantId = jwtCipher.getCurrentTenantId();
