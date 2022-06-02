@@ -1,15 +1,12 @@
 package com.mws.back_end.framework.database;
 
 
-import com.mws.back_end.account.service.security.JwtCipher;
 import com.mws.back_end.framework.IntegrationTestConfig;
 import com.mws.back_end.framework.database.dto.DatabaseFillDto;
 import com.mws.back_end.framework.dto.WebResult;
 import com.mws.back_end.framework.dto.WebResultCode;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,18 +22,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class DatabaseInterfaceIT extends IntegrationTestConfig {
 
-    @Autowired
-    private JwtCipher jwtCipher;
-
-    // @Test // In order to run this tests, variable USE_JWT_RESTRICTIONS in JwtCipher must be set to false
+    @Test
     void fillDatabase_happyPath_success() {
         final DatabaseFillDto fillDto = getDatabaseFillDto();
-        final URI uri = getUri(FILL_DATABASE_URL);
 
         final ResponseEntity<String> response = restTemplate.exchange(
-                uri,
+                getUri(FILL_DATABASE_URL),
                 HttpMethod.POST,
-                new HttpEntity<>(fillDto),
+                createSuperHttpEntity(toJson(fillDto)),
                 String.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status");
