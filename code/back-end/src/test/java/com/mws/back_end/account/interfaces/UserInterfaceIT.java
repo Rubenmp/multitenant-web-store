@@ -106,12 +106,10 @@ class UserInterfaceIT extends IntegrationTestConfig {
     }
 
     @Test
-    void updateUser_happyPath_success() {
+    void updateUser_thenLogin_success() {
         final UserCreationDto registerDto = createUserCreationDto("updateUser_happyPath_success@test.com");
-        final URI uri = getUri(CREATE_USER_URL);
-
         final ResponseEntity<String> response = restTemplate.exchange(
-                uri,
+                getUri(CREATE_USER_URL),
                 HttpMethod.POST,
                 new HttpEntity<>(registerDto),
                 String.class);
@@ -119,16 +117,36 @@ class UserInterfaceIT extends IntegrationTestConfig {
         final Long createdUserId = checkUserWasCreated(response);
 
         final UserUpdateDto updateRequest = createUserUpdateDto(createdUserId);
-        final URI updateUri = getUri(UPDATE_USER_URL);
         final ResponseEntity<String> updateResponse = restTemplate.exchange(
-                updateUri,
+                getUri(UPDATE_USER_URL),
                 HttpMethod.PUT,
                 createUserHttpEntity(toJson(updateRequest)),
                 String.class);
 
-        assertEquals(HttpStatus.OK, updateResponse.getStatusCode(), "Response status");
-        final WebResult<Serializable> result = toWebResult(updateResponse, Serializable.class);
+        checkSuccess(updateResponse);
+
+        final LoginRequest loginRequest = toLoginRequest(updateRequest);
+        final ResponseEntity<String> loginResponse = restTemplate.exchange(
+                getUri(LOGIN_USER_URL),
+                HttpMethod.POST,
+                new HttpEntity<>(loginRequest),
+                String.class);
+
+        final String token = checkLogin(loginResponse);
+        checkToken(token, loginRequest.getEmail(), createdUserId);
+    }
+
+    private void checkSuccess(ResponseEntity<String> response) {
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status");
+        final WebResult<Serializable> result = toWebResult(response, Serializable.class);
         assertEquals(WebResultCode.SUCCESS, result.getCode(), "Result code");
+    }
+
+    private LoginRequest toLoginRequest(UserUpdateDto updateRequest) {
+        final LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setEmail(updateRequest.getEmail());
+        loginRequest.setPassword(updateRequest.getPassword());
+        return loginRequest;
     }
 
     @Test

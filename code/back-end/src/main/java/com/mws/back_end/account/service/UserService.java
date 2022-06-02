@@ -95,6 +95,11 @@ public class UserService {
 
     private User checkUserToUpdate(final UserUpdateDto userUpdateDto) throws MWSException {
         requireNotNull(userUpdateDto.getId(), "User id is required.");
+        requireNotNull(userUpdateDto.getEmail(), "User email is required.");
+        requireNotNull(userUpdateDto.getPassword(), "User password is required.");
+        requireNotNull(userUpdateDto.getFirstName(), "User first name is required.");
+        requireNotNull(userUpdateDto.getLastName(), "User last name is required.");
+
         final User newUser = toUser(userUpdateDto);
         if (newUser == null) {
             throw new MWSException("Entity not found");
@@ -116,7 +121,7 @@ public class UserService {
         }
 
         user.setEmail(userUpdateDto.getEmail());
-        user.setPassword(userUpdateDto.getPassword());
+        user.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
         user.setFirstName(userUpdateDto.getFirstName());
         user.setLastName(userUpdateDto.getLastName());
 
