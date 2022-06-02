@@ -43,7 +43,6 @@ public class ProductInterface {
         return new ResponseEntity<>(success(productId), OK);
     }
 
-
     @GetMapping(LIST_PRODUCTS_URL)
     public ResponseEntity<WebResult<ArrayList<ProductDto>>> listProducts(@RequestParam(required = false) List<Long> ids, @RequestParam(required = false) Boolean active) {
         final List<ProductDto> products = productService.getProducts(ids, active);

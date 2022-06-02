@@ -63,8 +63,8 @@ public class ProductService {
         return product;
     }
 
-    public ProductDto getActiveProduct(final Long id) {
-        return toProductDto(productDao.find(Collections.singleton(id), true)).stream().findFirst().orElse(null);
+    public ProductDto getActiveProduct(final Long productId) {
+        return getProducts(Collections.singleton(productId), true).stream().findFirst().orElse(null);
     }
 
     public List<ProductDto> getProducts(final Collection<Long> ids, final Boolean active) {

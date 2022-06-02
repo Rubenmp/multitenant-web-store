@@ -69,7 +69,7 @@ public class TenantService {
     }
 
     public List<TenantDto> listTenants(final Boolean active) {
-        return tenantDao.find(null, active).stream().map(TenantDto::toDto).toList();
+        return tenantDao.findByActive(active).stream().map(TenantDto::toDto).toList();
     }
 
     public void deleteTenant(final long tenantId) throws MWSException {

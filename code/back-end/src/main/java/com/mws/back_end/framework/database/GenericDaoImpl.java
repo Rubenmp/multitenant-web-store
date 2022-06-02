@@ -9,6 +9,8 @@ import com.mws.back_end.account.service.security.JwtCipher;
 import com.mws.back_end.framework.exception.EntityNotFound;
 import com.mws.back_end.framework.exception.EntityPersistenceException;
 import com.mws.back_end.framework.exception.MWSRException;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityManager;
@@ -57,6 +59,15 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
 
     private Class<Entity> getEntityClass() {
         return entityClass;
+    }
+
+    @Data
+    @NoArgsConstructor
+    protected class DBSearch {
+        private Collection<Id> ids;
+        private Collection<Id> excludeIds;
+        private Boolean active;
+        private Integer maxResults;
     }
 
     @Override
@@ -160,8 +171,9 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
         return entity;
     }
 
-    @Override
-    public List<Entity> find(final Collection<Id> ids, final Boolean active) {
+    protected List<Entity> find(final DBSearch dbSearch) {
+        requireNotNull(dbSearch, "Required database search.");
+        Collection<Id> ids = dbSearch.getIds();
         if (ids != null && ids.isEmpty()) {
             return Collections.emptyList();
         }
@@ -174,8 +186,8 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
             predicate = getCriteriaBuilder().and(predicate, root.get(DB_COLUMN_ID).in(ids));
         }
 
-        if (active != null) {
-            predicate = getCriteriaBuilder().and(predicate, root.get(DB_COLUMN_ACTIVE).in(List.of(active)));
+        if (dbSearch.getActive() != null) {
+            predicate = getCriteriaBuilder().and(predicate, root.get(DB_COLUMN_ACTIVE).in(List.of(dbSearch.getActive())));
         }
 
         final Long tenantId = jwtCipher.getCurrentTenantId();

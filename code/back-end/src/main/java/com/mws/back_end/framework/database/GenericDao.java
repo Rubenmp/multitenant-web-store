@@ -2,7 +2,6 @@ package com.mws.back_end.framework.database;
 
 import com.mws.back_end.framework.exception.EntityPersistenceException;
 
-import java.util.Collection;
 import java.util.List;
 
 public interface GenericDao<Entity, Id> {
@@ -13,7 +12,6 @@ public interface GenericDao<Entity, Id> {
     Entity find(Id id);
     Entity findWeak(final Id id);
     List<Entity> findBy(String columnName, String value, Integer maxResults);
-    List<Entity> find(Collection<Id> ids, Boolean active);
 
     void delete(Id id);
 }
