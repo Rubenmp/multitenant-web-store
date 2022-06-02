@@ -65,7 +65,6 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
     @NoArgsConstructor
     protected class DBSearch {
         private Collection<Id> ids;
-        private Collection<Id> excludeIds;
         private Boolean active;
         private Integer maxResults;
     }
@@ -196,7 +195,12 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
         }
         criteriaQuery.where(predicate);
 
-        return entityManager.createQuery(criteriaQuery).getResultList();
+        final TypedQuery<Entity> query = entityManager.createQuery(criteriaQuery);
+        if (dbSearch.getMaxResults() != null) {
+            return query.setMaxResults(dbSearch.getMaxResults()).getResultList();
+        }
+
+        return query.getResultList();
     }
 
 
