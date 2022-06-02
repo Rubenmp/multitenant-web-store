@@ -8,7 +8,6 @@ import com.mws.back_end.account.model.entity.UserRole;
 import com.mws.back_end.account.service.security.JwtCipher;
 import com.mws.back_end.framework.exception.EntityNotFound;
 import com.mws.back_end.framework.exception.EntityPersistenceException;
-import com.mws.back_end.framework.exception.MWSRException;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,7 +74,7 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
         final List<String> violatedConstraintMessages = getViolatedConstraints(entity);
 
         if (!violatedConstraintMessages.isEmpty()) {
-            throw new MWSRException(violatedConstraintMessages.toString());
+            throw new EntityPersistenceException(violatedConstraintMessages.toString());
         }
 
         checkTenantPermissionsToCreateEntity(entity);
@@ -145,12 +144,12 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
         }
     }
 
-    private Long getTenantId(final Entity t) {
+    private Long getTenantId(final Entity entity) {
         try {
-            final Method method = t.getClass().getMethod("getTenantId");
-            return (Long) method.invoke(t);
+            final Method method = entity.getClass().getMethod("getTenantId");
+            return (Long) method.invoke(entity);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            return null;
+            throw new EntityPersistenceException("Database access over invalid entity \"" + entity.getClass() + "\"");
         }
     }
 

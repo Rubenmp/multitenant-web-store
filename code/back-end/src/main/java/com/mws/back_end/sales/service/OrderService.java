@@ -80,7 +80,7 @@ public class OrderService {
         return orders.stream().map(o -> toDto(o, productsMap)).toList();
     }
 
-    private void checkPermissionsToListOrders(long requestedUserId) throws MWSException {
+    private void checkPermissionsToListOrders(final long requestedUserId) throws MWSException {
         final UserRoleDto currentUserRole = jwtCipher.getCurrentUserRole();
         if (currentUserRole == null ||
                 (currentUserRole == UserRoleDto.USER && !Objects.equals(requestedUserId, jwtCipher.getCurrentUserId()))) {
