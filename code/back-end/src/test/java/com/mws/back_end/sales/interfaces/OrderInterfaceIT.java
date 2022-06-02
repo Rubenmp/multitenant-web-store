@@ -48,7 +48,7 @@ class OrderInterfaceIT extends IntegrationTestConfig {
         final ResponseEntity<String> listResponse = restTemplate.exchange(
                 listUri,
                 HttpMethod.GET,
-                null,
+                createUserHttpEntity(),
                 String.class);
 
         assertEquals(HttpStatus.OK, listResponse.getStatusCode(), "Response status");
@@ -73,4 +73,17 @@ class OrderInterfaceIT extends IntegrationTestConfig {
         return result.getData();
     }
 
+
+    @Test
+    void listOrders_fromOtherUser_notAllowed() {
+        final ResponseEntity<String> response = restTemplate.exchange(
+                getUri(LIST_ORDERS_URL, Pair.of("userId", "4")),
+                HttpMethod.GET,
+                null,
+                String.class);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode(), "Response status");
+        final WebResult<ArrayList<OrderDto>> result = toWebResultWithList(response, OrderDto.class);
+        assertEquals(WebResultCode.ERROR_INVALID_PARAMETER, result.getCode(), "Result code");
+    }
 }

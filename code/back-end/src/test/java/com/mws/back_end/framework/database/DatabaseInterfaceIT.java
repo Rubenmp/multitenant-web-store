@@ -28,7 +28,7 @@ class DatabaseInterfaceIT extends IntegrationTestConfig {
     @Autowired
     private JwtCipher jwtCipher;
 
-    @Test // In order to run this tests, variable USE_JWT_RESTRICTIONS in JwtCipher must be set to false
+    // @Test // In order to run this tests, variable USE_JWT_RESTRICTIONS in JwtCipher must be set to false
     void fillDatabase_happyPath_success() {
         final DatabaseFillDto fillDto = getDatabaseFillDto();
         final URI uri = getUri(FILL_DATABASE_URL);

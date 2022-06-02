@@ -42,7 +42,13 @@ public class OrderInterface {
 
     @GetMapping(LIST_ORDERS_URL)
     public ResponseEntity<WebResult<ArrayList<OrderDto>>> listOrders(@RequestParam long userId) {
-        final List<OrderDto> orders = orderService.listOrders(userId);
+        final List<OrderDto> orders;
+        try {
+            orders = orderService.listOrders(userId);
+        } catch (MWSException e) {
+            return new ResponseEntity<>(newWebResult(ERROR_INVALID_PARAMETER, e.getMessage()), BAD_REQUEST);
+        }
+
         return new ResponseEntity<>(success(new ArrayList<>(orders)), OK);
     }
 
