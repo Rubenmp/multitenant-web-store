@@ -12,6 +12,7 @@ import com.mws.back_end.product.model.entity.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -66,8 +67,8 @@ public class ProductService {
         return toProductDto(productDao.find(Collections.singleton(id), true)).stream().findFirst().orElse(null);
     }
 
-    public List<ProductDto> getProducts(final Boolean active) {
-        return toProductDto(productDao.find(null, active));
+    public List<ProductDto> getProducts(final Collection<Long> ids, final Boolean active) {
+        return toProductDto(productDao.find(ids, active));
     }
 
     private List<ProductDto> toProductDto(final List<Product> products) {

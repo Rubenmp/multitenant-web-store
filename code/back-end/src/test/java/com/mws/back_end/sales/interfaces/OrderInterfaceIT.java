@@ -60,7 +60,8 @@ class OrderInterfaceIT extends IntegrationTestConfig {
         final OrderDto returnedOrder = orders.stream().filter(o -> orderId.equals(o.getId())).findFirst().orElse(null);
         assertNotNull(returnedOrder, "Created order must be listed");
         assertEquals(creationDto.getUserId(), returnedOrder.getUserId(), "Order user id");
-        assertEquals(creationDto.getProductId(), returnedOrder.getProductId(), "Order product id");
+        assertNotNull(returnedOrder.getProduct(), "Order product");
+        assertEquals(creationDto.getProductId(), returnedOrder.getProduct().getId(), "Order product id");
     }
 
     private Long checkOrderWasCreated(ResponseEntity<String> response) {

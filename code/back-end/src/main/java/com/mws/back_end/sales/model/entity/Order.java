@@ -1,7 +1,6 @@
 package com.mws.back_end.sales.model.entity;
 
 
-import com.mws.back_end.sales.interfaces.dto.OrderDto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -32,15 +31,7 @@ public class Order {
 
     @NotNull
     private Long userId;
+
     @NotNull
     private Long productId;
-
-    public static OrderDto toDto(final Order order) {
-        final OrderDto orderDto = new OrderDto();
-        orderDto.setId(order.getId());
-        orderDto.setUserId(order.getUserId());
-        orderDto.setProductId(order.getProductId());
-
-        return orderDto;
-    }
 }

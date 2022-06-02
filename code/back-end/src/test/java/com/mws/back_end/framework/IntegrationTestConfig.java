@@ -18,6 +18,9 @@ import org.springframework.http.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -27,8 +30,7 @@ import java.util.stream.Collectors;
 import static com.mws.back_end.account.interfaces.user.UserInterface.LOGIN_USER_URL;
 import static com.mws.back_end.framework.dto.WebResultCode.SUCCESS;
 import static com.mws.back_end.framework.utils.DateUtils.isDateBeforeNow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class IntegrationTestConfig {
     protected static final Long TENANT_ID = 1L;
@@ -108,16 +110,27 @@ public class IntegrationTestConfig {
         return result;
     }
 
-    private String toJson(Map<String, Object> properties) {
+    private String toJson(final Map<String, Object> properties) {
+        return toJsonInternal(properties, 0);
+    }
+
+    private String toJsonInternal(final Map<String, Object> properties, final int depth) {
+        if (depth > 10) {
+            fail("Max depth serializing object.");
+        }
         int i = 0;
         final int mapSize = properties.size();
 
-        StringBuilder json = new StringBuilder("{");
-        for (Map.Entry<String, Object> entry : properties.entrySet()) {
+        final StringBuilder json = new StringBuilder("{");
+        for (final Map.Entry<String, Object> entry : properties.entrySet()) {
             json.append("\"").append(entry.getKey()).append("\":");
 
             if (entry.getValue() != null) {
-                json.append("\"").append(entry.getValue().toString()).append("\"");
+                if (entry.getValue() instanceof Map) {
+                    json.append(toJsonInternal((Map<String, Object>) entry.getValue(), depth + 1));
+                } else {
+                    json.append("\"").append(entry.getValue().toString()).append("\"");
+                }
             } else {
                 json.append("null");
             }
@@ -156,7 +169,9 @@ public class IntegrationTestConfig {
         String convertedObject = "{}";
         try {
             convertedObject = getObjectMapper().writeValueAsString(objectToConvert);
-        } catch (JsonProcessingException ignored) {}
+        } catch (JsonProcessingException ignored) {
+            fail("toJson method failed");
+        }
 
         return convertedObject;
     }
@@ -181,7 +196,7 @@ public class IntegrationTestConfig {
         String email = USER_EMAIL;
         if (role == UserRoleDto.ADMIN) {
             email = USER_ADMIN_EMAIL;
-        } else if  (role == UserRoleDto.SUPER) {
+        } else if (role == UserRoleDto.SUPER) {
             email = USER_SUPER_EMAIL;
         }
         loginRequest.setEmail(email);

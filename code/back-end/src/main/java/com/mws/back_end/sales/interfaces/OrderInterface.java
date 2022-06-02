@@ -41,7 +41,7 @@ public class OrderInterface {
 
 
     @GetMapping(LIST_ORDERS_URL)
-    public ResponseEntity<WebResult<ArrayList<OrderDto>>> listOrders(@RequestParam Long userId) {
+    public ResponseEntity<WebResult<ArrayList<OrderDto>>> listOrders(@RequestParam long userId) {
         final List<OrderDto> orders = orderService.listOrders(userId);
         return new ResponseEntity<>(success(new ArrayList<>(orders)), OK);
     }

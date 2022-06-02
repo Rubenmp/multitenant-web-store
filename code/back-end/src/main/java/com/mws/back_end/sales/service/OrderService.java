@@ -2,6 +2,7 @@ package com.mws.back_end.sales.service;
 
 import com.mws.back_end.account.service.security.JwtCipher;
 import com.mws.back_end.framework.exception.MWSException;
+import com.mws.back_end.product.interfaces.dto.ProductDto;
 import com.mws.back_end.product.service.ProductService;
 import com.mws.back_end.sales.interfaces.dto.OrderCreationDto;
 import com.mws.back_end.sales.interfaces.dto.OrderDto;
@@ -11,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.mws.back_end.framework.utils.ExceptionUtils.requireNotNull;
 
@@ -53,9 +56,21 @@ public class OrderService {
         return order;
     }
 
-    public List<OrderDto> listOrders(final Long userId) {
+    public List<OrderDto> listOrders(final long userId) {
         final List<Order> orders = orderDao.findByUser(userId);
-        return orders.stream().map(Order::toDto).toList();
+        final List<Long> productIds = orders.stream().map(Order::getProductId).toList();
+        final Map<Long, ProductDto> productsMap =
+                productService.getProducts(productIds, null).stream().collect(Collectors.toMap(ProductDto::getId, p -> p, (prev, newP) -> prev));
+
+        return orders.stream().map(o -> toDto(o, productsMap)).toList();
     }
 
+    public OrderDto toDto(final Order order, final Map<Long, ProductDto> productsMap) {
+        final OrderDto orderDto = new OrderDto();
+        orderDto.setId(order.getId());
+        orderDto.setUserId(order.getUserId());
+        orderDto.setProduct(productsMap.get(order.getProductId()));
+
+        return orderDto;
+    }
 }
