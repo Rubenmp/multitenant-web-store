@@ -104,7 +104,7 @@ public class JwtCipher {
         return null;
     }
 
-    public Optional<Date> getExpirationDateFromJwt(final String token) {
+    private Optional<Date> getExpirationDateFromJwt(final String token) {
         if (!jwtRestrictionsEnabled()) {
             return Optional.of(getDateInFuture());
         }
@@ -181,7 +181,7 @@ public class JwtCipher {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    private boolean isTokenDateExpired(final String jwt) {
+    public boolean isTokenDateExpired(final String jwt) {
         if (!jwtRestrictionsEnabled()) {
             return false;
         }

@@ -5,20 +5,15 @@ import com.mws.back_end.framework.dto.WebResultCode;
 import com.mws.back_end.product.interfaces.dto.ProductDto;
 import com.mws.back_end.sales.interfaces.dto.OrderDto;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.mws.back_end.framework.IntegrationTestConfig.TEST_PROFILE;
 import static org.junit.jupiter.api.Assertions.*;
 
-@ActiveProfiles(TEST_PROFILE)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class IntegrationTestConfigTest extends IntegrationTestConfig {
 
     @Test
