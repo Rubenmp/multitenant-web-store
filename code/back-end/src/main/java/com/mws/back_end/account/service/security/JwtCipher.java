@@ -147,8 +147,6 @@ public class JwtCipher {
         final String token = getCurrentToken();
         if (token != null) {
             return getTenantId(getTokenClaims(token));
-        } else if (!jwtRestrictionsEnabled()) {
-            return 1L;
         }
         return null;
     }
