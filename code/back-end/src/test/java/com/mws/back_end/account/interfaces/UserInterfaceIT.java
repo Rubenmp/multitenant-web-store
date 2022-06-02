@@ -19,7 +19,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.io.Serializable;
 import java.net.URI;
-import java.util.Date;
 import java.util.Optional;
 
 import static com.mws.back_end.account.interfaces.user.UserInterface.*;
@@ -36,17 +35,34 @@ class UserInterfaceIT extends IntegrationTestConfig {
     private JwtCipher jwtCipher;
 
     @Test
-    void createUser_happyPath_success() {
-        final UserCreationDto registerDto = createUserCreationDto("test.email@test.com");
-        final URI uri = getUri(CREATE_USER_URL);
-
-        final ResponseEntity<String> response = restTemplate.exchange(
-                uri,
+    void createUser_thenLogin_success() {
+        final UserCreationDto creationDto = createUserCreationDto("createUser_thenLogin_success@mwstest.com");
+        final ResponseEntity<String> creationResponse = restTemplate.exchange(
+                getUri(CREATE_USER_URL),
                 HttpMethod.POST,
-                new HttpEntity<>(registerDto),
+                new HttpEntity<>(creationDto),
                 String.class);
 
-        checkUserWasCreated(response);
+        final Long userId = checkUserWasCreated(creationResponse);
+
+        final LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setEmail(creationDto.getEmail());
+        loginRequest.setPassword(creationDto.getPassword());
+        final ResponseEntity<String> loginResponse = restTemplate.exchange(
+                getUri(LOGIN_USER_URL),
+                HttpMethod.POST,
+                new HttpEntity<>(loginRequest),
+                String.class);
+
+        final String token = checkLogin(loginResponse);
+        checkToken(token, creationDto.getEmail(), userId);
+    }
+
+    private String checkLogin(ResponseEntity<String> loginResponse) {
+        assertEquals(HttpStatus.OK, loginResponse.getStatusCode(), "Response status");
+        final WebResult<UserAuthenticationResponse> authenticationResult = toWebResult(loginResponse, UserAuthenticationResponse.class);
+        assertEquals(SUCCESS, authenticationResult.getCode(), "Result code");
+        return authenticationResult.getData().getToken();
     }
 
     private Long checkUserWasCreated(ResponseEntity<String> response) {
@@ -168,11 +184,8 @@ class UserInterfaceIT extends IntegrationTestConfig {
                 httpEntity,
                 String.class);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status");
-        WebResult<UserAuthenticationResponse> authenticationResult = toWebResult(response, UserAuthenticationResponse.class);
-        assertEquals(SUCCESS, authenticationResult.getCode(), "Result code");
-        final UserAuthenticationResponse authResponse = authenticationResult.getData();
-        checkUserToken(authResponse.getToken());
+        final String token = checkLogin(response);
+        checkToken(token, USER_EMAIL, USER_ID);
     }
 
 
@@ -194,14 +207,16 @@ class UserInterfaceIT extends IntegrationTestConfig {
         assertEquals(ERROR_AUTH, authenticationResult.getCode());
     }
 
-    private void checkUserToken(final String token) {
+    private void checkToken(final String token, final String expectedEmail, final Long userId) {
         assertTrue(Strings.isNotBlank(token), "Token not empty");
-        assertTrue(jwtCipher.isTokenWellFormedAndSigned(token), "Token well formed");
-        assertTrue(jwtCipher.getExpirationDateFromJwt(token).filter(d -> d.after(new Date())).isPresent(),
-                "Token expiration date after now");
-        final Optional<String> loginEmailOpt = jwtCipher.getLoginEmailFromJwt(token);
+        assertTrue(jwtCipher.isValidToken(token), "Valid token");
+        final Optional<String> loginEmailOpt = jwtCipher.getLoginEmail(token);
         assertTrue(loginEmailOpt.isPresent(), "Login email is present in token");
-        assertEquals(USER_EMAIL, loginEmailOpt.get(), "User login email");
+        assertEquals(expectedEmail, loginEmailOpt.get(), "User login email");
+
+        assertEquals(userId, jwtCipher.getUserId(token), "Token user id");
+        assertEquals(TENANT_ID, jwtCipher.getTenantId(token), "Token tenant id");
+        assertEquals(UserRoleDto.USER, jwtCipher.getUserRole(token), "Token user role");
     }
 
 

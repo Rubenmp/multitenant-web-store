@@ -13,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import static com.mws.back_end.account.interfaces.user.dto.UserDto.toDto;
@@ -33,6 +34,9 @@ public class UserService {
 
     @Autowired
     private TenantService tenantService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public Long createUser(final UserCreationDto userCreationDto) throws MWSException {
         requireNotNull(userCreationDto, "User info must be provided");
@@ -72,7 +76,7 @@ public class UserService {
         user.setTenantId(userCreationDto.getTenantId());
         user.setRole(UserRole.valueOf(userCreationDto.getRole().toString()));
         user.setEmail(userCreationDto.getEmail());
-        user.setPassword(userCreationDto.getPassword());
+        user.setPassword(passwordEncoder.encode(userCreationDto.getPassword()));
         user.setFirstName(userCreationDto.getFirstName());
         user.setLastName(userCreationDto.getLastName());
 

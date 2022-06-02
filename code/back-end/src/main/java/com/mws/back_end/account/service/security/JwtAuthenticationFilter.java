@@ -31,7 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         boolean validToken = false;
 
         if (jwtCipher.isValidToken(jwtToken)) {
-            Optional<String> loginEmail = jwtCipher.getLoginEmailFromJwt(jwtToken);
+            Optional<String> loginEmail = jwtCipher.getLoginEmail(jwtToken);
 
             if (loginEmail.isPresent()) {
                 final UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(loginEmail.get());

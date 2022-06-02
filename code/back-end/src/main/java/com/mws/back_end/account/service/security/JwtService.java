@@ -40,7 +40,7 @@ public class JwtService {
             throw new MWSException(INVALID_TOKEN_IN_HTTP_HEADERS);
         }
 
-        final Optional<String> emailOpt = jwtCipher.getLoginEmailFromJwt(currentToken);
+        final Optional<String> emailOpt = jwtCipher.getLoginEmail(currentToken);
         if (emailOpt.isEmpty()) {
             throw new MWSException(INVALID_TOKEN_IN_HTTP_HEADERS);
         }

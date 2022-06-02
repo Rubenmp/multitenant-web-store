@@ -68,13 +68,40 @@ public class JwtCipher {
         return Long.valueOf(String.valueOf(claims.get(TOKEN_CLAIM_TENANT_ID)));
     }
 
-    public Optional<String> getLoginEmailFromJwt(final String token) {
+    public Optional<String> getLoginEmail(final String token) {
         if (isTokenWellFormedAndSigned(token)) {
             final Claims claims = getTokenClaims(token);
             return Optional.of(String.valueOf(claims.get(TOKEN_CLAIM_USER_EMAIL)));
         }
 
         return Optional.empty();
+    }
+
+    public Long getUserId(final String token) {
+        if (isTokenWellFormedAndSigned(token)) {
+            final Claims claims = getTokenClaims(token);
+            return Long.valueOf(String.valueOf(claims.get(TOKEN_CLAIM_USER_ID)));
+        }
+
+        return null;
+    }
+
+    public Long getTenantId(final String token) {
+        if (isTokenWellFormedAndSigned(token)) {
+            final Claims claims = getTokenClaims(token);
+            return Long.valueOf(String.valueOf(claims.get(TOKEN_CLAIM_TENANT_ID)));
+        }
+
+        return null;
+    }
+
+    public UserRoleDto getUserRole(final String token) {
+        if (isTokenWellFormedAndSigned(token)) {
+            final Claims claims = getTokenClaims(token);
+            return UserRoleDto.valueOf(String.valueOf(claims.get(TOKEN_CLAIM_USER_ROLE)));
+        }
+
+        return null;
     }
 
     public Optional<Date> getExpirationDateFromJwt(final String token) {
