@@ -70,6 +70,7 @@ public class DatabaseInterface {
         final ProductCreationDto productCreationDto = new ProductCreationDto();
         productCreationDto.setName("[auto] Product " + (productIndex + 1));
         productCreationDto.setImage("image");
+        productCreationDto.setDescription("desc.");
         return productCreationDto;
     }
 

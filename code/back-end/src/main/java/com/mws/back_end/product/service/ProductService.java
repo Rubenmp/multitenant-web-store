@@ -59,6 +59,7 @@ public class ProductService {
         }
         product.setName(productCreationDto.getName());
         product.setImage(productCreationDto.getImage());
+        product.setDescription(productCreationDto.getDescription());
 
         return product;
     }
@@ -94,6 +95,7 @@ public class ProductService {
         }
         productToUpdate.setName(productUpdateDto.getName());
         productToUpdate.setImage(productUpdateDto.getImage());
+        productToUpdate.setDescription(productUpdateDto.getDescription());
 
         final Product productWithSameName = productDao.findByName(productUpdateDto.getName());
         if (productWithSameName != null && !productWithSameName.getId().equals(productToUpdate.getId())) {

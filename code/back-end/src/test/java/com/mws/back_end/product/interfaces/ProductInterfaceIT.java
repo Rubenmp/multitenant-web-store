@@ -54,6 +54,7 @@ class ProductInterfaceIT extends IntegrationTestConfig {
         final ProductCreationDto creationDto = new ProductCreationDto();
         creationDto.setName(name);
         creationDto.setImage("New product image");
+        creationDto.setDescription("New product description");
 
         return creationDto;
     }
@@ -81,6 +82,7 @@ class ProductInterfaceIT extends IntegrationTestConfig {
         updateRequest.setId(PRODUCT_ID);
         updateRequest.setName("New product name");
         updateRequest.setImage("New product image");
+        updateRequest.setDescription("New product description");
 
         return updateRequest;
     }

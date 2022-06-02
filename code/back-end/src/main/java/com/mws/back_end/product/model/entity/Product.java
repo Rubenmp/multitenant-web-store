@@ -32,6 +32,9 @@ public class Product {
     private String image;
 
     @NotNull
+    private String description;
+
+    @NotNull
     @Column(nullable = false, columnDefinition = "BOOLEAN")
     private boolean active = true;
 }
