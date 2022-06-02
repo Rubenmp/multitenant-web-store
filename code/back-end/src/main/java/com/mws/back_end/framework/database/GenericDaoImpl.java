@@ -236,8 +236,17 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
     @Override
     @Transactional
     public void delete(final Id id) {
+        // Warning: only entities with "active" field are allowed to be deleted logically
         final Entity reference = this.entityManager.getReference(entityClass, id);
         checkTenantPermissionsToUpdateEntity(reference);
+
+        try {
+            final Method method = reference.getClass().getMethod("setActive", boolean.class);
+            method.invoke(reference, false);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new EntityPersistenceException("It's not possible to delete entity with id " + id);
+        }
+
         this.entityManager.remove(reference);
     }
 

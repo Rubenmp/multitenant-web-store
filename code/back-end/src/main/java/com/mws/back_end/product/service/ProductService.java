@@ -109,13 +109,11 @@ public class ProductService {
     public void deleteProduct(final long productId) throws MWSException {
         checkProductPermissions();
 
-        final Product product = productDao.findWeak(productId);
-        if (product == null) {
+        if (productDao.findWeak(productId) == null) {
             throw new MWSException("Product not found");
         }
 
-        product.setActive(false);
-        productDao.update(product);
+        productDao.delete(productId);
     }
 
 }

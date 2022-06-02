@@ -73,16 +73,13 @@ public class TenantService {
     }
 
     public void deleteTenant(final long tenantId) throws MWSException {
-        tenantDao.findBy("tenantId", String.valueOf(tenantId), 1);
-        final Tenant tenant = tenantDao.findWeak(tenantId);
         checkSuperPermissions();
 
-        if (tenant == null) {
+        if (tenantDao.findWeak(tenantId) == null) {
             throw new MWSException("Entity not found");
         }
 
-        tenant.setActive(false);
-        tenantDao.update(tenant);
+        tenantDao.delete(tenantId);
     }
 
     private void checkSuperPermissions() throws MWSException {
