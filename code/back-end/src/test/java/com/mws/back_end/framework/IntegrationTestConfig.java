@@ -18,9 +18,6 @@ import org.springframework.http.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.Serializable;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -30,7 +27,8 @@ import java.util.stream.Collectors;
 import static com.mws.back_end.account.interfaces.user.UserInterface.LOGIN_USER_URL;
 import static com.mws.back_end.framework.dto.WebResultCode.SUCCESS;
 import static com.mws.back_end.framework.utils.DateUtils.isDateBeforeNow;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class IntegrationTestConfig {
     protected static final Long TENANT_ID = 1L;
