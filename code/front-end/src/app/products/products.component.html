@@ -1,0 +1,23 @@
+<h1 id="products_title">Products</h1>
+
+
+  
+  <div fxFlex fxLayout="column" fxLayoutGap="10px" style="height: 100vh">
+    <div fxLayout="row wrap">
+      <!-- loop over the cardList and show the cards -->
+      <div
+        *ngFor="let card of [1,2,3,4,5,6,7]"
+        fxFlex="25"
+        fxFlex.md="33"
+        fxFlex.sm="50"
+        fxFlex.xs="100"
+        fxLayout="column"
+        style="padding: 5px;"
+      >
+        <!-- cards here -->
+        <mat-card class="mat-elevation-z1">
+            <app-product></app-product>
+        </mat-card>
+      </div>
+    </div>
+  </div>
