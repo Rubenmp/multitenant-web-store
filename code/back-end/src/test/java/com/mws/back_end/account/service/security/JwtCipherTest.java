@@ -52,7 +52,6 @@ class JwtCipherTest extends TestUtils {
     void getCurrentUserRole_withRoleUser_success() {
         final UserDto user = newUserDto(UserRoleDto.USER);
         final String token = createToken(user);
-        Mockito.doReturn(true).when(jwtCipher).jwtRestrictionsEnabled();
         Mockito.doReturn(token).when(jwtCipher).getCurrentTokenWithoutValidation();
 
         assertEquals(UserRoleDto.USER, jwtCipher.getCurrentUserRole(), "User role");
@@ -63,7 +62,6 @@ class JwtCipherTest extends TestUtils {
     void getCurrentUserRole_withRoleAdmin_success() {
         final UserDto user = newUserDto(UserRoleDto.ADMIN);
         final String token = createToken(user);
-        Mockito.doReturn(true).when(jwtCipher).jwtRestrictionsEnabled();
         Mockito.doReturn(token).when(jwtCipher).getCurrentTokenWithoutValidation();
 
         assertEquals(UserRoleDto.ADMIN, jwtCipher.getCurrentUserRole(), "User role");
@@ -74,7 +72,6 @@ class JwtCipherTest extends TestUtils {
     void getCurrentUserRole_withRoleSuper_success() {
         final UserDto user = newUserDto(UserRoleDto.SUPER);
         final String token = createToken(user);
-        Mockito.doReturn(true).when(jwtCipher).jwtRestrictionsEnabled();
         Mockito.doReturn(token).when(jwtCipher).getCurrentTokenWithoutValidation();
 
         assertEquals(UserRoleDto.SUPER, jwtCipher.getCurrentUserRole(), "User role");
@@ -83,7 +80,6 @@ class JwtCipherTest extends TestUtils {
 
     @Test
     void getCurrentUserRole_withoutUser_success() {
-        Mockito.doReturn(true).when(jwtCipher).jwtRestrictionsEnabled();
         Mockito.doReturn(null).when(jwtCipher).getCurrentTokenWithoutValidation();
 
         assertNull(jwtCipher.getCurrentUserRole(), "User role");

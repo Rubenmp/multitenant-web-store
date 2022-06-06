@@ -25,7 +25,7 @@ import static java.util.Date.from;
 
 @Service
 public class JwtCipher {
-    public static final boolean USE_JWT_RESTRICTIONS = true;
+    public static final boolean USE_JWT_RESTRICTIONS = false;
     private static final String DEV_SECRET_KEY = "Tk9RX3NlY3JldF9rZXlfdG9fZ2VuZXJhdGVfc2lnbmVkX3Rva2VuX2Zvcl9kZXY=";
     private static final Long JWT_EXPIRATION_IN_MILLISECONDS = 100000000L;
     private static final int TOTAL_NUMBER_OF_TOKEN_CLAIMS = 6;
@@ -152,9 +152,6 @@ public class JwtCipher {
     }
 
     public UserRoleDto getCurrentUserRole() {
-        if (!jwtRestrictionsEnabled()) {
-            return UserRoleDto.SUPER;
-        }
         final String token = getCurrentToken();
         if (token != null) {
             return UserRoleDto.valueOf(String.valueOf(getTokenClaims(token).get(TOKEN_CLAIM_USER_ROLE)));

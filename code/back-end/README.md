@@ -3,7 +3,7 @@ Back end services for the project.
 
 
 ## Requirements
-- Java 11
+- Java 17
 - [MySQL](https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-20-04)
     Create local databases "mws_db" (main database) and "mws_test_db" (database used for integration tests) with user "mws_dev" and password "password"
     ```roomsql
