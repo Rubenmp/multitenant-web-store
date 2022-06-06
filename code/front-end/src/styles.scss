@@ -1,5 +1,8 @@
 :root {
-    --main-color: #58739b; 
+    --main-color: #002b5c; 
     --second-color: #c3cfd7;
     --font-color:  white; 
 }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
