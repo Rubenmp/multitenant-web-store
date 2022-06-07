@@ -1,4 +1,8 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Input, OnInit } from '@angular/core';
+import { isOkResponse } from 'src/service/dto/api';
+import { NotificationService } from 'src/service/notification/notification.service';
+import { OrderService } from 'src/service/order/order.service';
 import { Product } from 'src/service/product/dto/product';
 
 @Component({
@@ -10,11 +14,29 @@ export class ProductComponent implements OnInit {
   @Input()
   product!: Product;
 
-  constructor() { }
+  constructor(private orderService: OrderService,
+    private notificationService: NotificationService) { }
 
-  ngOnInit(): void {
-    console.log("product init");
-    console.log(this.product);
+  ngOnInit(): void { }
+
+  async order(): Promise<void> {
+    if (!this.product) {
+      this.notificationService.showError("Not a product.")
+      return;
+    }
+
+    // TODO: select userId from local storage
+    await (await this.orderService.orderProduct(1, this.product.id)).subscribe({
+      next: (response) => {
+        if (isOkResponse(response)) {
+          this.notificationService.showInfoMessage("Successful order");
+        } else {
+          this.notificationService.showError(response.message);
+        }
+      },
+      error: (e: HttpErrorResponse) => {
+        this.notificationService.showErrorOrDefault(e, "Internal error ordering product.");
+      },
+    });
   }
-
 }
