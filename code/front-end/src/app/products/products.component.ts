@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { isOkResponse } from 'src/service/dto/api';
+import { Product } from 'src/service/dto/product';
 import { ProductsService } from '../../service/products.service';
 
 @Component({
@@ -8,19 +9,21 @@ import { ProductsService } from '../../service/products.service';
   styleUrls: ['./products.component.scss']
 })
 export class ProductsComponent implements OnInit {
+  private products: Product[] | undefined;
 
   constructor(private productsService: ProductsService) { }
 
   async ngOnInit(): Promise<void> {
-    const productsResponse = await this.productsService.list();
-
-    if (isOkResponse(productsResponse)) {
-      console.log("isOkResponse yes");
-    } else {
-      console.log("isOkResponse no");
-    }
-
-    console.log(`${JSON.stringify(productsResponse)}`);
+    const productsResponse = await (await this.productsService.list()).subscribe(
+      response => {
+        if (isOkResponse(response)) {
+          this.products = response.data;
+          console.log("isokresponse true")
+          console.log(this.products);
+        } else {
+          console.log("isOkResponse no (error)");
+        }
+      }
+    );
   }
-
 }

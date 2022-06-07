@@ -1,8 +1,8 @@
 export interface ListProductResponse {
-    type: string;
-    exception: {};
+    code: string;
+    message: string;
     data: Product[];
-  }
+}
 
 export class Product {
     id!: number;

@@ -1,3 +1,14 @@
+import { Observable } from "rxjs";
+
+export interface ApiResponse {
+  code: string;
+  message: string;
+  data: any;
+
+  new (): ApiResponse;
+
+}
+
 export function isOkResponse(response: any) {
   if (response && response.error && response.status !== 200) {
     return false;
@@ -9,6 +20,7 @@ export function isOkResponse(response: any) {
   }
   return false;
 }
+
 
 export async function to(promise: Promise<any>) {
   try {
