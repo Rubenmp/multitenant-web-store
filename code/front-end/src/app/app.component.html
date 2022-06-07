@@ -1,7 +1,6 @@
 <mat-toolbar class="toolbar" role="banner">
   <button
     mat-icon-button
-    *ngIf="sidenav.mode !== 'over'"
     (click)="sidenav.toggle()"
   >
     <mat-icon *ngIf="!sidenav.opened"> menu </mat-icon>
@@ -10,7 +9,6 @@
 
   <span class="header-title">Multitenant web store</span>
   <div class="spacer"></div>
-  <span id="account">Account</span>
 </mat-toolbar>
 
 
@@ -27,13 +25,13 @@
 
     <mat-divider></mat-divider>
 
+    <button mat-button class="menu-button" routerLink="/">
+      <mat-icon>person</mat-icon>
+      <span>Account</span>
+    </button>
     <button mat-button class="menu-button" routerLink="/products">
       <mat-icon>shop</mat-icon>
       <span>Products</span>
-    </button>
-    <button mat-button class="menu-button" routerLink="/">
-      <mat-icon>person</mat-icon>
-      <span>Profile</span>
     </button>
 
   </mat-sidenav>

@@ -11,6 +11,7 @@ then run the docker image.
 
 Using npm:
 ```console
+npm i
 ng serve
 ```
 

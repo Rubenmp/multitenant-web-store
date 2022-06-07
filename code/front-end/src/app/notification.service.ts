@@ -4,14 +4,15 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class NotificationService {
+  private errorTitle: string = "Error";
 
   constructor() { }
 
   showError() {
-    this.showErrorMessage("There was an internal error");
+    this.showMessage(this.errorTitle, "There was an internal error");
   }
 
-  showErrorMessage(msg: string) {
-    console.log(msg)
+  showMessage(title: string, msg: string) {
+    console.log(title + msg)
   }
 }
