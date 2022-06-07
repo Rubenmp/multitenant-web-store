@@ -14,9 +14,11 @@ export class NotificationService {
   }
 
   showMessage(title: string, msg: string) {
-    this._snackBar.open(msg, 'Splash', {
+    this._snackBar.open(msg, 'X', {
       horizontalPosition: 'right',
       verticalPosition: 'top',
+      duration: 5000,
+      panelClass: ['notification-style']
     });
   }
 }
