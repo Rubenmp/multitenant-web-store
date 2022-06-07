@@ -2,8 +2,8 @@
 
 <div id="products_flexbox" fxFlex fxLayout="column" fxLayoutGap="10px">
     <div fxLayout="row wrap">
-        <div *ngFor="let p of getProducts()" fxFlex="25" fxFlex.md="33" fxFlex.sm="50" fxFlex.xs="100"
-            fxLayout="column">
+        <div *ngFor="let p of getProducts()" fxFlex="32.5" fxFlex.md="50" fxFlex.sm="75" fxFlex.xs="100"
+            fxLayout="column" style="margin: 5px;">
             <app-product [product]=p></app-product>
         </div>
     </div>

@@ -9,6 +9,8 @@
 .content-row {
     flex-direction: row;
     display: flex;
+    max-height: 100px;
+    height: 100px;
 
     >.product-description {
         display: flex;
