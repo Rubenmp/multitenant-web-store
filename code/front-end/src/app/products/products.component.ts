@@ -20,9 +20,7 @@ export class ProductsComponent implements OnInit {
     await (await this.productsService.list()).subscribe({
       next: (response) => {
         if (isOkResponse(response)) {
-          this.products = response.data;
-          console.log(this.products);
-        } else {
+          this.products = response.data;        } else {
           this.notificationService.showError(response.message);
         }
       },

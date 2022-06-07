@@ -1,6 +1,5 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { ListProductResponse, Product } from './dto/product';
 
@@ -8,11 +7,14 @@ import { ListProductResponse, Product } from './dto/product';
   providedIn: 'root'
 })
 export class ProductsService {
+  private listProductsUrl: string = `${environment.baseUrl}/product/list`;
 
   constructor(private http: HttpClient) { }
 
   async list() {
+    let params = new HttpParams().set("active", "true");
+
     return await this.http
-      .get<ListProductResponse>(`${environment.baseUrl}/product/list`);
+      .get<ListProductResponse>(this.listProductsUrl, { params });
   }
 }
