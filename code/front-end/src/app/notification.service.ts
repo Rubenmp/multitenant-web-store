@@ -8,6 +8,10 @@ export class NotificationService {
   constructor() { }
 
   showError() {
-    console.log("show error")
+    this.showErrorMessage("There was an internal error");
+  }
+
+  showErrorMessage(msg: string) {
+    console.log(msg)
   }
 }

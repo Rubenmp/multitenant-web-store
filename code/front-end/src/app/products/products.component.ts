@@ -15,19 +15,19 @@ export class ProductsComponent implements OnInit {
   constructor(private productsService: ProductsService, private notificationService: NotificationService) { }
 
   async ngOnInit(): Promise<void> {
-    const productsResponse = await (await this.productsService.list()).subscribe(
-      response => {
+    await (await this.productsService.list()).subscribe({
+      next: (response) => {
         if (isOkResponse(response)) {
           this.products = response.data;
-          console.log("isokresponse true")
           console.log(this.products);
-          this.notificationService.showError();
         } else {
           console.log("isOkResponse no (error)");
           this.notificationService.showError();
-          console.log(response);
         }
-      }
-    );
+      },
+      error: (_) => {
+        this.notificationService.showError();
+      },
+    });
   }
 }
