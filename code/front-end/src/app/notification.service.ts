@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
   providedIn: 'root'
@@ -6,13 +7,16 @@ import { Injectable } from '@angular/core';
 export class NotificationService {
   private errorTitle: string = "Error";
 
-  constructor() { }
+  constructor(private _snackBar: MatSnackBar) { }
 
-  showError() {
-    this.showMessage(this.errorTitle, "There was an internal error");
+  showError(msg: string) {
+    this.showMessage(this.errorTitle, msg);
   }
 
   showMessage(title: string, msg: string) {
-    console.log(title + msg)
+    this._snackBar.open(msg, 'Splash', {
+      horizontalPosition: 'right',
+      verticalPosition: 'top',
+    });
   }
 }

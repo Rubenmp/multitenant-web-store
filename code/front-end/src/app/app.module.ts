@@ -14,7 +14,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatCardModule} from '@angular/material/card';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { HttpClientModule } from '@angular/common/http';
-
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
@@ -34,6 +34,7 @@ import { HttpClientModule } from '@angular/common/http';
     FlexLayoutModule,
     MatCardModule,
     HttpClientModule,
+    MatSnackBarModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

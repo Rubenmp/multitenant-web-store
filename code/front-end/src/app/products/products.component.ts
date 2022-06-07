@@ -12,21 +12,22 @@ import { NotificationService } from '../notification.service';
 export class ProductsComponent implements OnInit {
   private products: Product[] | undefined;
 
-  constructor(private productsService: ProductsService, private notificationService: NotificationService) { }
+  constructor(private productsService: ProductsService,
+    private notificationService: NotificationService) { }
 
   async ngOnInit(): Promise<void> {
+
     await (await this.productsService.list()).subscribe({
       next: (response) => {
         if (isOkResponse(response)) {
           this.products = response.data;
           console.log(this.products);
         } else {
-          console.log("isOkResponse no (error)");
-          this.notificationService.showError();
+          this.notificationService.showError(response.message);
         }
       },
       error: (_) => {
-        this.notificationService.showError();
+        this.notificationService.showError("Internal error fetching products.");
       },
     });
   }
