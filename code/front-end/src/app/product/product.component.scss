@@ -5,4 +5,39 @@
     padding: 50px;
     text-align: center;
 }
-  
+
+.content-row {
+    flex-direction: row;
+    display: flex;
+
+    >.product-description {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        justify-content: center;
+        flex: 65%;
+    }
+
+    >.product-image {
+        background: var(--second-color);
+        flex: 35%;
+        margin-right: 10px;
+
+        img {
+            width: 100%;
+            max-height: 100%;
+            max-width: 100%;
+        }
+    }
+}
+
+
+.action-buttons {
+    padding: 0px;
+    margin-left: 0px;
+
+    #order-button {
+        background-color: var(--second-color);
+    }
+}
+

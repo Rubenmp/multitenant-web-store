@@ -1,3 +1,18 @@
-<div id ="product">
-    <p>Product</p>
-</div>
+<!-- Template based on https://zoaibkhan.com/blog/weather-card-design-with-angular-material-and-css/ -->
+<mat-card class="mat-elevation-z5">
+    <mat-card-header>
+        <mat-card-title>{{product.name}}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <div class="content-row">
+            <div class="product-image">
+                <img src="{{product.image}}" />
+            </div>
+            <div class="product-description">{{product.description}}</div>
+        </div>
+    </mat-card-content>
+
+    <mat-card-actions class="action-buttons">
+        <button mat-button id="order-button">Order</button>
+    </mat-card-actions>
+</mat-card>

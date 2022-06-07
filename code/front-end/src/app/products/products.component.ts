@@ -16,7 +16,6 @@ export class ProductsComponent implements OnInit {
     private notificationService: NotificationService) { }
 
   async ngOnInit(): Promise<void> {
-
     await (await this.productsService.list()).subscribe({
       next: (response) => {
         if (isOkResponse(response)) {
@@ -29,5 +28,9 @@ export class ProductsComponent implements OnInit {
         this.notificationService.showError("Internal error fetching products.");
       },
     });
+  }
+
+  getProducts() : Product[]{ 
+    return this.products;
   }
 }

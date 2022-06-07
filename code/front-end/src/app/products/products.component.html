@@ -1,20 +1,10 @@
 <h1 id="products_title">Products</h1>
 
-
-
 <div id="products_flexbox" fxFlex fxLayout="column" fxLayoutGap="10px">
     <div fxLayout="row wrap">
-        <div
-            *ngFor="let card of [1,2,3,4,5,6,7]"
-            fxFlex="25"
-            fxFlex.md="33"
-            fxFlex.sm="50"
-            fxFlex.xs="100"
-            fxLayout="column"
-        >
-        <mat-card class="mat-elevation-z1">
-            <app-product></app-product>
-        </mat-card>
+        <div *ngFor="let p of getProducts()" fxFlex="25" fxFlex.md="33" fxFlex.sm="50" fxFlex.xs="100"
+            fxLayout="column">
+            <app-product [product]=p></app-product>
         </div>
     </div>
 </div>
