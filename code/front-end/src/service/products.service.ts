@@ -13,7 +13,12 @@ export class ProductsService {
     console.log("inside products service")
 
     const products = await this.http
-      .get<any[]>(`${environment.baseUrl}/product/list`).subscribe();
+      .get<any[]>(`${environment.baseUrl}/product/list`).subscribe(
+        {
+          next(num) { console.log('Next num: ' + num)},
+          error(err) { console.log('Received an error: ' + err)}
+        }
+      );
 
     console.log("products service end async call")
     console.log(products)
