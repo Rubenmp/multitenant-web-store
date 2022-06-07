@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { isOkResponse } from 'src/service/dto/api';
 import { ProductsService } from '../../service/products.service';
 
 @Component({
@@ -10,9 +11,16 @@ export class ProductsComponent implements OnInit {
 
   constructor(private productsService: ProductsService) { }
 
-  ngOnInit(): void {
-    console.log("products init")
-    this.productsService.call();
+  async ngOnInit(): Promise<void> {
+    const productsResponse = await this.productsService.list();
+
+    if (isOkResponse(productsResponse)) {
+      console.log("isOkResponse yes");
+    } else {
+      console.log("isOkResponse no");
+    }
+
+    console.log(`${JSON.stringify(productsResponse)}`);
   }
 
 }
