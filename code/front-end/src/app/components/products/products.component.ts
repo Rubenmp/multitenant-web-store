@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { isOkResponse } from 'src/service/dto/api';
 import { NotificationService } from 'src/service/notification/notification.service';
 import { Product } from 'src/service/product/dto/product';
-import { ProductsService } from '../../service/product/products.service';
+import { ProductsService } from '../../../service/product/products.service';
 
 @Component({
   selector: 'app-products',
