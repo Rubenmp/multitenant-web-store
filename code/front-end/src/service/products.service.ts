@@ -12,8 +12,6 @@ export class ProductsService {
   constructor(private http: HttpClient) { }
 
   async list() {
-    console.log("inside products service")
-
     return await this.http
       .get<ListProductResponse>(`${environment.baseUrl}/product/list`);
   }
