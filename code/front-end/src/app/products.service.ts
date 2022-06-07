@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -12,8 +13,7 @@ export class ProductsService {
     console.log("inside products service")
 
     const products = await this.http
-      .get<any[]>("http://localhost:8080/product/list").subscribe();
-
+      .get<any[]>(`${environment.baseUrl}/product/list`).subscribe();
 
     console.log("products service end async call")
     console.log(products)
