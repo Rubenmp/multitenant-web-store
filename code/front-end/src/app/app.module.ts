@@ -13,6 +13,7 @@ import { ProductComponent } from './product/product.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatCardModule} from '@angular/material/card';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { HttpClientModule } from '@angular/common/http';
 
 
 @NgModule({
@@ -31,7 +32,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     MatIconModule,
     MatDividerModule,
     FlexLayoutModule,
-    MatCardModule
+    MatCardModule,
+    HttpClientModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
