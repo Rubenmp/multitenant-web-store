@@ -1,5 +1,3 @@
-import { Observable } from "rxjs";
-
 export interface ApiResponse {
   code: string;
   message: string;
@@ -19,14 +17,4 @@ export function isOkResponse(response: any) {
     return true;
   }
   return false;
-}
-
-
-export async function to(promise: Promise<any>) {
-  try {
-    const data = await promise;
-    return data;
-  } catch (err) {
-    return err;
-  }
 }
