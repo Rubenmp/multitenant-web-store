@@ -35,6 +35,7 @@ public class JwtCipher {
     private static final String TOKEN_CLAIM_USER_ROLE = "USER_ROLE";
     private static final String TOKEN_CLAIM_ISSUED_AT = "iat";
     private static final String TOKEN_CLAIM_EXPIRATION_TIME = "exp";
+    private static final String TOKEN_BEARER = "Bearer ";
 
     public boolean jwtRestrictionsEnabled() {
         return USE_JWT_RESTRICTIONS;
@@ -128,9 +129,9 @@ public class JwtCipher {
         return isTokenWellFormedAndSigned(token) ? token : null;
     }
 
-    String getCurrentTokenWithoutValidation() {
+    protected String getCurrentTokenWithoutValidation() {
         final HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        return request.getHeader(HttpHeaders.AUTHORIZATION);
+        return extractJwtToken(request);
     }
 
     public Long getCurrentUserId() {
@@ -160,16 +161,20 @@ public class JwtCipher {
     }
 
     public String getJwtFromRequest(final HttpServletRequest httpServletRequest) {
-        String bearerToken = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
-
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-
-        return bearerToken;
+        return extractJwtToken(httpServletRequest);
     }
 
-    public Key getSecretKey() {
+    private String extractJwtToken(final HttpServletRequest httpServletRequest) {
+        final String authorizationHeader = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
+
+        if (StringUtils.hasText(authorizationHeader) && authorizationHeader.startsWith(TOKEN_BEARER)) {
+            return authorizationHeader.substring(TOKEN_BEARER.length());
+        }
+
+        return authorizationHeader;
+    }
+
+    private Key getSecretKey() {
         String base64Secret = System.getenv("MWS_SECURITY_KEY");
         byte[] keyBytes = Decoders.BASE64.decode(StringUtils.hasText(base64Secret) ? base64Secret : DEV_SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);

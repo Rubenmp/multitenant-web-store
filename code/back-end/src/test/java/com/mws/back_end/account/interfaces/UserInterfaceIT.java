@@ -149,6 +149,7 @@ class UserInterfaceIT extends IntegrationTestConfig {
         final LoginRequest loginRequest = new LoginRequest();
         loginRequest.setEmail(updateRequest.getEmail());
         loginRequest.setPassword(updateRequest.getPassword());
+
         return loginRequest;
     }
 
@@ -167,13 +168,13 @@ class UserInterfaceIT extends IntegrationTestConfig {
         assertEquals(WebResultCode.SUCCESS, resultCreate.getCode(), "Create user result code");
         assertNotNull(resultCreate.getData(), "Created user id");
 
-        final UserUpdateDto registerRequest = createUserUpdateDto(USER_ID);
-        registerRequest.setEmail(duplicatedEmail);
+        final UserUpdateDto updateDto = createUserUpdateDto(USER_ID);
+        updateDto.setEmail(duplicatedEmail);
 
         final ResponseEntity<String> responseEntityUpdate = restTemplate.exchange(
                 getUri(UPDATE_USER_URL),
                 HttpMethod.PUT,
-                new HttpEntity<>(registerRequest),
+                new HttpEntity<>(updateDto),
                 String.class);
 
         assertEquals(HttpStatus.BAD_REQUEST, responseEntityUpdate.getStatusCode(), "Update status");
