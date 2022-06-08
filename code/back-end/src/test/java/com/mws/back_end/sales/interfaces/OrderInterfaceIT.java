@@ -31,7 +31,6 @@ class OrderInterfaceIT extends IntegrationTestConfig {
     @Test
     void createOrder_thenListThem_success() {
         final OrderCreationDto creationDto = new OrderCreationDto();
-        creationDto.setUserId(USER_ID);
         creationDto.setProductId(PRODUCT_ID);
         final HttpEntity<String> createHttpEntity = createUserHttpEntity(toJson(creationDto));
         final URI createUri = getUri(CREATE_ORDER_URL);
@@ -59,7 +58,7 @@ class OrderInterfaceIT extends IntegrationTestConfig {
         assertTrue(orders != null && !orders.isEmpty(), "Orders not empty");
         final OrderDto returnedOrder = orders.stream().filter(o -> orderId.equals(o.getId())).findFirst().orElse(null);
         assertNotNull(returnedOrder, "Created order must be listed");
-        assertEquals(creationDto.getUserId(), returnedOrder.getUserId(), "Order user id");
+        assertEquals(USER_ID, returnedOrder.getUserId(), "Order user id must be the logged user.");
         assertNotNull(returnedOrder.getProduct(), "Order product");
         assertEquals(creationDto.getProductId(), returnedOrder.getProduct().getId(), "Order product id");
     }

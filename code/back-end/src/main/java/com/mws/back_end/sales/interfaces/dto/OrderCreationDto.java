@@ -6,6 +6,5 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class OrderCreationDto {
-    private Long userId;
     private Long productId;
 }

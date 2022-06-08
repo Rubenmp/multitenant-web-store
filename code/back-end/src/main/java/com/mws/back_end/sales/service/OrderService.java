@@ -35,36 +35,35 @@ public class OrderService {
     public Long createOrder(final OrderCreationDto orderCreationDto) throws MWSException {
         requireNotNull(orderCreationDto, "Order info must be provided");
         requireNotNull(orderCreationDto.getProductId(), "Product must be provided");
-        requireNotNull(orderCreationDto.getUserId(), "User must be provided");
-        checkOrderCreationPermissions(orderCreationDto.getUserId());
+        final Long userId = jwtCipher.getCurrentUserId();
+        checkOrderCreationPermissions(userId);
 
         if (productService.getActiveProduct(orderCreationDto.getProductId()) == null) {
             throw new MWSException("Invalid product id.");
         }
 
-        final Order order = toOrder(orderCreationDto);
+        final Order order = toOrder(orderCreationDto.getProductId(), userId);
         return orderDao.create(order).getId();
     }
 
     private void checkOrderCreationPermissions(final Long userRequested) throws MWSException {
+        requireNotNull(userRequested, "User must be provided in the context.");
+
         final UserRoleDto userRole = jwtCipher.getCurrentUserRole();
-        if (userRole == UserRoleDto.SUPER) {
+        if (userRole == UserRoleDto.SUPER || userRole == UserRoleDto.ADMIN) {
             throw new MWSException("Not allowed to create order(s).");
-        } else if (userRole == null || !userRequested.equals(jwtCipher.getCurrentUserId())){
-            throw new MWSException("Not allowed to create order(s) for other user.");
         }
     }
 
-    private Order toOrder(final OrderCreationDto orderCreationDto) throws MWSException {
+    private Order toOrder(final Long productId, final Long userId) throws MWSException {
         final Order order = new Order();
         final Long tenantId = jwtCipher.getCurrentTenantId();
         order.setTenantId(tenantId);
         if (tenantId == null) {
             throw new MWSException("Tenant id must be in the request context.");
         }
-        order.setTenantId(orderCreationDto.getUserId());
-        order.setUserId(orderCreationDto.getUserId());
-        order.setProductId(orderCreationDto.getProductId());
+        order.setUserId(userId);
+        order.setProductId(productId);
 
         return order;
     }
