@@ -54,14 +54,58 @@ class UserServiceTest extends TestUtils {
     }
 
     @Test
+    void createUser_withoutEmail_error() {
+        final UserCreationDto registerRequest = getValidRegisterRequest(UserRoleDto.USER);
+        registerRequest.setEmail(null);
+        when(tenantService.getTenant(TENANT_ID)).thenReturn(new TenantDto());
+
+        createUserExpectingException(registerRequest);
+    }
+
+    @Test
+    void createUser_withEmptyEmail_error() {
+        final UserCreationDto registerRequest = getValidRegisterRequest(UserRoleDto.USER);
+        registerRequest.setEmail("");
+        when(tenantService.getTenant(TENANT_ID)).thenReturn(new TenantDto());
+
+        createUserExpectingException(registerRequest);
+    }
+
+    @Test
+    void createUser_withoutPassword_error() {
+        final UserCreationDto registerRequest = getValidRegisterRequest(UserRoleDto.USER);
+        registerRequest.setPassword(null);
+        when(tenantService.getTenant(TENANT_ID)).thenReturn(new TenantDto());
+
+        createUserExpectingException(registerRequest);
+    }
+
+    @Test
+    void createUser_withEmptyPassword_error() {
+        final UserCreationDto registerRequest = getValidRegisterRequest(UserRoleDto.USER);
+        registerRequest.setPassword("");
+        when(tenantService.getTenant(TENANT_ID)).thenReturn(new TenantDto());
+
+        createUserExpectingException(registerRequest);
+    }
+
+    private void createUserExpectingException(UserCreationDto registerRequest) {
+        boolean exceptionThrown = false;
+        try {
+            userService.createUser(registerRequest);
+        } catch (MWSException e) {
+            exceptionThrown = true;
+        }
+
+        assertTrue(exceptionThrown, "Exception should be thrown");
+    }
+
+    @Test
     void createUser_withRoleSuperUsingSuper_success() throws MWSException {
         final UserCreationDto registerRequest = getValidRegisterRequest(UserRoleDto.SUPER);
         final User createdUser = newUser();
         when(userDao.create(any(User.class))).thenReturn(createdUser);
-
-        final User currentUser = userWithRole(UserRole.SUPER);
         when(jwtService.getCurrentUserRole()).thenReturn(UserRoleDto.SUPER);
-        //when(userDao.findWeak(currentUser.getId())).thenReturn(currentUser);
         when(tenantService.getTenant(TENANT_ID)).thenReturn(new TenantDto());
 
         final Long createdUserId = userService.createUser(registerRequest);
@@ -72,9 +116,7 @@ class UserServiceTest extends TestUtils {
     @Test
     void createUser_withRoleSuperUsingAdmin_notAllowed() {
         final UserCreationDto registerRequest = getValidRegisterRequest(UserRoleDto.SUPER);
-        final User currentUser = userWithRole(UserRole.ADMIN);
         when(jwtService.getCurrentUserRole()).thenReturn(UserRoleDto.ADMIN);
-        //when(userDao.findWeak(currentUser.getId())).thenReturn(currentUser);
         when(tenantService.getTenant(TENANT_ID)).thenReturn(new TenantDto());
 
         boolean exceptionThrown = false;
@@ -127,9 +169,7 @@ class UserServiceTest extends TestUtils {
         final UserCreationDto registerRequest = getValidRegisterRequest(UserRoleDto.ADMIN);
         final User createdUser = newUser();
         when(userDao.create(any(User.class))).thenReturn(createdUser);
-        final User currentUser = userWithRole(UserRole.SUPER);
         when(jwtService.getCurrentUserRole()).thenReturn(UserRoleDto.SUPER);
-        //when(userDao.findWeak(currentUser.getId())).thenReturn(currentUser);
         when(tenantService.getTenant(TENANT_ID)).thenReturn(new TenantDto());
 
         final Long createdUserId = userService.createUser(registerRequest);
@@ -143,9 +183,7 @@ class UserServiceTest extends TestUtils {
         final UserCreationDto registerRequest = getValidRegisterRequest(UserRoleDto.ADMIN);
         final User createdUser = newUser();
         when(userDao.create(any(User.class))).thenReturn(createdUser);
-        final User currentUser = userWithRole(UserRole.ADMIN);
         when(jwtService.getCurrentUserRole()).thenReturn(UserRoleDto.ADMIN);
-        //when(userDao.findWeak(currentUser.getId())).thenReturn(currentUser);
         when(tenantService.getTenant(TENANT_ID)).thenReturn(new TenantDto());
 
         final Long createdUserId = userService.createUser(registerRequest);
@@ -157,7 +195,6 @@ class UserServiceTest extends TestUtils {
     @Test
     void createUser_withRoleAdminUsingUser_notAllowed() {
         final UserCreationDto registerRequest = getValidRegisterRequest(UserRoleDto.ADMIN);
-        final User currentUser = userWithRole(UserRole.USER);
         when(jwtService.getCurrentUserRole()).thenReturn(UserRoleDto.USER);
         when(tenantService.getTenant(TENANT_ID)).thenReturn(new TenantDto());
 
@@ -194,7 +231,6 @@ class UserServiceTest extends TestUtils {
         final UserCreationDto registerRequest = getValidRegisterRequest(UserRoleDto.USER);
         final User createdUser = newUser();
         when(userDao.create(any(User.class))).thenReturn(createdUser);
-        final User currentUser = userWithRole(UserRole.SUPER);
         when(jwtService.getCurrentUserRole()).thenReturn(UserRoleDto.SUPER);
         when(tenantService.getTenant(TENANT_ID)).thenReturn(new TenantDto());
 
@@ -208,7 +244,6 @@ class UserServiceTest extends TestUtils {
         final UserCreationDto registerRequest = getValidRegisterRequest(UserRoleDto.USER);
         final User createdUser = newUser();
         when(userDao.create(any(User.class))).thenReturn(createdUser);
-        final User currentUser = userWithRole(UserRole.ADMIN);
         when(jwtService.getCurrentUserRole()).thenReturn(UserRoleDto.ADMIN);
         when(tenantService.getTenant(TENANT_ID)).thenReturn(new TenantDto());
 
@@ -222,7 +257,6 @@ class UserServiceTest extends TestUtils {
         final UserCreationDto registerRequest = getValidRegisterRequest(UserRoleDto.USER);
         final User createdUser = newUser();
         when(userDao.create(any(User.class))).thenReturn(createdUser);
-        final User currentUser = userWithRole(UserRole.USER);
         when(jwtService.getCurrentUserRole()).thenReturn(UserRoleDto.USER);
         when(tenantService.getTenant(TENANT_ID)).thenReturn(new TenantDto());
 
@@ -281,6 +315,48 @@ class UserServiceTest extends TestUtils {
         } catch (MWSException e) {
             fail(e.getMessage());
         }
+    }
+
+    @Test
+    void updateUser_withoutEmail_error() {
+        final UserUpdateDto updateDto = getUpdateRequest();
+        updateDto.setEmail(null);
+
+        updateUserExpectingException(updateDto);
+    }
+
+    @Test
+    void updateUser_withEmptyEmail_error() {
+        final UserUpdateDto updateDto = getUpdateRequest();
+        updateDto.setEmail("");
+
+        updateUserExpectingException(updateDto);
+    }
+
+    @Test
+    void updateUser_withoutPassword_error() {
+        final UserUpdateDto updateDto = getUpdateRequest();
+        updateDto.setPassword(null);
+
+        updateUserExpectingException(updateDto);
+    }
+    @Test
+    void updateUser_withEmptyPassword_error() {
+        final UserUpdateDto updateDto = getUpdateRequest();
+        updateDto.setPassword("");
+
+        updateUserExpectingException(updateDto);
+    }
+
+    private void updateUserExpectingException(UserUpdateDto updateDto) {
+        boolean exceptionThrown = false;
+        try {
+            userService.updateUser(updateDto);
+        } catch (MWSException e) {
+            exceptionThrown = true;
+        }
+
+        assertTrue(exceptionThrown, "Exception should be thrown");
     }
 
     @Test

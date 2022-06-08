@@ -7,6 +7,7 @@ import com.mws.back_end.account.model.entity.UserRole;
 import com.mws.back_end.account.service.security.JwtService;
 import com.mws.back_end.framework.exception.EntityPersistenceException;
 import com.mws.back_end.framework.exception.MWSException;
+import com.mws.back_end.framework.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -41,8 +42,8 @@ public class UserService {
     public Long createUser(final UserCreationDto userCreationDto) throws MWSException {
         requireNotNull(userCreationDto, "User info must be provided");
 
+        checkUserToCreate(userCreationDto);
         final User user = updatePreviousUserData(userCreationDto);
-        checkUserToCreate(user);
         try {
             return userDao.create(user).getId();
         } catch (EntityPersistenceException e) {
@@ -50,20 +51,25 @@ public class UserService {
         }
     }
 
-    private void checkUserToCreate(final User user) throws MWSException {
-        if (tenantService.getTenant(user.getTenantId()) == null) {
+    private void checkUserToCreate(final UserCreationDto userCreationDto) throws MWSException {
+        if (tenantService.getTenant(userCreationDto.getTenantId()) == null) {
             throw new MWSException("Invalid tenant id.");
         }
-        checkPermissionsToCreateUser(user);
+        checkUserEmail(userCreationDto.getEmail());
+        checkUserPassword(userCreationDto.getPassword());
+        checkUserFirstName(userCreationDto.getFirstName());
+        checkUserLastName(userCreationDto.getLastName());
+
+        checkPermissionsToCreateUser(userCreationDto);
     }
 
-    private void checkPermissionsToCreateUser(final User userToCreate) throws MWSException {
+    private void checkPermissionsToCreateUser(final UserCreationDto userToCreate) throws MWSException {
         final UserRoleDto loggedUserRole = jwtService.getCurrentUserRole();
-        if (UserRole.SUPER == userToCreate.getRole()) {
+        if (UserRoleDto.SUPER == userToCreate.getRole()) {
             if (UserRoleDto.SUPER != loggedUserRole) {
                 throw new MWSException("Not allowed to create an user with super role.");
             }
-        } else if (UserRole.ADMIN == userToCreate.getRole() && !(UserRoleDto.SUPER == loggedUserRole || UserRoleDto.ADMIN == loggedUserRole)) {
+        } else if (UserRoleDto.ADMIN == userToCreate.getRole() && !(UserRoleDto.SUPER == loggedUserRole || UserRoleDto.ADMIN == loggedUserRole)) {
             throw new MWSException("Not allowed to create an user with admin role.");
         }
     }
@@ -95,10 +101,10 @@ public class UserService {
 
     private User checkUserToUpdate(final UserUpdateDto userUpdateDto) throws MWSException {
         requireNotNull(userUpdateDto.getId(), "User id is required.");
-        requireNotNull(userUpdateDto.getEmail(), "User email is required.");
-        requireNotNull(userUpdateDto.getPassword(), "User password is required.");
-        requireNotNull(userUpdateDto.getFirstName(), "User first name is required.");
-        requireNotNull(userUpdateDto.getLastName(), "User last name is required.");
+        checkUserEmail(userUpdateDto.getEmail());
+        checkUserPassword(userUpdateDto.getPassword());
+        checkUserFirstName(userUpdateDto.getFirstName());
+        checkUserLastName(userUpdateDto.getLastName());
 
         final User newUser = toUser(userUpdateDto);
         if (newUser == null) {
@@ -110,6 +116,31 @@ public class UserService {
             throw new MWSException("Duplicated email");
         }
         return newUser;
+    }
+
+    private void checkUserEmail(final String email) throws MWSException {
+        if (StringUtils.isEmpty(email)) {
+            throw new MWSException("User email is required.");
+        }
+    }
+
+    private void checkUserPassword(final String password) throws MWSException {
+        if (StringUtils.isEmpty(password)) {
+            throw new MWSException("User password is required.");
+        } else if (password.length() < 8) {
+            throw new MWSException("User password must contain at least 8 characters.");
+        }
+    }
+    private void checkUserFirstName(final String firstName) throws MWSException {
+        if (StringUtils.isEmpty(firstName)) {
+            throw new MWSException("User first name cannot be blank.");
+        }
+    }
+
+    private void checkUserLastName(final String lastName) throws MWSException {
+        if (StringUtils.isEmpty(lastName)) {
+            throw new MWSException("User last name cannot be blank.");
+        }
     }
 
     private User toUser(final UserUpdateDto userUpdateDto) {

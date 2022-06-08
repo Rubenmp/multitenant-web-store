@@ -5,7 +5,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -27,16 +30,20 @@ public class User {
     private UserRole role;
 
     @NotNull
+    @Size(min=1)
     @Column(unique = true)
     private String email;
 
     @NotNull
+    @Size(min=8)
     private String password;
 
     @NotNull
+    @Size(min=1)
     private String firstName;
 
     @NotNull
+    @Size(min=1)
     private String lastName;
 
 }
