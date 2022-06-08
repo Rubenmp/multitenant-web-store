@@ -1,0 +1,45 @@
+#account_title {
+    color: var(--main-color);
+    font-weight: bold;
+    position: absolute;
+}
+
+#identification_form {
+    padding: 0;
+    margin: 0;
+    width: auto;
+    max-width: auto;
+    height: 95%;
+    max-height: 95%;
+}
+
+
+.identification-field {
+    width: 60%;
+    max-width: 60%;
+    margin-left: 20%;
+}
+
+#submit-button {
+    margin-left: 20%;
+    margin-top: 10px;
+    background-color: var(--second-color);
+}
+
+
+.ask-container {
+    padding-top: 13px;
+    padding-bottom: 13px;
+
+    background-color: #f1f1f1;
+    text-align: center;
+
+    span {
+        color: dodgerblue;
+
+        :hover {
+            cursor: link;
+
+        }
+    }
+}

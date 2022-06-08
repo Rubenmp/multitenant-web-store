@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { OrderProductResponse } from './dto/order';
+import { ApiResponse } from '../dto/api';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +19,6 @@ export class OrderService {
     }
 
     return await this.http
-      .post<OrderProductResponse>(this.orderProductsUrl, body);
+      .post<ApiResponse>(this.orderProductsUrl, body);
   }
 }

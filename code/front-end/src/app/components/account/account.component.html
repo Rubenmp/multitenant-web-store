@@ -1,0 +1,76 @@
+<div *ngIf="show_login">
+    <h1 id="account_title">Login</h1>
+</div>
+<div *ngIf="!show_login">
+    <h1 id="account_title">Sign up</h1>
+</div>
+
+
+<div id="identification_form">
+
+    <div *ngIf="show_login">
+        <mat-grid-list cols="1" rowHeight="500px">
+            <mat-form-field appearance="fill" class="identification-field">
+                <mat-label>Email</mat-label>
+                <input matInput placeholder="Ex. pat@example.com">
+            </mat-form-field>
+            <br>
+
+            <mat-form-field appearance="fill" class="identification-field">
+                <mat-label>Password</mat-label>
+                <input matInput [type]="hide ? 'password' : 'text'">
+                <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
+                    [attr.aria-pressed]="hide">
+                    <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                </button>
+            </mat-form-field>
+            <br>
+
+            <div class="identification-field ask-container ">
+                Don't have an account? <span (click)="show_signup_form()">Sign up</span>
+            </div>
+
+            <button mat-button id="submit-button" (click)="login()">Create</button>
+        </mat-grid-list>
+    </div>
+
+    <div *ngIf="!show_login">
+        <mat-grid-list cols="1" rowHeight="500px">
+            <mat-form-field appearance="fill" class="identification-field">
+                <mat-label>First Name</mat-label>
+                <input matInput>
+            </mat-form-field>
+            <br>
+
+            <mat-form-field appearance="fill" class="identification-field">
+                <mat-label>Last Name</mat-label>
+                <input matInput>
+            </mat-form-field>
+            <br>
+
+            <mat-form-field appearance="fill" class="identification-field">
+                <mat-label>Email</mat-label>
+                <input matInput placeholder="Ex. pat@example.com">
+            </mat-form-field>
+            <br>
+
+            <mat-form-field appearance="fill" class="identification-field">
+                <mat-label>Password</mat-label>
+                <input matInput [type]="hide ? 'password' : 'text'">
+                <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
+                    [attr.aria-pressed]="hide">
+                    <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                </button>
+            </mat-form-field>
+            <br>
+
+            <div class="identification-field ask-container ">
+                Already have an account? <span (click)="show_login_form()">Sign in</span>
+            </div>
+
+            <button mat-button id="submit-button" (click)="signup()">Sign up</button>
+        </mat-grid-list>
+    </div>
+
+
+</div>
