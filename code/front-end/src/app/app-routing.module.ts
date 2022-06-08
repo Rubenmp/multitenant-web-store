@@ -4,6 +4,7 @@ import { AccountComponent } from './components/account/account.component';
 import { ProductsComponent } from './components/products/products.component';
 
 const routes: Routes = [
+  { path: "", redirectTo: "/account", pathMatch: "full" },
   {
     path: 'products',
     component: ProductsComponent,
