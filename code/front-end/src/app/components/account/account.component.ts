@@ -3,6 +3,9 @@ import { Component, OnInit } from '@angular/core';
 import { isOkResponse } from 'src/service/dto/api';
 import { IdentificationService } from 'src/service/identification/identification.service';
 import { NotificationService } from 'src/service/notification/notification.service';
+import {Router} from "@angular/router"
+import { AuthenticationResponse } from 'src/service/identification/dto/authentication-response';
+import { LocalStorageService } from 'src/service/local-storage/local-storage.service';
 
 @Component({
   selector: 'app-account',
@@ -18,7 +21,9 @@ export class AccountComponent implements OnInit {
   inputPassword: string = ''
 
   constructor(private identificationService: IdentificationService,
-    private notificationService: NotificationService) { }
+    private notificationService: NotificationService,
+    private router: Router,
+    private localStorageService: LocalStorageService) { }
 
   ngOnInit(): void {
   }
@@ -28,8 +33,7 @@ export class AccountComponent implements OnInit {
     await (await this.identificationService.login(this.inputEmail, this.inputPassword)).subscribe({
       next: (response) => {
         if (isOkResponse(response)) {
-          this.notificationService.showInfoMessage("Successful login");
-          this.afterLogin();
+          this.afterLogin(response);
         } else {
           this.notificationService.showError(response.message);
         }
@@ -40,8 +44,12 @@ export class AccountComponent implements OnInit {
     });
   }
 
-  afterLogin() {
-    
+  afterLogin(response: AuthenticationResponse) {
+    this.router.navigate(['/products'])
+    console.log("token: " +  response.data.token);
+    this.localStorageService.storeToken(response.data.token);
+    console.log("token stored: " +  this.localStorageService.getToken());
+
   }
 
   showLoginForm(): void {
