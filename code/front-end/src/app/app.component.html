@@ -9,7 +9,7 @@
 
   <span class="header-title">Multitenant web store</span>
   <div class="spacer"></div>
-  <mat-icon (click)="logout()">exit_to_app</mat-icon>
+  <mat-icon (click)="logout()" *ngIf="isUserLogged()">exit_to_app</mat-icon>
 </mat-toolbar>
 
 
