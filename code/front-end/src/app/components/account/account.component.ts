@@ -26,6 +26,7 @@ export class AccountComponent implements OnInit {
     private localStorageService: LocalStorageService) { }
 
   ngOnInit(): void {
+    this.localStorageService.clearToken();
   }
 
 
