@@ -43,6 +43,8 @@ export class LocalStorageService {
 
   clearStorage() {
     localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem(this.USER_FULL_NAME_KEY);
+    localStorage.removeItem(this.USER_ROLE_KEY);
   }
 
 }

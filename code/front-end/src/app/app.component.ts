@@ -53,7 +53,7 @@ export class AppComponent {
 
   getUserRole(): string {
     const role = this.localStorageService.getUserRole();
-    return role || "Unknown role";
+    return role || "Unknown";
   }
 
   logout(): void {
