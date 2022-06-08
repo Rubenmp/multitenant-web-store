@@ -7,7 +7,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AccountComponent implements OnInit {
   hide = true;
-  show_login = true;
+  show_login = false;
 
   constructor() { }
 
