@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 
 // Angular material
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -40,6 +41,7 @@ import { ProductsComponent } from './components/products/products.component';
     BrowserAnimationsModule,
     FlexLayoutModule,
     HttpClientModule,
+    FormsModule,
 
     // Angular material
     MatCardModule,

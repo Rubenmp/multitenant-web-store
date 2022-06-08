@@ -17,13 +17,13 @@
 .identification-field {
     width: 60%;
     max-width: 60%;
-    margin-left: 20%;
+    margin-left: 22%;
     margin-bottom: 10px;
-    max-width: 750px;
+    max-width: 700px;
 }
 
 #submit-button {
-    margin-left: 20%;
+    margin-left: 22%;
     margin-top: 10px;
     background-color: var(--second-color);
 }
@@ -38,10 +38,5 @@
 
     span {
         color: dodgerblue;
-
-        :hover {
-            cursor: link;
-
-        }
     }
 }

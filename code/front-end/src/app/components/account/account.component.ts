@@ -10,8 +10,12 @@ import { NotificationService } from 'src/service/notification/notification.servi
   styleUrls: ['./account.component.scss']
 })
 export class AccountComponent implements OnInit {
-  hide_password = true;
-  show_login = true;
+  hidePassword = true;
+  showLogin = true;
+  inputFirstName: string = ''
+  inputLastName: string = ''
+  inputEmail: string = ''
+  inputPassword: string = ''
 
   constructor(private identificationService: IdentificationService,
     private notificationService: NotificationService) { }
@@ -21,37 +25,35 @@ export class AccountComponent implements OnInit {
 
 
   async login() {
-    const email = "";
-    const password = ""
-
-    await (await this.identificationService.login(email, password)).subscribe({
+    await (await this.identificationService.login(this.inputEmail, this.inputPassword)).subscribe({
       next: (response) => {
         if (isOkResponse(response)) {
           this.notificationService.showInfoMessage("Successful login");
+          this.afterLogin();
         } else {
           this.notificationService.showError(response.message);
         }
       },
       error: (e: HttpErrorResponse) => {
-        this.notificationService.showErrorWithDefault(e, "Internal error in signup.");
+        this.notificationService.showErrorWithDefault(e, "Internal error in login.");
       },
     });
   }
 
-  show_login_form(): void {
-    this.show_login = true;
+  afterLogin() {
+    
+  }
+
+  showLoginForm(): void {
+    this.showLogin = true;
   }
 
   async signUp() {
-    const email = "";
-    const password = ""
-    const firstName = "";
-    const lastName = "";
-
-    await (await this.identificationService.signUp(email, password, firstName, lastName)).subscribe({
+    await (await this.identificationService.signUp(this.inputEmail, this.inputPassword, this.inputFirstName, this.inputLastName)).subscribe({
       next: (response) => {
         if (isOkResponse(response)) {
           this.notificationService.showInfoMessage("Successful sign up");
+          this.showLoginForm();
         } else {
           this.notificationService.showError(response.message);
         }
@@ -62,7 +64,7 @@ export class AccountComponent implements OnInit {
     });
   }
 
-  show_signup_form(): void {
-    this.show_login = false;
+  showSignupForm(): void {
+    this.showLogin = false;
   }
 }
