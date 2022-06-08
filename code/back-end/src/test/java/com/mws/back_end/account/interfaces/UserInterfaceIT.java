@@ -62,6 +62,9 @@ class UserInterfaceIT extends IntegrationTestConfig {
         assertEquals(HttpStatus.OK, loginResponse.getStatusCode(), "Response status");
         final WebResult<UserAuthenticationResponse> authenticationResult = toWebResult(loginResponse, UserAuthenticationResponse.class);
         assertEquals(SUCCESS, authenticationResult.getCode(), "Result code");
+        assertNotNull(authenticationResult.getData().getFirstName(), "First name cannot be null");
+        assertNotNull(authenticationResult.getData().getLastName(), "Last name cannot be null");
+
         return authenticationResult.getData().getToken();
     }
 

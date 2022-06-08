@@ -179,7 +179,11 @@ public class UserService {
 
         SecurityContextHolder.getContext().setAuthentication(authenticate);
         final String token = jwtService.generateNewToken(authenticate);
+        final User loggedUser = userDao.findWeak(jwtService.getUserId(token));
+
         return UserAuthenticationResponse.builder()
+                .firstName(loggedUser.getFirstName())
+                .lastName(loggedUser.getLastName())
                 .token(token)
                 .build();
     }
