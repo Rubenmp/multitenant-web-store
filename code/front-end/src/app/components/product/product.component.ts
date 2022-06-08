@@ -25,8 +25,7 @@ export class ProductComponent implements OnInit {
       return;
     }
 
-    // TODO: select userId from local storage
-    await (await this.orderService.orderProduct(1, this.product.id)).subscribe({
+    await (await this.orderService.orderProduct(this.product.id)).subscribe({
       next: (response) => {
         if (isOkResponse(response)) {
           this.notificationService.showInfoMessage("Successful order");

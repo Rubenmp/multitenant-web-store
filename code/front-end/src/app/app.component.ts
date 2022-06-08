@@ -20,19 +20,6 @@ export class AppComponent {
 
   ngAfterViewInit() {
     this.configureAutomaticSideNavHide();
-    this.localStorageService.clearStorage();
-  }
-
-  shouldShowAccountSection(): boolean {
-    return !this.isUserLogged();
-  }
-
-  isUserLogged(): boolean {
-    return !(!this.localStorageService.getToken());
-  }
-
-  getUserFullName(): string {
-    return this.localStorageService.getUserFirstLastName() || '';
   }
 
   private configureAutomaticSideNavHide() {
@@ -48,5 +35,21 @@ export class AppComponent {
           this.sidenav.open();
         }
       });
+  }
+
+  shouldShowAccountSection(): boolean {
+    return !this.isUserLogged();
+  }
+
+  isUserLogged(): boolean {
+    return !(!this.localStorageService.getToken());
+  }
+
+  getUserFullName(): string {
+    return this.localStorageService.getUserFirstLastName() || '';
+  }
+
+  logout(): void {
+    this.localStorageService.clearStorage();
   }
 }

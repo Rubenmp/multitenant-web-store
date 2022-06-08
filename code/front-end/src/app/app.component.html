@@ -9,6 +9,7 @@
 
   <span class="header-title">Multitenant web store</span>
   <div class="spacer"></div>
+  <mat-icon (click)="logout()">exit_to_app</mat-icon>
 </mat-toolbar>
 
 
@@ -26,11 +27,11 @@
 
     <mat-divider></mat-divider>
 
-    <button mat-button class="menu-button" routerLink="/account" *ngIf="true">
+    <button mat-button class="menu-button" routerLink="/account" *ngIf="!isUserLogged()">
       <mat-icon>person</mat-icon>
       <span>Account</span>
     </button>
-    <button mat-button class="menu-button" routerLink="/products">
+    <button mat-button class="menu-button" routerLink="/products" *ngIf="isUserLogged()">
       <mat-icon>shop</mat-icon>
       <span>Products</span>
     </button>

@@ -11,14 +11,8 @@ export class OrderService {
 
   constructor(private http: HttpClient) { }
 
-  async orderProduct(userId: number, productId: number) {
-    console.log("orderProduct: " + productId);
-    const body = {
-      userId,
-      productId
-    }
-
+  async orderProduct(productId: number) {
     return await this.http
-      .post<ApiResponse>(this.orderProductsUrl, body);
+      .post<ApiResponse>(this.orderProductsUrl, { productId });
   }
 }
