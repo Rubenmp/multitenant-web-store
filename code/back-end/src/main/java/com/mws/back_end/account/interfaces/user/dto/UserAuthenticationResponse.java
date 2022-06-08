@@ -12,7 +12,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Builder
 public class UserAuthenticationResponse implements Serializable {
+    private String token;
     private String firstName;
     private String lastName;
-    private String token;
+    private UserRoleDto role;
 }

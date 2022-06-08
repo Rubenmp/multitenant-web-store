@@ -58,12 +58,14 @@ class UserInterfaceIT extends IntegrationTestConfig {
         checkToken(token, creationDto.getEmail(), userId);
     }
 
-    private String checkLogin(ResponseEntity<String> loginResponse) {
+    private String checkLogin(final ResponseEntity<String> loginResponse) {
         assertEquals(HttpStatus.OK, loginResponse.getStatusCode(), "Response status");
         final WebResult<UserAuthenticationResponse> authenticationResult = toWebResult(loginResponse, UserAuthenticationResponse.class);
         assertEquals(SUCCESS, authenticationResult.getCode(), "Result code");
-        assertNotNull(authenticationResult.getData().getFirstName(), "First name cannot be null");
-        assertNotNull(authenticationResult.getData().getLastName(), "Last name cannot be null");
+        final UserAuthenticationResponse data = authenticationResult.getData();
+        assertNotNull(data.getFirstName(), "First name cannot be null");
+        assertNotNull(data.getLastName(), "Last name cannot be null");
+        assertNotNull(data.getRole(), "User role cannot be null");
 
         return authenticationResult.getData().getToken();
     }
@@ -145,7 +147,7 @@ class UserInterfaceIT extends IntegrationTestConfig {
         assertEquals(WebResultCode.SUCCESS, result.getCode(), "Result code");
     }
 
-    private LoginRequest toLoginRequest(UserUpdateDto updateRequest) {
+    private LoginRequest toLoginRequest(final UserUpdateDto updateRequest) {
         final LoginRequest loginRequest = new LoginRequest();
         loginRequest.setEmail(updateRequest.getEmail());
         loginRequest.setPassword(updateRequest.getPassword());

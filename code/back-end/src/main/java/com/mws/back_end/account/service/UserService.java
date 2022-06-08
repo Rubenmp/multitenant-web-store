@@ -184,6 +184,7 @@ public class UserService {
         return UserAuthenticationResponse.builder()
                 .firstName(loggedUser.getFirstName())
                 .lastName(loggedUser.getLastName())
+                .role(UserRoleDto.of(loggedUser.getRole()))
                 .token(token)
                 .build();
     }
