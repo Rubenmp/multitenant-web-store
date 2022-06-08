@@ -13,7 +13,7 @@ export class IdentificationService {
 
   constructor(private http: HttpClient) { }
 
-  async signup(email: string, password: string, firstName: string, lastName: string) {
+  async signUp(email: string, password: string, firstName: string, lastName: string) {
     const body = {
       tenantId: 1, // TODO: set this parameter dynamically
       role: "USER",

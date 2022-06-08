@@ -10,7 +10,7 @@
 
     <div *ngIf="show_login">
         <mat-grid-list cols="1" rowHeight="500px">
-            <mat-form-field appearance="fill" class="identification-field" style="margin-top: 25%;">
+            <mat-form-field appearance="fill" class="identification-field" style="margin-top: 20%;">
                 <mat-label>Email</mat-label>
                 <input matInput placeholder="Ex. pat@example.com">
             </mat-form-field>
@@ -18,10 +18,10 @@
 
             <mat-form-field appearance="fill" class="identification-field">
                 <mat-label>Password</mat-label>
-                <input matInput [type]="hide ? 'password' : 'text'">
-                <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
-                    [attr.aria-pressed]="hide">
-                    <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                <input matInput [type]="hide_password ? 'password' : 'text'">
+                <button mat-icon-button matSuffix (click)="hide_password = !hide_password" [attr.aria-label]="'Hide password'"
+                    [attr.aria-pressed]="hide_password">
+                    <mat-icon>{{hide_password ? 'visibility_off' : 'visibility'}}</mat-icon>
                 </button>
             </mat-form-field>
             <br>
@@ -36,7 +36,7 @@
 
     <div *ngIf="!show_login">
         <mat-grid-list cols="1" rowHeight="500px">
-            <mat-form-field appearance="fill" class="identification-field" style="margin-top: 15%;">
+            <mat-form-field appearance="fill" class="identification-field" style="margin-top: 13%;">
                 <mat-label>First Name</mat-label>
                 <input matInput>
             </mat-form-field>
@@ -56,10 +56,10 @@
 
             <mat-form-field appearance="fill" class="identification-field">
                 <mat-label>Password</mat-label>
-                <input matInput [type]="hide ? 'password' : 'text'">
-                <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
-                    [attr.aria-pressed]="hide">
-                    <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                <input matInput [type]="hide_password ? 'password' : 'text'">
+                <button mat-icon-button matSuffix (click)="hide_password = !hide_password" [attr.aria-label]="'Hide password'"
+                    [attr.aria-pressed]="hide_password">
+                    <mat-icon>{{hide_password ? 'visibility_off' : 'visibility'}}</mat-icon>
                 </button>
             </mat-form-field>
             <br>
@@ -68,7 +68,7 @@
                 Already have an account? <span (click)="show_login_form()">Sign in</span>
             </div>
 
-            <button mat-button id="submit-button" (click)="signup()">Sign up</button>
+            <button mat-button id="submit-button" (click)="signUp()">Sign up</button>
         </mat-grid-list>
     </div>
 

@@ -18,7 +18,7 @@ export class NotificationService {
     });
   }
 
-  showErrorOrDefault(e: HttpErrorResponse, defaultMsg: string) {
+  showErrorWithDefault(e: HttpErrorResponse, defaultMsg: string) {
     if (e && e.error && e.error.message) {
       this.showError(e.error.message);
     } else {

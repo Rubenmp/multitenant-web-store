@@ -35,7 +35,7 @@ export class ProductComponent implements OnInit {
         }
       },
       error: (e: HttpErrorResponse) => {
-        this.notificationService.showErrorOrDefault(e, "Internal error ordering product.");
+        this.notificationService.showErrorWithDefault(e, "Internal error ordering product.");
       },
     });
   }
