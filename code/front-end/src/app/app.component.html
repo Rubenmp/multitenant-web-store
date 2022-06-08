@@ -23,7 +23,7 @@
 
     <h4 class="name" *ngIf="isUserLogged()">{{ getUserFullName() }}</h4>
     <h4 class="name" *ngIf="!isUserLogged()">Unknown</h4>
-    <p class="designation">Unknown role</p>
+    <p class="designation">Role: {{ getUserRole() }}</p>
 
     <mat-divider></mat-divider>
 

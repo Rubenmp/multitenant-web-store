@@ -3,6 +3,7 @@ import { MatSidenav } from '@angular/material/sidenav';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { delay } from 'rxjs/operators';
 import { LocalStorageService } from 'src/service/local-storage/local-storage.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -16,7 +17,8 @@ export class AppComponent {
   sidenav!: MatSidenav;
 
   constructor(private observer: BreakpointObserver,
-    private localStorageService: LocalStorageService) { }
+    private localStorageService: LocalStorageService,
+    private router: Router) { }
 
   ngAfterViewInit() {
     this.configureAutomaticSideNavHide();
@@ -49,7 +51,13 @@ export class AppComponent {
     return this.localStorageService.getUserFirstLastName() || '';
   }
 
+  getUserRole(): string {
+    const role = this.localStorageService.getUserRole();
+    return role || "Unknown role";
+  }
+
   logout(): void {
     this.localStorageService.clearStorage();
+    this.router.navigate(['/account'])
   }
 }

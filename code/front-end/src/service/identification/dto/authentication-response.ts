@@ -5,7 +5,8 @@ export interface AuthenticationResponse {
 }
 
 export class AuthenticationData {
+    token!: string;
     firstName!: string;
     lastName!: string;
-    token!: string;
+    role!: string;
 }

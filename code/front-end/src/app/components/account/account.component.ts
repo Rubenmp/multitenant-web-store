@@ -47,8 +47,8 @@ export class AccountComponent implements OnInit {
 
   afterLogin(response: AuthenticationResponse) {
     this.router.navigate(['/products'])
-    this.localStorageService.storeToken(response.data.token);
-    this.localStorageService.storeUserFirstLastName(response.data.firstName + " " + response.data.lastName);
+    this.localStorageService.clearStorage();
+    this.localStorageService.saveUserInfo(response.data);
   }
 
   showLoginForm(): void {
