@@ -5,7 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 
 // Angular material
@@ -27,6 +27,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { AccountComponent } from './components/account/account.component';
 import { ProductComponent } from './components/product/product.component';
 import { ProductsComponent } from './components/products/products.component';
+import { HttpTokenInterceptor } from './http-token.interceptor';
 
 @NgModule({
   declarations: [
@@ -59,7 +60,9 @@ import { ProductsComponent } from './components/products/products.component';
     MatRadioModule,
     MatGridListModule
   ],
-  providers: [],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: HttpTokenInterceptor, multi: true },
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

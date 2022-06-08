@@ -26,7 +26,7 @@ export class AccountComponent implements OnInit {
     private localStorageService: LocalStorageService) { }
 
   ngOnInit(): void {
-    this.localStorageService.clearToken();
+    this.localStorageService.clearStorage();
   }
 
 
@@ -47,10 +47,8 @@ export class AccountComponent implements OnInit {
 
   afterLogin(response: AuthenticationResponse) {
     this.router.navigate(['/products'])
-    console.log("token: " +  response.data.token);
     this.localStorageService.storeToken(response.data.token);
-    console.log("token stored: " +  this.localStorageService.getToken());
-
+    this.localStorageService.storeUserFirstLastName(response.data.firstName + " " + response.data.lastName);
   }
 
   showLoginForm(): void {

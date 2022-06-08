@@ -18,6 +18,10 @@ export class NotificationService {
     });
   }
 
+  showWarning(msg: string) {
+    this.showError(msg);
+  }
+
   showErrorWithDefault(e: HttpErrorResponse, defaultMsg: string) {
     if (e && e.error && e.error.message) {
       this.showError(e.error.message);

@@ -20,11 +20,19 @@ export class AppComponent {
 
   ngAfterViewInit() {
     this.configureAutomaticSideNavHide();
-    this.localStorageService.clearToken();
+    this.localStorageService.clearStorage();
   }
 
   shouldShowAccountSection(): boolean {
-    return !this.localStorageService.getToken();
+    return !this.isUserLogged();
+  }
+
+  isUserLogged(): boolean {
+    return !(!this.localStorageService.getToken());
+  }
+
+  getUserFullName(): string {
+    return this.localStorageService.getUserFirstLastName() || '';
   }
 
   private configureAutomaticSideNavHide() {

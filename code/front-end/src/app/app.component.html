@@ -20,12 +20,13 @@
       alt="Profile icon"
     />
 
-    <h4 class="name">Rubén Morales</h4>
-    <p class="designation">Software Engineer</p>
+    <h4 class="name" *ngIf="isUserLogged()">{{ getUserFullName() }}</h4>
+    <h4 class="name" *ngIf="!isUserLogged()">Unknown</h4>
+    <p class="designation">Unknown role</p>
 
     <mat-divider></mat-divider>
 
-    <button mat-button class="menu-button" routerLink="/account" *ngIf="shouldShowAccountSection()">
+    <button mat-button class="menu-button" routerLink="/account" *ngIf="true">
       <mat-icon>person</mat-icon>
       <span>Account</span>
     </button>
