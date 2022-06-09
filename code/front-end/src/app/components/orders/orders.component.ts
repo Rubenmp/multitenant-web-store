@@ -25,6 +25,9 @@ export class OrdersComponent implements OnInit {
   @ViewChild(MatSort)
   sort!: MatSort;
 
+  filterById: string = "";
+  filterByProductName: string = "";
+
 
   constructor(private orderService: OrderService,
     private notificationService: NotificationService) { }
@@ -54,10 +57,27 @@ export class OrdersComponent implements OnInit {
   }
 
 
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    const filter = filterValue.trim().toLowerCase();
-    const newOrders = this.orders.filter(o => o.product.name.toLowerCase().includes(filter));
+  applyFilterById(event: Event) {
+    const filter = this.getFilterValue(event);
+    this.filterById = filter;
+    this.applyFilterInternal()
+  }
+
+  applyFilterByProductName(event: Event) {
+    const filter = this.getFilterValue(event);
+    this.filterByProductName = filter;
+    this.applyFilterInternal()
+  }
+
+
+  private applyFilterInternal() {
+    const newOrders = this.orders.filter(o => o.product.name.toLowerCase().includes(this.filterByProductName))
+      .filter(o => o.id.toLocaleString().includes(this.filterById));
     this.updateOrdersInTable(newOrders);
+  }
+
+  private getFilterValue(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    return filterValue.trim().toLowerCase();
   }
 }

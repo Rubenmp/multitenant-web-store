@@ -1,8 +1,15 @@
 <h1 id="orders_title">Orders</h1>
 
-<mat-form-field appearance="standard" style="display: inline;">
-  <mat-label>Filter by product name</mat-label>
-  <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input>
+
+<span id="filter_title">Filter</span>
+<mat-form-field appearance="standard" style="width: 75px;">
+  <mat-label>By id</mat-label>
+  <input matInput (keyup)="applyFilterById($event)" placeholder="Ex. Mia" #input>
+</mat-form-field>
+
+<mat-form-field appearance="standard" style="padding-left: 15px;" >
+  <mat-label>By product name</mat-label>
+  <input matInput (keyup)="applyFilterByProductName($event)" placeholder="Ex. Mia" #input>
 </mat-form-field>
 
 <div class="mat-elevation-z8">
