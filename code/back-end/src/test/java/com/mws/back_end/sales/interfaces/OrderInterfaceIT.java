@@ -69,7 +69,6 @@ class OrderInterfaceIT extends IntegrationTestConfig {
     @Test
     void createOrderInOneTransaction_success() {
         final OrderCreationOneTransactionDto creationDto = createOrderCreationOneTransactionDto();
-        //final HttpEntity<String> createHttpEntity = createUserHttpEntity(toJson(creationDto));
         final URI createUri = getUri(CREATE_ORDER_ONE_TRANSACTION_URL);
 
         final ResponseEntity<String> createResponse = restTemplate.exchange(
