@@ -1,0 +1,11 @@
+<h1 id="orders_title">Orders</h1>
+
+
+<mat-list id="order_list">
+  <mat-list-item *ngFor="let order of orders">
+    <mat-icon mat-list-icon>folder</mat-icon>
+    <div mat-line>{{order.id}}</div>
+    <div mat-line> {{order.product.name}} </div>
+  </mat-list-item>
+  <mat-divider></mat-divider>
+</mat-list>

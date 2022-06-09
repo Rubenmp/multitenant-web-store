@@ -28,7 +28,8 @@ import { AccountComponent } from './components/account/account.component';
 import { ProductComponent } from './components/product/product.component';
 import { ProductsComponent } from './components/products/products.component';
 import { HttpTokenInterceptor } from './http-token.interceptor';
-import { OrdersComponent } from './orders/orders.component';
+import { OrdersComponent } from './components/orders/orders.component';
+import { MatListModule } from '@angular/material/list';
 
 @NgModule({
   declarations: [
@@ -60,7 +61,8 @@ import { OrdersComponent } from './orders/orders.component';
     MatSelectModule,
     MatIconModule,
     MatRadioModule,
-    MatGridListModule
+    MatGridListModule,
+    MatListModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: HttpTokenInterceptor, multi: true },
