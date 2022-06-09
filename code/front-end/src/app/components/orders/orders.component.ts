@@ -46,9 +46,7 @@ export class OrdersComponent implements OnInit {
     });
   }
 
-  ngAfterViewInit() {
 
-  }
 /*
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
