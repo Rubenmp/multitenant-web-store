@@ -14,6 +14,8 @@ import { OrderService } from 'src/service/order/order.service';
   styleUrls: ['./orders.component.scss']
 })
 export class OrdersComponent implements OnInit {
+  orders: Order[] = []
+
   displayedColumns: string[] = ['orderId', 'productName', 'productImage', 'date'];
   dataSource!: MatTableDataSource<Order>;
 
@@ -32,10 +34,9 @@ export class OrdersComponent implements OnInit {
     await (await this.orderService.listOrders()).subscribe({
       next: (response) => {
         if (isOkResponse(response)) {
-          this.dataSource = new MatTableDataSource(response.data);
-          this.paginator.pageSize = 10;
-          this.dataSource.paginator = this.paginator;
-          this.dataSource.sort = this.sort;
+          this.orders = response.data;
+          this.paginator.pageSize = 5;
+          this.updateOrdersInTable(this.orders);
         } else {
           this.notificationService.showError(response.message);
         }
@@ -46,14 +47,17 @@ export class OrdersComponent implements OnInit {
     });
   }
 
+  updateOrdersInTable(order: Order[]) {
+    this.dataSource = new MatTableDataSource(order);
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
 
-/*
+
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
-  }*/
+    const filter = filterValue.trim().toLowerCase();
+    const newOrders = this.orders.filter(o => o.product.name.toLowerCase().includes(filter));
+    this.updateOrdersInTable(newOrders);
+  }
 }

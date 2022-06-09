@@ -1,8 +1,11 @@
 <h1 id="orders_title">Orders</h1>
 
+<mat-form-field appearance="standard" style="display: inline;">
+  <mat-label>Filter by product name</mat-label>
+  <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input>
+</mat-form-field>
 
 <div class="mat-elevation-z8">
-
   <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" id="order_list">
     <ng-container matColumnDef="orderId">
       <th mat-header-cell *matHeaderCellDef> Order id </th>
