@@ -1,34 +1,36 @@
 <h1 id="orders_title">Orders</h1>
 
 
-<table mat-table [dataSource]="orders" class="mat-elevation-z8" id="order_list">
+<div class="mat-elevation-z8">
 
-  <ng-container matColumnDef="orderId">
-    <th mat-header-cell *matHeaderCellDef> Order id </th>
-    <td mat-cell *matCellDef="let order"> {{order.id}} </td>
-  </ng-container>
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" id="order_list">
+    <ng-container matColumnDef="orderId">
+      <th mat-header-cell *matHeaderCellDef> Order id </th>
+      <td mat-cell *matCellDef="let order"> {{order.id}} </td>
+    </ng-container>
 
-  <ng-container matColumnDef="productName">
-    <th mat-header-cell *matHeaderCellDef> Product name </th>
-    <td mat-cell *matCellDef="let order"> {{order.product.name}} </td>
-  </ng-container>
+    <ng-container matColumnDef="productName">
+      <th mat-header-cell *matHeaderCellDef> Product name </th>
+      <td mat-cell *matCellDef="let order"> {{order.product.name}} </td>
+    </ng-container>
 
-  <ng-container matColumnDef="productImage">
-    <th mat-header-cell *matHeaderCellDef> Product image </th>
-    <td mat-cell *matCellDef="let order">
-      <div class="product-image">
-        <img src="{{order.product.image}}" />
-      </div>
-    </td>
-  </ng-container>
+    <ng-container matColumnDef="productImage">
+      <th mat-header-cell *matHeaderCellDef> Product image </th>
+      <td mat-cell *matCellDef="let order">
+        <div class="product-image">
+          <img src="{{order.product.image}}" />
+        </div>
+      </td>
+    </ng-container>
 
-  <ng-container matColumnDef="date">
-    <th mat-header-cell *matHeaderCellDef> Date </th>
-    <td mat-cell *matCellDef="let order"> {{order.date}} </td>
-  </ng-container>
+    <ng-container matColumnDef="date">
+      <th mat-header-cell *matHeaderCellDef> Date </th>
+      <td mat-cell *matCellDef="let order"> {{order.date}} </td>
+    </ng-container>
 
-  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
-  
-</table>
+  </table>
+  <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
+</div>

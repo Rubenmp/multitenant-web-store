@@ -23,6 +23,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatListModule } from '@angular/material/list';
 
 // App component
 import { AccountComponent } from './components/account/account.component';
@@ -30,7 +32,6 @@ import { ProductComponent } from './components/product/product.component';
 import { ProductsComponent } from './components/products/products.component';
 import { HttpTokenInterceptor } from './http-token.interceptor';
 import { OrdersComponent } from './components/orders/orders.component';
-import { MatListModule } from '@angular/material/list';
 
 @NgModule({
   declarations: [
@@ -65,6 +66,7 @@ import { MatListModule } from '@angular/material/list';
     MatGridListModule,
     MatListModule,
     MatTableModule,
+    MatPaginatorModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: HttpTokenInterceptor, multi: true },
