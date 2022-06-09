@@ -10,4 +10,5 @@ export class Order {
     id!: number;
     userId!: string;
     product!: Product;
+    date!: String;
 }

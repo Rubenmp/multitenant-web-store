@@ -12,7 +12,7 @@ import { OrderService } from 'src/service/order/order.service';
 })
 export class OrdersComponent implements OnInit {
   orders: Order[] = [];
-  displayedColumns: string[] = ['orderId', 'productName', 'productImage'];
+  displayedColumns: string[] = ['orderId', 'productName', 'productImage', 'date'];
 
   constructor(private orderService: OrderService,
     private notificationService: NotificationService) { }
@@ -23,6 +23,7 @@ export class OrdersComponent implements OnInit {
       next: (response) => {
         if (isOkResponse(response)) {
           this.orders = response.data;
+          console.log(this.orders);
         } else {
           this.notificationService.showError(response.message);
         }
