@@ -15,7 +15,11 @@
 
   <ng-container matColumnDef="productImage">
     <th mat-header-cell *matHeaderCellDef> Product image </th>
-    <td mat-cell *matCellDef="let order"> {{order.product.image}} </td>
+    <td mat-cell *matCellDef="let order">
+      <div class="product-image">
+        <img src="{{order.product.image}}" />
+      </div>
+    </td>
   </ng-container>
 
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
