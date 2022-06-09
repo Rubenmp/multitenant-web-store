@@ -36,6 +36,11 @@
       <span>Products</span>
     </button>
 
+    <button mat-button class="menu-button" routerLink="/orders" *ngIf="isUserLogged()">
+      <mat-icon>assignment_turned_in</mat-icon>
+      <span>Orders</span>
+    </button>
+
   </mat-sidenav>
   <mat-sidenav-content>
     <div class="content mat-elevation-z8">

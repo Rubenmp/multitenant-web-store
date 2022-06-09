@@ -10,16 +10,11 @@ export class NotificationService {
   constructor(private _snackBar: MatSnackBar) { }
 
   showError(msg: string) {
-    this._snackBar.open(msg, 'X', {
-      horizontalPosition: 'right',
-      verticalPosition: 'top',
-      duration: 5000,
-      panelClass: ['notification-style']
-    });
+    this.showMessage(String.fromCharCode(0x274C) + " " + msg);
   }
 
   showWarning(msg: string) {
-    this.showError(msg);
+    this.showMessage(String.fromCharCode(0x26A0) + " " + msg);
   }
 
   showErrorWithDefault(e: HttpErrorResponse, defaultMsg: string) {
@@ -31,6 +26,10 @@ export class NotificationService {
   }
 
   showInfoMessage(msg: string) {
+    this.showMessage(String.fromCharCode(0x2713) + " " + msg)
+  }
+
+  private showMessage(msg: string) {
     this._snackBar.open(msg, undefined, {
       horizontalPosition: 'right',
       verticalPosition: 'top',

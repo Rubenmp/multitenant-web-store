@@ -28,13 +28,15 @@ import { AccountComponent } from './components/account/account.component';
 import { ProductComponent } from './components/product/product.component';
 import { ProductsComponent } from './components/products/products.component';
 import { HttpTokenInterceptor } from './http-token.interceptor';
+import { OrdersComponent } from './orders/orders.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     ProductsComponent,
     ProductComponent,
-    AccountComponent
+    AccountComponent,
+    OrdersComponent
   ],
   imports: [
     BrowserModule,
