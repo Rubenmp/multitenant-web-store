@@ -22,6 +22,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { MatTableModule } from '@angular/material/table';
 
 // App component
 import { AccountComponent } from './components/account/account.component';
@@ -63,6 +64,7 @@ import { MatListModule } from '@angular/material/list';
     MatRadioModule,
     MatGridListModule,
     MatListModule,
+    MatTableModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: HttpTokenInterceptor, multi: true },
