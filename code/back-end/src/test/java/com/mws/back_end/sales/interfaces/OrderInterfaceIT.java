@@ -17,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static com.mws.back_end.framework.IntegrationTestConfig.TEST_PROFILE;
@@ -59,6 +60,8 @@ class OrderInterfaceIT extends IntegrationTestConfig {
         final OrderDto returnedOrder = orders.stream().filter(o -> orderId.equals(o.getId())).findFirst().orElse(null);
         assertNotNull(returnedOrder, "Created order must be listed");
         assertEquals(USER_ID, returnedOrder.getUserId(), "Order user id must be the logged user.");
+        assertNotNull(returnedOrder.getDate(), "Order date must be not null.");
+        assertFalse(returnedOrder.getDate().after(new Date()), "Order date must be before now.");
         assertNotNull(returnedOrder.getProduct(), "Order product");
         assertEquals(creationDto.getProductId(), returnedOrder.getProduct().getId(), "Order product id");
     }

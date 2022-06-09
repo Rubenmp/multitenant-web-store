@@ -3,7 +3,6 @@ package com.mws.back_end.account.service.security;
 import com.mws.back_end.account.interfaces.user.dto.UserDto;
 import com.mws.back_end.account.interfaces.user.dto.UserRoleDto;
 import com.mws.back_end.framework.exception.MWSException;
-import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;

@@ -39,4 +39,4 @@ VALUES (1,15,'Monitor ultrawide','https://img.pccomponentes.com/articles/38/3892
 
 --- Order data
 ------------------
-INSERT INTO order_table(tenant_id, id, user_id, product_id) VALUES (1, 1, 4, 1);
+INSERT INTO order_table(tenant_id, id, user_id, product_id, date) VALUES (1, 1, 4, 1, '2004-01-22');

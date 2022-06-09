@@ -10,6 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import java.util.Date;
+
 import static com.mws.back_end.sales.model.entity.Order.ORDER_TABLE;
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -34,4 +36,7 @@ public class Order {
 
     @NotNull
     private Long productId;
+
+    @NotNull
+    private Date date;
 }

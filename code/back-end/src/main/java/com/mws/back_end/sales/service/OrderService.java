@@ -43,7 +43,7 @@ public class OrderService {
         }
 
         final Order order = toOrder(orderCreationDto.getProductId(), userId);
-        return orderDao.create(order).getId();
+        return orderDao.createOrder(order).getId();
     }
 
     private void checkOrderCreationPermissions(final Long userRequested) throws MWSException {
@@ -68,21 +68,23 @@ public class OrderService {
         return order;
     }
 
-    public List<OrderDto> listOrders(final long userId) throws MWSException {
+    public List<OrderDto> listOrders(final Long userId) throws MWSException {
         checkPermissionsToListOrders(userId);
 
-        final List<Order> orders = orderDao.findByUser(userId);
+        final Long requestedUser = userId == null ? jwtCipher.getCurrentUserId() : userId;
+        final List<Order> orders = orderDao.findByUser(requestedUser);
         final List<Long> productIds = orders.stream().map(Order::getProductId).toList();
         final Map<Long, ProductDto> productsMap =
                 productService.getProducts(productIds, null).stream().collect(Collectors.toMap(ProductDto::getId, p -> p, (prev, newP) -> prev));
 
-        return orders.stream().map(o -> toDto(o, productsMap)).toList();
+        return orders.stream().map(o -> toDto(o, productsMap)).filter(o -> o.getProduct() != null).toList();
     }
 
-    private void checkPermissionsToListOrders(final long requestedUserId) throws MWSException {
+    private void checkPermissionsToListOrders(final Long requestedUserId) throws MWSException {
         final UserRoleDto currentUserRole = jwtCipher.getCurrentUserRole();
         if (currentUserRole == null ||
-                (currentUserRole == UserRoleDto.USER && !Objects.equals(requestedUserId, jwtCipher.getCurrentUserId()))) {
+                (currentUserRole == UserRoleDto.USER && requestedUserId != null &&
+                        !Objects.equals(requestedUserId, jwtCipher.getCurrentUserId()))) {
             throw new MWSException("Not allowed to list order(s) from other user.");
         }
     }
@@ -92,6 +94,7 @@ public class OrderService {
         orderDto.setId(order.getId());
         orderDto.setUserId(order.getUserId());
         orderDto.setProduct(productsMap.get(order.getProductId()));
+        orderDto.setDate(order.getDate());
 
         return orderDto;
     }
