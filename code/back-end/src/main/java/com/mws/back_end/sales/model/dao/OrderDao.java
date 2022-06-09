@@ -17,7 +17,10 @@ public class OrderDao extends GenericDaoImpl<Order, Long> {
     @Transactional
     public Order createOrder(final Order order) throws EntityPersistenceException {
         order.setDate(new Date());
-        return create(order);
+
+        this.entityManager.persist(order);
+
+        return order;
     }
 
     public List<Order> findByUser(final Long userId) {

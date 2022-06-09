@@ -5,6 +5,7 @@ import com.mws.back_end.framework.IntegrationTestConfig;
 import com.mws.back_end.framework.dto.WebResult;
 import com.mws.back_end.framework.dto.WebResultCode;
 import com.mws.back_end.sales.interfaces.dto.OrderCreationDto;
+import com.mws.back_end.sales.interfaces.dto.OrderCreationOneTransactionDto;
 import com.mws.back_end.sales.interfaces.dto.OrderDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,8 +22,7 @@ import java.util.Date;
 import java.util.List;
 
 import static com.mws.back_end.framework.IntegrationTestConfig.TEST_PROFILE;
-import static com.mws.back_end.sales.interfaces.OrderInterface.CREATE_ORDER_URL;
-import static com.mws.back_end.sales.interfaces.OrderInterface.LIST_ORDERS_URL;
+import static com.mws.back_end.sales.interfaces.OrderInterface.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles(TEST_PROFILE)
@@ -64,6 +64,29 @@ class OrderInterfaceIT extends IntegrationTestConfig {
         assertFalse(returnedOrder.getDate().after(new Date()), "Order date must be before now.");
         assertNotNull(returnedOrder.getProduct(), "Order product");
         assertEquals(creationDto.getProductId(), returnedOrder.getProduct().getId(), "Order product id");
+    }
+
+    @Test
+    void createOrderInOneTransaction_success() {
+        final OrderCreationOneTransactionDto creationDto = createOrderCreationOneTransactionDto();
+        //final HttpEntity<String> createHttpEntity = createUserHttpEntity(toJson(creationDto));
+        final URI createUri = getUri(CREATE_ORDER_ONE_TRANSACTION_URL);
+
+        final ResponseEntity<String> createResponse = restTemplate.exchange(
+                createUri,
+                HttpMethod.POST,
+                createHttpEntityInternal(toJson(creationDto)),
+                String.class);
+
+        checkOrderWasCreated(createResponse);
+    }
+
+    private OrderCreationOneTransactionDto createOrderCreationOneTransactionDto() {
+        final OrderCreationOneTransactionDto creationDto = new OrderCreationOneTransactionDto();
+        creationDto.setTenantId(TENANT_ID);
+        creationDto.setUserId(USER_ID);
+        creationDto.setProductId(PRODUCT_ID);
+        return creationDto;
     }
 
     private Long checkOrderWasCreated(ResponseEntity<String> response) {

@@ -3,6 +3,7 @@ package com.mws.back_end.sales.interfaces;
 import com.mws.back_end.framework.dto.WebResult;
 import com.mws.back_end.framework.exception.MWSException;
 import com.mws.back_end.sales.interfaces.dto.OrderCreationDto;
+import com.mws.back_end.sales.interfaces.dto.OrderCreationOneTransactionDto;
 import com.mws.back_end.sales.interfaces.dto.OrderDto;
 import com.mws.back_end.sales.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import static org.springframework.http.HttpStatus.OK;
 public class OrderInterface {
     private static final String BASE_ORDER_URL = "/order";
     public static final String CREATE_ORDER_URL = BASE_ORDER_URL + "/" + "create";
+    public static final String CREATE_ORDER_ONE_TRANSACTION_URL = BASE_ORDER_URL + "/" + "create-in-one-transaction";
     public static final String LIST_ORDERS_URL = BASE_ORDER_URL + "/" + "list";
 
     @Autowired
@@ -33,6 +35,22 @@ public class OrderInterface {
         try {
             orderId = orderService.createOrder(orderCreationDto);
         } catch (MWSException e) {
+            return new ResponseEntity<>(newWebResult(ERROR_INVALID_PARAMETER, e.getMessage()), BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(success(orderId), OK);
+    }
+
+    /**
+     * This method is created only for database testing purposes.
+     * It does not provide any security.
+     * */
+    @PostMapping(CREATE_ORDER_ONE_TRANSACTION_URL)
+    public ResponseEntity<WebResult<Long>> createOrderInOneTransaction(@RequestBody OrderCreationOneTransactionDto orderCreationDto) {
+        final Long orderId;
+        try {
+            orderId = orderService.createOrderInOneTransaction(orderCreationDto);
+        } catch (Exception e) {
             return new ResponseEntity<>(newWebResult(ERROR_INVALID_PARAMETER, e.getMessage()), BAD_REQUEST);
         }
 

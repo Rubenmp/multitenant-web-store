@@ -115,11 +115,22 @@ public class IntegrationTestConfig extends TestUtils {
         return new HttpEntity<>(body, requestHeaders);
     }
 
+    protected HttpEntity<String> createHttpEntityInternal(final String body) {
+        final HttpHeaders requestHeaders = createHttpHeadersWithAuthorization(null);
+
+        if (body == null) {
+            return new HttpEntity<>(requestHeaders);
+        }
+
+        return new HttpEntity<>(body, requestHeaders);
+    }
+
     private HttpHeaders createHttpHeadersWithAuthorization(final String authorization) {
         final HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-        requestHeaders.add(HttpHeaders.AUTHORIZATION, authorization);
-
+        if (authorization != null) {
+            requestHeaders.add(HttpHeaders.AUTHORIZATION, authorization);
+        }
         return requestHeaders;
     }
 

@@ -6,6 +6,7 @@ import com.mws.back_end.framework.exception.MWSException;
 import com.mws.back_end.product.interfaces.dto.ProductDto;
 import com.mws.back_end.product.service.ProductService;
 import com.mws.back_end.sales.interfaces.dto.OrderCreationDto;
+import com.mws.back_end.sales.interfaces.dto.OrderCreationOneTransactionDto;
 import com.mws.back_end.sales.interfaces.dto.OrderDto;
 import com.mws.back_end.sales.model.dao.OrderDao;
 import com.mws.back_end.sales.model.entity.Order;
@@ -97,5 +98,14 @@ public class OrderService {
         orderDto.setDate(order.getDate());
 
         return orderDto;
+    }
+
+    public Long createOrderInOneTransaction(final OrderCreationOneTransactionDto orderCreationDto) {
+        final Order order = new Order();
+        order.setTenantId(orderCreationDto.getTenantId());
+        order.setUserId(orderCreationDto.getUserId());
+        order.setProductId(orderCreationDto.getProductId());
+
+        return orderDao.createOrder(order).getId();
     }
 }

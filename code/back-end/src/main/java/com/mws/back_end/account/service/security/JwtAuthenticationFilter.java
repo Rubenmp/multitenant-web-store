@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
+import static com.mws.back_end.account.service.security.JwtCipher.USE_JWT_RESTRICTIONS;
+
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -27,6 +29,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
                                     FilterChain filterChain) throws ServletException, IOException {
+        if (!USE_JWT_RESTRICTIONS) {
+            return;
+        }
         final String jwtToken = jwtCipher.getJwtFromRequest(httpServletRequest);
         boolean validToken = false;
 
