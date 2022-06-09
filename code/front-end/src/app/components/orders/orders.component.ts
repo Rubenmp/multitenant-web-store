@@ -33,6 +33,7 @@ export class OrdersComponent implements OnInit {
       next: (response) => {
         if (isOkResponse(response)) {
           this.dataSource = new MatTableDataSource(response.data);
+          this.paginator.pageSize = 10;
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
         } else {
