@@ -72,6 +72,10 @@ public class ProductService {
         return toProductDto(productDao.find(ids, active));
     }
 
+    public List<Product> getProductEntities(final Collection<Long> ids, final Boolean active) {
+        return productDao.find(ids, active);
+    }
+
     private List<ProductDto> toProductDto(final List<Product> products) {
         return products.stream().map(this::toProductDto).toList();
     }
