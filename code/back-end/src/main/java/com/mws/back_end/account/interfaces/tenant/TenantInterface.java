@@ -54,7 +54,7 @@ public class TenantInterface {
     }
 
     @GetMapping(LIST_TENANTS_URL)
-    public ResponseEntity<WebResult<ArrayList<TenantDto>>> listTenants(@RequestParam Boolean active) {
+    public ResponseEntity<WebResult<ArrayList<TenantDto>>> listTenants(@RequestParam(required = false) Boolean active) {
         List<TenantDto> tenants = tenantService.listTenants(active);
 
         if (tenants != null) {
