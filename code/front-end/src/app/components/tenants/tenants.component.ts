@@ -16,7 +16,7 @@ import { TenantService } from 'src/service/tenant/tenant.service';
 export class TenantsComponent implements OnInit {
   tenants: Tenant[] = []
 
-  displayedColumns: string[] = ['tenantId', 'name'];
+  displayedColumns: string[] = ['tenantId', 'name', 'active'];
   dataSource!: MatTableDataSource<Tenant>;
 
   @ViewChild(MatPaginator)
@@ -37,7 +37,6 @@ export class TenantsComponent implements OnInit {
     
     await (await this.tenantService.listTenants()).subscribe({
       next: (response) => {
-        console.log(response);
         if (isOkResponse(response)) {
           this.tenants = response.data;
           this.paginator.pageSize = 5;
@@ -73,9 +72,9 @@ export class TenantsComponent implements OnInit {
 
 
   private applyFilterInternal() {
-    const newOrders = this.tenants.filter(o => o.name.toLowerCase().includes(this.filterByProductName))
+    const newTenants = this.tenants.filter(o => o.name.toLowerCase().includes(this.filterByProductName))
       .filter(o => o.tenantId.toLocaleString().includes(this.filterById));
-    this.updateTenantsInTable(newOrders);
+    this.updateTenantsInTable(newTenants);
   }
 
   private getFilterValue(event: Event) {
