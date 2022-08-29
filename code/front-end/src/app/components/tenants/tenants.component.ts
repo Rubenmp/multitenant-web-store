@@ -72,10 +72,10 @@ export class TenantsComponent implements OnInit {
   }
 
 
-  private applyFilterInternal() {/*
+  private applyFilterInternal() {
     const newOrders = this.tenants.filter(o => o.name.toLowerCase().includes(this.filterByProductName))
-      .filter(o => o.id.toLocaleString().includes(this.filterById));
-    this.updateTenantsInTable(newOrders);*/
+      .filter(o => o.tenantId.toLocaleString().includes(this.filterById));
+    this.updateTenantsInTable(newOrders);
   }
 
   private getFilterValue(event: Event) {
