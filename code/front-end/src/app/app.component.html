@@ -31,6 +31,10 @@
       <mat-icon>person</mat-icon>
       <span>Account</span>
     </button>
+    <button mat-button class="menu-button" routerLink="/tenants" *ngIf="isUserLogged() || isSuperUser()">
+      <mat-icon>person</mat-icon>
+      <span>Tenants</span>
+    </button>
     <button mat-button class="menu-button" routerLink="/products" *ngIf="isUserLogged()">
       <mat-icon>shop</mat-icon>
       <span>Products</span>

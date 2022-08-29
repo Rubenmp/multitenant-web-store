@@ -32,6 +32,7 @@ import { ProductComponent } from './components/product/product.component';
 import { ProductsComponent } from './components/products/products.component';
 import { HttpTokenInterceptor } from './http-token.interceptor';
 import { OrdersComponent } from './components/orders/orders.component';
+import { TenantsComponent } from './components/tenants/tenants.component';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,8 @@ import { OrdersComponent } from './components/orders/orders.component';
     ProductsComponent,
     ProductComponent,
     AccountComponent,
-    OrdersComponent
+    OrdersComponent,
+    TenantsComponent
   ],
   imports: [
     BrowserModule,

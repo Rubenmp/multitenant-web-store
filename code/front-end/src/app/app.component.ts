@@ -56,6 +56,10 @@ export class AppComponent {
     return role || "Unknown";
   }
 
+  isSuperUser(): boolean {
+    return this.getUserRole() === 'SUPER';
+  }
+
   logout(): void {
     this.localStorageService.clearStorage();
     this.router.navigate(['/account'])
