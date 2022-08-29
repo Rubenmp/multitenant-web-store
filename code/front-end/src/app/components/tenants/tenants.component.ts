@@ -2,9 +2,11 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { isOkResponse } from 'src/service/dto/api';
 import { NotificationService } from 'src/service/notification/notification.service';
 import { Tenant } from 'src/service/tenant/dto/tenant';
 import { TenantService } from 'src/service/tenant/tenant.service';
+
 
 @Component({
   selector: 'app-tenants',
@@ -14,7 +16,7 @@ import { TenantService } from 'src/service/tenant/tenant.service';
 export class TenantsComponent implements OnInit {
   tenants: Tenant[] = []
 
-  displayedColumns: string[] = ['tenantId', 'tenantName', 'active'];
+  displayedColumns: string[] = ['tenantId', 'name'];
   dataSource!: MatTableDataSource<Tenant>;
 
   @ViewChild(MatPaginator)
@@ -32,24 +34,25 @@ export class TenantsComponent implements OnInit {
 
 
   async ngOnInit(): Promise<void> {
-    /*
-    await (await this.orderService.listOrders()).subscribe({
+    
+    await (await this.tenantService.listTenants()).subscribe({
       next: (response) => {
+        console.log(response);
         if (isOkResponse(response)) {
-          this.orders = response.data;
+          this.tenants = response.data;
           this.paginator.pageSize = 5;
-          this.updateOrdersInTable(this.orders);
+          this.updateTenantsInTable(this.tenants);
         } else {
           this.notificationService.showError(response.message);
         }
       },
       error: (_) => {
-        this.notificationService.showError("Internal error fetching orders.");
+        this.notificationService.showError("Internal error fetching tenants.");
       },
-    });*/
+    });
   }
 
-  updateOrdersInTable(tenant: Tenant[]) {
+  updateTenantsInTable(tenant: Tenant[]) {
     this.dataSource = new MatTableDataSource(tenant);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
@@ -69,10 +72,10 @@ export class TenantsComponent implements OnInit {
   }
 
 
-  private applyFilterInternal() {
+  private applyFilterInternal() {/*
     const newOrders = this.tenants.filter(o => o.name.toLowerCase().includes(this.filterByProductName))
       .filter(o => o.id.toLocaleString().includes(this.filterById));
-    this.updateOrdersInTable(newOrders);
+    this.updateTenantsInTable(newOrders);*/
   }
 
   private getFilterValue(event: Event) {

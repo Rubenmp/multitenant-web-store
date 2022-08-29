@@ -5,7 +5,7 @@ export interface ListTenantsResponse {
 }
 
 export class Tenant {
-    id!: number;
+    tenantId!: number;
     name!: string;
     active!: boolean;
 }

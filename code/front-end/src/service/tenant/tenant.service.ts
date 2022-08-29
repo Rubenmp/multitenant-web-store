@@ -8,7 +8,7 @@ import { ListTenantsResponse } from './dto/tenant';
   providedIn: 'root'
 })
 export class TenantService {
-  private createTenantUrl: string = `${environment.baseUrl}/order/create`;
+  private createTenantUrl: string = `${environment.baseUrl}/tenant/create`;
   private listTenantsUrl: string = `${environment.baseUrl}/tenant/list`;
 
   constructor(private http: HttpClient) { }
@@ -18,7 +18,7 @@ export class TenantService {
       .post<ApiResponse>(this.createTenantUrl, { tenantName });
   }
 
-  async listOrders() {
+  async listTenants() {
     return await this.http.get<ListTenantsResponse>(this.listTenantsUrl);
   }
 }

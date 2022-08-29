@@ -1,0 +1,20 @@
+@import '../../../styles.scss';
+
+
+#tenants_title {
+    color: var(--main-color);
+    font-weight: bold;
+    position: relative;
+    margin: 0 0 0 0px;
+}
+
+#filter_title {
+    color: var(--main-color);
+    position: relative;
+    margin: 0 0 0 0px;
+    padding-right: 25px;
+}
+
+#tenant_list {
+    width: 100%;
+}
