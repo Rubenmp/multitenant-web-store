@@ -15,7 +15,7 @@
     padding-right: 25px;
 }
 
-#create_button {
+.crud_button {
     background-color: var(--main-color);
     color: var(--second-color);
     position: relative;
@@ -23,11 +23,15 @@
     margin-right: 10px;
 }
 
+#tenant_creation {
+    width: 100%;
+}
+
 #tenant_list {
     width: 100%;
 }
 
 
-.highlight{
-    background:  var(--second-color);
+.highlight {
+    background: var(--second-color);
 }

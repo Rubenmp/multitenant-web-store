@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { ApiResponse } from '../dto/api';
@@ -13,9 +13,9 @@ export class TenantService {
 
   constructor(private http: HttpClient) { }
 
-  async createTenant(tenantName: string) {
+  async createTenant(name: string) {
     return await this.http
-      .post<ApiResponse>(this.createTenantUrl, { tenantName });
+      .post<ApiResponse>(this.createTenantUrl, { name });
   }
 
   async listTenants() {

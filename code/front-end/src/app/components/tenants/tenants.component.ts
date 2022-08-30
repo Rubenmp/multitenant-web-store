@@ -4,9 +4,10 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { isOkResponse } from 'src/service/dto/api';
 import { NotificationService } from 'src/service/notification/notification.service';
-import { Tenant } from 'src/service/tenant/dto/tenant';
 import { TenantService } from 'src/service/tenant/tenant.service';
 
+type TenantRow = { tenantId: number, name: string, active: boolean, isUpdated: boolean }
+type TenantCreation = { name: string }
 
 @Component({
   selector: 'app-tenants',
@@ -14,21 +15,25 @@ import { TenantService } from 'src/service/tenant/tenant.service';
   styleUrls: ['./tenants.component.scss']
 })
 export class TenantsComponent implements OnInit {
-  tenants: Tenant[] = []
+  tenants: TenantRow[] = []
 
   displayedColumns: string[] = ['tenantId', 'name', 'active'];
-  dataSource!: MatTableDataSource<Tenant>;
-
-  @ViewChild(MatPaginator)
-  paginator!: MatPaginator;
-
-  @ViewChild(MatSort)
-  sort!: MatSort;
-
+  dataSource!: MatTableDataSource<TenantRow>;
   filterById: string = "";
   filterByProductName: string = "";
 
-  selectedRowIndex: any = -1;
+  @ViewChild(MatPaginator)
+  paginator!: MatPaginator;
+  @ViewChild(MatSort)
+  sort!: MatSort;
+
+  // Creation
+  tenantToCreate: TenantCreation[] = [];
+  inputTenantName: string = '';/*  */
+  selectedRowIndex: number = -1;
+  isCreatingTenant: boolean = false;
+  displayedColumnsToCreate: string[] = ['name'];
+  dataSourceToCreate!: MatTableDataSource<TenantCreation>;
 
 
   constructor(private tenantService: TenantService,
@@ -37,10 +42,16 @@ export class TenantsComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
 
+    await this.refreshTenants();
+  }
+
+  async refreshTenants() {
     await (await this.tenantService.listTenants()).subscribe({
       next: (response) => {
         if (isOkResponse(response)) {
-          this.tenants = response.data;
+          this.tenants = response.data.map((t) => {
+            return { tenantId: t.tenantId, name: t.name, active: t.active, isUpdated: false }
+          });
           this.paginator.pageSize = 5;
           this.updateTenantsInTable(this.tenants);
         } else {
@@ -53,8 +64,8 @@ export class TenantsComponent implements OnInit {
     });
   }
 
-  updateTenantsInTable(tenant: Tenant[]) {
-    this.dataSource = new MatTableDataSource(tenant);
+  updateTenantsInTable(tenants: TenantRow[]) {
+    this.dataSource = new MatTableDataSource(tenants);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
@@ -94,5 +105,39 @@ export class TenantsComponent implements OnInit {
 
   isRowSelected() {
     return (this.selectedRowIndex !== -1);
+  }
+
+  // Tenants operations
+  async createTenant() {
+    console.log("createTenant");
+    console.log(this.inputTenantName);
+    if (this.isCreatingTenant) {
+      await (await this.tenantService.createTenant(this.inputTenantName)).subscribe({
+        next: (response) => {
+          console.log("response")
+          console.log(response);
+          if (isOkResponse(response)) {
+            this.notificationService.showInfoMessage("Tenant created with id " + response.data);
+            this.isCreatingTenant = false;
+            this.refreshTenants();
+          } else {
+            this.notificationService.showError(response.message);
+          }
+        },
+        error: (_) => {
+          this.notificationService.showError("Internal error creating tenant.");
+        },
+      });
+
+    } else {
+      this.isCreatingTenant = true;
+      this.tenantToCreate = [{ name: '' }]
+      this.dataSourceToCreate = new MatTableDataSource(this.tenantToCreate);
+    }
+  }
+
+
+  cancelTenantCreation() {
+    this.isCreatingTenant = false;
   }
 }

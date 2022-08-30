@@ -1,9 +1,14 @@
 <h1 id="tenants_title">Tenants</h1>
 
 
-<button *ngIf="!isRowSelected()" mat-flat-button id="create_button" color="primary">Create</button>
-<button *ngIf="isRowSelected()" mat-flat-button id="create_button" color="primary">Update</button>
-<button *ngIf="isRowSelected()" mat-flat-button id="create_button" color="primary">Delete</button>
+<button *ngIf="!isRowSelected()" (click)="createTenant()" mat-flat-button id="create_button" class="crud_button">
+    Create
+</button>
+<button *ngIf="isRowSelected()" mat-flat-button id="update_button" class="crud_button">Update</button>
+<button *ngIf="isRowSelected()" mat-flat-button id="delete_button" class="crud_button">Delete</button>
+<button *ngIf="isCreatingTenant" (click)="cancelTenantCreation()" mat-flat-button id="cancel_button" class="crud_button">
+    Cancel
+</button>
 
 <span id="filter_title">Filter</span>
 <mat-form-field appearance="standard" style="width: 75px;">
@@ -16,7 +21,25 @@
     <input matInput (keyup)="applyFilterByName($event)" placeholder="Ex. E-commerce" #input>
 </mat-form-field>
 
-<div class="mat-elevation-z8">
+
+
+<div class="mat-elevation-z8" *ngIf="isCreatingTenant">
+    <table mat-table class="mat-elevation-z8" id="tenant_creation" [dataSource]="dataSourceToCreate">
+
+        <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Tenant name</th>
+            <td mat-cell *matCellDef="let tenant"> 
+                <input matInput placeholder="Ex. E-commerce" [(ngModel)]='inputTenantName'>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumnsToCreate"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumnsToCreate;"></tr>
+    </table>
+</div>
+
+
+<div class="mat-elevation-z8" *ngIf="!isCreatingTenant">
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" id="tenant_list">
         <ng-container matColumnDef="tenantId">
             <th mat-header-cell *matHeaderCellDef> Tenant id </th>
