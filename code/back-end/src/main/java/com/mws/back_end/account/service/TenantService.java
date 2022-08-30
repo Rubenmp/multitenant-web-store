@@ -27,7 +27,9 @@ public class TenantService {
 
 
     public Long createTenant(final String tenantName) throws MWSException {
+        requireNotNull(tenantName, "Tenant name must be provided");
         checkSuperPermissions();
+
         final Tenant tenant = new Tenant();
         tenant.setName(tenantName);
         try {

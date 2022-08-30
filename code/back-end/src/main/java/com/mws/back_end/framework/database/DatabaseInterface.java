@@ -1,6 +1,7 @@
 package com.mws.back_end.framework.database;
 
 import com.mws.back_end.account.interfaces.tenant.TenantInterface;
+import com.mws.back_end.account.interfaces.tenant.tenant.TenantCreationDto;
 import com.mws.back_end.account.interfaces.user.UserInterface;
 import com.mws.back_end.account.interfaces.user.dto.UserCreationDto;
 import com.mws.back_end.account.interfaces.user.dto.UserRoleDto;
@@ -116,7 +117,10 @@ public class DatabaseInterface {
 
     private List<Long> createTenants(final Long numberOfTenants) {
         return LongStream.range(0, numberOfTenants).map(index -> {
-            ResponseEntity<WebResult<Long>> response = tenantInterface.createTenant("Tenant " + (index + 1));
+            final TenantCreationDto data = new TenantCreationDto();
+            data.setName("Tenant " + (index + 1));
+
+            ResponseEntity<WebResult<Long>> response = tenantInterface.createTenant(data);
             checkOkResponse(response, "It was not possible to create tenant");
             return Objects.requireNonNull(response.getBody()).getData();
         }).boxed().toList();

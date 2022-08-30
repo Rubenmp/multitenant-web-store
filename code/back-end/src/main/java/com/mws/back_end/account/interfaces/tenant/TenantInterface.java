@@ -1,10 +1,12 @@
 package com.mws.back_end.account.interfaces.tenant;
 
+import com.mws.back_end.account.interfaces.tenant.tenant.TenantCreationDto;
 import com.mws.back_end.account.interfaces.tenant.tenant.TenantDto;
 import com.mws.back_end.account.interfaces.tenant.tenant.TenantUpdateDto;
 import com.mws.back_end.account.service.TenantService;
 import com.mws.back_end.framework.dto.WebResult;
 import com.mws.back_end.framework.exception.MWSException;
+import com.mws.back_end.framework.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,15 +33,13 @@ public class TenantInterface {
     private TenantService tenantService;
 
     @PostMapping(CREATE_TENANT_URL)
-    public ResponseEntity<WebResult<Long>> createTenant(@RequestParam String name) {
-        final Long tenantId;
+    public ResponseEntity<WebResult<Long>> createTenant(@RequestBody TenantCreationDto tenantData) {
         try {
-            tenantId = tenantService.createTenant(name);
+            final Long tenantId = tenantService.createTenant(tenantData.getName());
+            return new ResponseEntity<>(success(tenantId), OK);
         } catch (MWSException e) {
             return new ResponseEntity<>(newWebResult(ERROR_INVALID_PARAMETER, e.getMessage()), BAD_REQUEST);
         }
-
-        return new ResponseEntity<>(success(tenantId), OK);
     }
 
     @PutMapping(UPDATE_TENANT_URL)
@@ -61,7 +61,7 @@ public class TenantInterface {
             return new ResponseEntity<>(success(new ArrayList<>(tenants)), OK);
         }
 
-        return new ResponseEntity<>(newWebResult(ERROR_INVALID_PARAMETER, "Invalid user id"), BAD_REQUEST);
+        return new ResponseEntity<>(newWebResult(ERROR_INVALID_PARAMETER, "Invalid tenants"), BAD_REQUEST);
     }
 
     @DeleteMapping(DELETE_TENANT_URL)
