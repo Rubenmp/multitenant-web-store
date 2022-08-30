@@ -5,8 +5,10 @@ import { MatTableDataSource } from '@angular/material/table';
 import { isOkResponse } from 'src/service/dto/api';
 import { NotificationService } from 'src/service/notification/notification.service';
 import { TenantService } from 'src/service/tenant/tenant.service';
+import { UserService } from 'src/service/user/user.service';
 
 
+type AdminRow = { id: number, tenantId: number, email: string, firstName: string, lastName: string, isBeingUpdated: boolean, isSelected: boolean }
 type TenantRow = { tenantId: number, name: string, active: boolean, isBeingUpdated: boolean, isSelected: boolean }
 type TenantCreation = { name: string }
 
@@ -19,6 +21,7 @@ type TenantCreation = { name: string }
 export class AdminsComponent implements OnInit {
 
   tenants: TenantRow[] = []
+  admins: AdminRow[] = []
 
   displayedColumns: string[] = ['tenantId', 'name', 'active'];
   dataSource!: MatTableDataSource<TenantRow>;
@@ -42,12 +45,32 @@ export class AdminsComponent implements OnInit {
   isBeingUpdated: boolean = false;
 
   constructor(private tenantService: TenantService,
+    private userService: UserService,
     private notificationService: NotificationService) { }
 
 
   async ngOnInit(): Promise<void> {
+    console.log("init")
 
-    await this.refreshTenants();
+    await (await this.userService.listAdmins()).subscribe({
+      next: (response) => {
+        if (isOkResponse(response)) {
+          this.admins = response.data.map((t) => {
+            return { id: t.id, tenantId: t.tenantId, email: t.email, firstName: t.firstName, lastName: t.lastName, isBeingUpdated: false, isSelected: false }
+          });
+          console.log(this.admins);
+
+          this.paginator.pageSize = 5;
+          this.updateTenantsInTable(this.tenants);
+        } else {
+          this.notificationService.showError(response.message);
+        }
+      },
+      error: (_) => {
+        this.notificationService.showError("Internal error fetching admins.");
+      },
+    });
+    //await this.refreshTenants();
   }
 
   async refreshTenants() {

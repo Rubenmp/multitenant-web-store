@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { ApiResponse } from '../dto/api';
+import { ListAdminsResponse } from './dto/user-response';
 
 
 @Injectable({
@@ -10,6 +11,7 @@ import { ApiResponse } from '../dto/api';
 export class UserService {
   private signUpUrl: string = `${environment.baseUrl}/user/create`;
   private loginUrl: string = `${environment.baseUrl}/user/login`;
+  private listAdminsUrl: string = `${environment.baseUrl}/user/filter`;
 
   constructor(private http: HttpClient) { }
 
@@ -33,5 +35,9 @@ export class UserService {
     }
 
     return await this.http.post<ApiResponse>(this.loginUrl, body);
+  }
+
+  async listAdmins() {
+    return await this.http.get<ListAdminsResponse>(this.listAdminsUrl);
   }
 }

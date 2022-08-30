@@ -4,7 +4,6 @@ export interface ApiResponse {
   data: any;
 
   new (): ApiResponse;
-
 }
 
 export function isOkResponse(response: any) {
