@@ -7,7 +7,7 @@ import { ApiResponse } from '../dto/api';
 @Injectable({
   providedIn: 'root'
 })
-export class IdentificationService {
+export class UserService {
   private signUpUrl: string = `${environment.baseUrl}/user/create`;
   private loginUrl: string = `${environment.baseUrl}/user/login`;
 

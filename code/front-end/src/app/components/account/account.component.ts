@@ -1,11 +1,11 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { isOkResponse } from 'src/service/dto/api';
-import { IdentificationService } from 'src/service/identification/identification.service';
 import { NotificationService } from 'src/service/notification/notification.service';
 import {Router} from "@angular/router"
-import { AuthenticationResponse } from 'src/service/identification/dto/authentication-response';
+import { AuthenticationResponse } from 'src/service/user/dto/authentication-response';
 import { LocalStorageService } from 'src/service/local-storage/local-storage.service';
+import { UserService } from 'src/service/user/user.service';
 
 @Component({
   selector: 'app-account',
@@ -20,7 +20,7 @@ export class AccountComponent implements OnInit {
   inputEmail: string = ''
   inputPassword: string = ''
 
-  constructor(private identificationService: IdentificationService,
+  constructor(private userService: UserService,
     private notificationService: NotificationService,
     private router: Router,
     private localStorageService: LocalStorageService) { }
@@ -31,7 +31,7 @@ export class AccountComponent implements OnInit {
 
 
   async login() {
-    await (await this.identificationService.login(this.inputEmail, this.inputPassword)).subscribe({
+    await (await this.userService.login(this.inputEmail, this.inputPassword)).subscribe({
       next: (response) => {
         if (isOkResponse(response)) {
           this.afterLogin(response);
@@ -56,7 +56,7 @@ export class AccountComponent implements OnInit {
   }
 
   async signUp() {
-    await (await this.identificationService.signUp(this.inputEmail, this.inputPassword, this.inputFirstName, this.inputLastName)).subscribe({
+    await (await this.userService.signUp(this.inputEmail, this.inputPassword, this.inputFirstName, this.inputLastName)).subscribe({
       next: (response) => {
         if (isOkResponse(response)) {
           this.notificationService.showInfoMessage("Successful sign up");
