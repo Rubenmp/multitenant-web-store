@@ -22,7 +22,8 @@ export class AdminsComponent implements OnInit {
   displayedColumns: string[] = ['id', 'tenantId', 'email', 'firstName', 'lastName'];
   dataSource!: MatTableDataSource<AdminRow>;
   filterById: string = "";
-  filterByProductName: string = "";
+  filterByTenantId: string = "";
+  filterByEmail: string = "";
 
   @ViewChild(MatPaginator)
   paginator!: MatPaginator;
@@ -85,18 +86,25 @@ export class AdminsComponent implements OnInit {
     this.applyFilterInternal()
   }
 
+  applyFilterByTenantId(event: Event) {
+    const filter = this.getFilterValue(event);
+    this.filterByTenantId = filter;
+    this.applyFilterInternal()
+  }
+
   applyFilterByName(event: Event) {
     const filter = this.getFilterValue(event);
-    this.filterByProductName = filter;
+    this.filterByEmail = filter;
     this.applyFilterInternal()
   }
 
 
   private applyFilterInternal() {
-    /*
-    const newTenants = this.admins.filter(o => o.name.toLowerCase().includes(this.filterByProductName))
-      .filter(o => o.tenantId.toLocaleString().includes(this.filterById));
-    this.updateAdminsInTable(newTenants);*/
+    const newTenants = this.admins
+      .filter(o => o.id.toLocaleString().includes(this.filterById))
+      .filter(o => o.tenantId.toLocaleString().includes(this.filterByTenantId))
+      .filter(o => o.email.toLowerCase().includes(this.filterByEmail));
+    this.updateAdminsInTable(newTenants);
   }
 
   private getFilterValue(event: Event) {

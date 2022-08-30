@@ -22,6 +22,11 @@
     <input matInput (keyup)="applyFilterById($event)" placeholder="Ex. 1" #input>
 </mat-form-field>
 
+<mat-form-field appearance="standard" style="width: 75px;">
+    <mat-label>By tenant id</mat-label>
+    <input matInput (keyup)="applyFilterByTenantId($event)" placeholder="Ex. 1" #input>
+</mat-form-field>
+
 <mat-form-field appearance="standard" style="padding-left: 15px;">
     <mat-label>By name</mat-label>
     <input matInput (keyup)="applyFilterByName($event)" placeholder="Ex. E-commerce" #input>
