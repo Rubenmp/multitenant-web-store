@@ -8,14 +8,16 @@ INSERT INTO tenant(tenant_id, name, active) VALUES (2,'Deleted tenant', false);
 INSERT INTO tenant(tenant_id, name, active) VALUES (3,'Tenant to delete', true);
 
 -- User
-INSERT INTO user(tenant_id, id, role, email, password, first_name, last_name)
-    VALUES (1, 1,'USER','user@mwstest.com','$2a$10$m5Kx4KMZ8zvlogNdWh/Ooe1qyjqZITUNMfFWhHp7kxwGCLFpsXfdW','First name','Last name');
-INSERT INTO user(tenant_id, id, role, email, password, first_name, last_name)
-    VALUES (1, 2,'ADMIN','admin@mwstest.com','$2a$10$m5Kx4KMZ8zvlogNdWh/Ooe1qyjqZITUNMfFWhHp7kxwGCLFpsXfdW','First name','Last name');
-INSERT INTO user(tenant_id, id, role, email, password, first_name, last_name)
-    VALUES (1, 3,'SUPER','super@mwstest.com','$2a$10$m5Kx4KMZ8zvlogNdWh/Ooe1qyjqZITUNMfFWhHp7kxwGCLFpsXfdW','First name','Last name');
-INSERT INTO user(tenant_id, id, role, email, password, first_name, last_name)
-    VALUES (1, 4,'USER','other_user@mwstest.com','$2a$10$m5Kx4KMZ8zvlogNdWh/Ooe1qyjqZITUNMfFWhHp7kxwGCLFpsXfdW','First name','Last name');
+INSERT INTO user(tenant_id, id, role, email, password, first_name, last_name, active)
+    VALUES (1, 1,'USER','user@mwstest.com','$2a$10$m5Kx4KMZ8zvlogNdWh/Ooe1qyjqZITUNMfFWhHp7kxwGCLFpsXfdW','First name','Last name', true);
+INSERT INTO user(tenant_id, id, role, email, password, first_name, last_name, active)
+    VALUES (1, 2,'ADMIN','admin@mwstest.com','$2a$10$m5Kx4KMZ8zvlogNdWh/Ooe1qyjqZITUNMfFWhHp7kxwGCLFpsXfdW','First name','Last name', true);
+INSERT INTO user(tenant_id, id, role, email, password, first_name, last_name, active)
+    VALUES (1, 3,'SUPER','super@mwstest.com','$2a$10$m5Kx4KMZ8zvlogNdWh/Ooe1qyjqZITUNMfFWhHp7kxwGCLFpsXfdW','First name','Last name', true);
+INSERT INTO user(tenant_id, id, role, email, password, first_name, last_name, active)
+    VALUES (1, 4,'USER','other_user@mwstest.com','$2a$10$m5Kx4KMZ8zvlogNdWh/Ooe1qyjqZITUNMfFWhHp7kxwGCLFpsXfdW','First name','Last name', true);
+INSERT INTO user(tenant_id, id, role, email, password, first_name, last_name, active)
+    VALUES (1, 5,'USER','user_to_delete@mwstest.com','$2a$10$m5Kx4KMZ8zvlogNdWh/Ooe1qyjqZITUNMfFWhHp7kxwGCLFpsXfdW','First name','Last name', true);
 
 --- Product data
 ------------------

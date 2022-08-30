@@ -206,4 +206,13 @@ public class UserService {
             throw new MWSException("Not allowed.");
         }
     }
+
+    public void deleteUser(final Long id) throws MWSException {
+        checkSuperPermissions();
+        if (userDao.findWeak(id) == null) {
+            throw new MWSException("Entity not found");
+        }
+
+        userDao.delete(id);
+    }
 }

@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import static com.mws.back_end.account.interfaces.user.UserInterface.CREATE_USER_URL;
+import static com.mws.back_end.account.interfaces.user.UserInterface.DELETE_USER_URL;
 import static com.mws.back_end.account.interfaces.user.UserInterface.FILTER_USERS_URL;
 import static com.mws.back_end.account.interfaces.user.UserInterface.GET_USER_URL;
 import static com.mws.back_end.account.interfaces.user.UserInterface.LOGIN_USER_URL;
@@ -290,5 +291,21 @@ class UserInterfaceIT extends IntegrationTestConfig {
         assertEquals(SUCCESS, result.getCode(), "Result code");
         assertNotNull(result.getData(), "Data not null");
         assertTrue(result.getData().stream().map(UserDto::getId).anyMatch(ADMIN_ID::equals), "Admin id");
+    }
+
+    @Test
+    void deleteUser_success() {
+        final URI uri = getUri(DELETE_USER_URL, Pair.of("id", "5"));
+
+        final ResponseEntity<String> response = restTemplate.exchange(
+                uri,
+                HttpMethod.DELETE,
+                createSuperHttpEntity(),
+                String.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status");
+        final WebResult<ArrayList<UserDto>> result = toWebResultWithList(response, UserDto.class);
+        assertEquals(SUCCESS, result.getCode(), "Result code");
+        assertNull(result.getData(), "Data not null");
     }
 }

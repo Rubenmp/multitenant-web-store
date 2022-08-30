@@ -50,4 +50,7 @@ public class User {
     @Size(min=1)
     private String lastName;
 
+    @NotNull
+    @Column(nullable = false, columnDefinition = "BOOLEAN")
+    private boolean active = true;
 }
