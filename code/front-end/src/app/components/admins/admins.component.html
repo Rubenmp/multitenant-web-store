@@ -47,14 +47,14 @@
         <ng-container matColumnDef="email">
             <th mat-header-cell *matHeaderCellDef>Email</th>
             <td mat-cell *matCellDef="let admin">
-                <input matInput placeholder="Ex. email@domain.com" [(ngModel)]='adminToCreate.email'>
+                <input matInput autocomplete="disabled" placeholder="Ex. email@domain.com" [(ngModel)]='adminToCreate.email'>
             </td>
         </ng-container>
 
         <ng-container matColumnDef="password">
             <th mat-header-cell *matHeaderCellDef>Password</th>
             <td mat-cell *matCellDef="let admin">
-                <input matInput type="password" placeholder="Ex. *********" [(ngModel)]='adminToCreate.password'>
+                <input matInput autocomplete="new-password" type="password" placeholder="Ex. *********" [(ngModel)]='adminToCreate.password'>
             </td>
         </ng-container>
 

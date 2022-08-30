@@ -54,7 +54,7 @@ export class TenantsComponent implements OnInit {
           this.tenants = response.data.map((t) => {
             return { tenantId: t.tenantId, name: t.name, active: t.active, isBeingUpdated: false, isSelected: false }
           });
-          this.paginator.pageSize = 5;
+
           this.updateTenantsInTable(this.tenants);
         } else {
           this.notificationService.showError(response.message);
@@ -65,6 +65,7 @@ export class TenantsComponent implements OnInit {
       },
     });
 
+    this.isCreatingTenant = false;
     this.isBeingUpdated = false;
     this.selectedRows = 0;
   }
@@ -124,8 +125,8 @@ export class TenantsComponent implements OnInit {
         next: async (response) => {
           if (isOkResponse(response)) {
             this.notificationService.showInfoMessage("Tenant created with id " + response.data);
-            this.isCreatingTenant = false;
-            await this.refreshTenants();
+            
+            this.refreshTenants();
           } else {
             this.notificationService.showError(response.message);
           }
@@ -145,6 +146,9 @@ export class TenantsComponent implements OnInit {
 
   async cancelAction() {
     await this.refreshTenants();
+    if (this.paginator && !this.paginator.pageSize) {
+      this.paginator.pageSize = 5;
+    }
   }
 
 

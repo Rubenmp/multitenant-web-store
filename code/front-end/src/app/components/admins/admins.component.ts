@@ -56,7 +56,6 @@ export class AdminsComponent implements OnInit {
             return { id: t.id, tenantId: t.tenantId, email: t.email, firstName: t.firstName, lastName: t.lastName, isBeingUpdated: false, isSelected: false }
           });
 
-          this.paginator.pageSize = 5;
           this.updateAdminsInTable(this.admins);
         } else {
           this.notificationService.showError(response.message);
@@ -158,6 +157,9 @@ export class AdminsComponent implements OnInit {
 
   cancelAction() {
     this.refreshAdmins();
+    if (this.paginator && !this.paginator.pageSize) {
+      this.paginator.pageSize = 5;
+    }
   }
 
 
