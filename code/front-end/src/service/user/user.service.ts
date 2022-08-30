@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { ApiResponse } from '../dto/api';
@@ -12,6 +12,7 @@ export class UserService {
   private signUpUrl: string = `${environment.baseUrl}/user/create`;
   private loginUrl: string = `${environment.baseUrl}/user/login`;
   private listAdminsUrl: string = `${environment.baseUrl}/user/filter`;
+  private deleteAdminUrl: string = `${environment.baseUrl}/user/delete`;
 
   constructor(private http: HttpClient) { }
 
@@ -39,5 +40,11 @@ export class UserService {
 
   async listAdmins() {
     return await this.http.get<ListAdminsResponse>(this.listAdminsUrl);
+  }
+
+  async deleteUser(id: number) {
+    let params = new HttpParams().set("id", id);
+
+    return await this.http.delete<ApiResponse>(this.deleteAdminUrl, { params });
   }
 }

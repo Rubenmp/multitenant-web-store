@@ -23,8 +23,8 @@ export class AdminsComponent implements OnInit {
   tenants: TenantRow[] = []
   admins: AdminRow[] = []
 
-  displayedColumns: string[] = ['tenantId', 'name', 'active'];
-  dataSource!: MatTableDataSource<TenantRow>;
+  displayedColumns: string[] = ['id', 'tenantId', 'email', 'firstName', 'lastName'];
+  dataSource!: MatTableDataSource<AdminRow>;
   filterById: string = "";
   filterByProductName: string = "";
 
@@ -50,8 +50,10 @@ export class AdminsComponent implements OnInit {
 
 
   async ngOnInit(): Promise<void> {
-    console.log("init")
+    this.refreshAdmins();
+  }
 
+  async refreshAdmins() {
     await (await this.userService.listAdmins()).subscribe({
       next: (response) => {
         if (isOkResponse(response)) {
@@ -61,7 +63,7 @@ export class AdminsComponent implements OnInit {
           console.log(this.admins);
 
           this.paginator.pageSize = 5;
-          this.updateTenantsInTable(this.tenants);
+          this.updateAdminsInTable(this.admins);
         } else {
           this.notificationService.showError(response.message);
         }
@@ -70,33 +72,14 @@ export class AdminsComponent implements OnInit {
         this.notificationService.showError("Internal error fetching admins.");
       },
     });
-    //await this.refreshTenants();
-  }
-
-  async refreshTenants() {
-    await (await this.tenantService.listTenants()).subscribe({
-      next: (response) => {
-        if (isOkResponse(response)) {
-          this.tenants = response.data.map((t) => {
-            return { tenantId: t.tenantId, name: t.name, active: t.active, isBeingUpdated: false, isSelected: false }
-          });
-          this.paginator.pageSize = 5;
-          this.updateTenantsInTable(this.tenants);
-        } else {
-          this.notificationService.showError(response.message);
-        }
-      },
-      error: (_) => {
-        this.notificationService.showError("Internal error fetching tenants.");
-      },
-    });
 
     this.isBeingUpdated = false;
     this.selectedRows = 0;
   }
 
-  updateTenantsInTable(tenants: TenantRow[]) {
-    this.dataSource = new MatTableDataSource(tenants);
+
+  updateAdminsInTable(admins: AdminRow[]) {
+    this.dataSource = new MatTableDataSource(admins);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
@@ -116,9 +99,10 @@ export class AdminsComponent implements OnInit {
 
 
   private applyFilterInternal() {
-    const newTenants = this.tenants.filter(o => o.name.toLowerCase().includes(this.filterByProductName))
+    /*
+    const newTenants = this.admins.filter(o => o.name.toLowerCase().includes(this.filterByProductName))
       .filter(o => o.tenantId.toLocaleString().includes(this.filterById));
-    this.updateTenantsInTable(newTenants);
+    this.updateAdminsInTable(newTenants);*/
   }
 
   private getFilterValue(event: Event) {
@@ -146,7 +130,7 @@ export class AdminsComponent implements OnInit {
   // Tenants operations
   async createAdmin() {
     return;
-    if (this.isCreatingTenant) {
+    /*if (this.isCreatingTenant) {
       await (await this.tenantService.createTenant(this.inputTenantName)).subscribe({
         next: async (response) => {
           if (isOkResponse(response)) {
@@ -166,17 +150,18 @@ export class AdminsComponent implements OnInit {
       this.isCreatingTenant = true;
       this.tenantToCreate = [{ name: '' }]
       this.dataSourceToCreate = new MatTableDataSource(this.tenantToCreate);
-    }
+    }*/
   }
 
 
   cancelAction() {
-    this.refreshTenants();
+    this.refreshAdmins();
   }
 
 
   async updateAdmin() {
     return;
+    /*
     if (this.selectedRows > 0) {
       const rowsToUpdate = this.tenants.filter(row => row.isSelected);
       const isUpdating = (rowsToUpdate.length > 0 && rowsToUpdate[0].isBeingUpdated);
@@ -203,26 +188,26 @@ export class AdminsComponent implements OnInit {
         this.isBeingUpdated = true;
       }
     }
+    */
   }
 
 
   async deleteSelectedAdmin() {
-    return;
     if (this.selectedRows > 0) {
-      const selectedTenantIds = this.tenants.filter(row => row.isSelected).map(tenant => tenant.tenantId);
+      const selectedAdminIds = this.admins.filter(row => row.isSelected).map(admin => admin.id);
 
-      for (let selectedTenantId of selectedTenantIds) {
-        await (await this.tenantService.delete(selectedTenantId)).subscribe({
+      for (let selectedAdminId of selectedAdminIds) {
+        await (await this.userService.deleteUser(selectedAdminId)).subscribe({
           next: async (response) => {
             if (isOkResponse(response)) {
-              this.notificationService.showInfoMessage("Tenant deleted");
-              await this.refreshTenants();
+              this.notificationService.showInfoMessage("Admin deleted");
+              await this.refreshAdmins();
             } else {
               this.notificationService.showError(response.message);
             }
           },
           error: (_) => {
-            this.notificationService.showError("Internal error deleting tenant.");
+            this.notificationService.showError("Internal error deleting admin.");
           },
         });
       }
