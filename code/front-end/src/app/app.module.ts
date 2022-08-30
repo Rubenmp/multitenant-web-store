@@ -33,6 +33,7 @@ import { ProductsComponent } from './components/products/products.component';
 import { HttpTokenInterceptor } from './http-token.interceptor';
 import { OrdersComponent } from './components/orders/orders.component';
 import { TenantsComponent } from './components/tenants/tenants.component';
+import { AdminsComponent } from './components/admins/admins.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import { TenantsComponent } from './components/tenants/tenants.component';
     ProductComponent,
     AccountComponent,
     OrdersComponent,
-    TenantsComponent
+    TenantsComponent,
+    AdminsComponent
   ],
   imports: [
     BrowserModule,
