@@ -207,12 +207,22 @@ public class UserService {
         }
     }
 
-    public void deleteUser(final Long id) throws MWSException {
+    public void deleteUser(final Long userId) throws MWSException {
+        deleteUserChecks(userId);
+        userDao.delete(userId);
+    }
+
+    private void deleteUserChecks(final Long userId) throws MWSException {
         checkSuperPermissions();
-        if (userDao.findWeak(id) == null) {
+        preventDeleteOwnUser(userId);
+        if (userDao.findWeak(userId) == null) {
             throw new MWSException("Entity not found");
         }
+    }
 
-        userDao.delete(id);
+    private void preventDeleteOwnUser(final Long userId) throws MWSException {
+        if (userId != null && userId.equals(jwtCipher.getCurrentUserId())) {
+            throw new MWSException("It is not possible to delete your own user.");
+        }
     }
 }
