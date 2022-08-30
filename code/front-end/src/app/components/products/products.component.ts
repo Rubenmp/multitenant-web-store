@@ -24,8 +24,8 @@ export class ProductsComponent implements OnInit {
           this.notificationService.showError(response.message);
         }
       },
-      error: (_) => {
-        this.notificationService.showError("Internal error fetching products.");
+      error: (e) => {
+        this.notificationService.showError(e.error.message);
       },
     });
   }

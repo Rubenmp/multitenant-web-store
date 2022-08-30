@@ -44,8 +44,8 @@ export class OrdersComponent implements OnInit {
           this.notificationService.showError(response.message);
         }
       },
-      error: (_) => {
-        this.notificationService.showError("Internal error fetching orders.");
+      error: (e) => {
+        this.notificationService.showError(e.error.message);
       },
     });
   }

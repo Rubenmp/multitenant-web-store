@@ -60,8 +60,8 @@ export class TenantsComponent implements OnInit {
           this.notificationService.showError(response.message);
         }
       },
-      error: (_) => {
-        this.notificationService.showError("Internal error fetching tenants.");
+      error: (e) => {
+        this.notificationService.showError(e.error.message);
       },
     });
 
@@ -131,8 +131,8 @@ export class TenantsComponent implements OnInit {
             this.notificationService.showError(response.message);
           }
         },
-        error: (_) => {
-          this.notificationService.showError("Internal error creating tenant.");
+        error: (e) => {
+          this.notificationService.showError(e.error.message);
         },
       });
 
@@ -157,7 +157,6 @@ export class TenantsComponent implements OnInit {
       const rowsToUpdate = this.tenants.filter(row => row.isSelected);
       const isUpdating = (rowsToUpdate.length > 0 && rowsToUpdate[0].isBeingUpdated);
       if (isUpdating) {
-        let successResponses = 0;
         for (let rowToUpdate of rowsToUpdate) {
           await (await this.tenantService.updateTenant(rowToUpdate.tenantId, rowToUpdate.name)).subscribe({
             next: (response) => {
@@ -167,8 +166,8 @@ export class TenantsComponent implements OnInit {
                 this.notificationService.showError(response.message);
               }
             },
-            error: (_) => {
-              this.notificationService.showError("Internal error updating tenant.");
+            error: (e) => {
+              this.notificationService.showError(e.error.message);
             },
           });
         }
@@ -196,8 +195,8 @@ export class TenantsComponent implements OnInit {
               this.notificationService.showError(response.message);
             }
           },
-          error: (_) => {
-            this.notificationService.showError("Internal error deleting tenant.");
+          error: (e) => {
+            this.notificationService.showError(e.error.message);
           },
         });
       }

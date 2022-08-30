@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { ApiResponse } from '../dto/api';
 import { ListAdminsResponse } from './dto/user-response';
+import { UserUpdate } from './dto/user-update';
 
 
 @Injectable({
@@ -12,12 +13,13 @@ export class UserService {
   private signUpUrl: string = `${environment.baseUrl}/user/create`;
   private loginUrl: string = `${environment.baseUrl}/user/login`;
   private listAdminsUrl: string = `${environment.baseUrl}/user/filter`;
-  private deleteAdminUrl: string = `${environment.baseUrl}/user/delete`;
+  private updateUserUrl: string = `${environment.baseUrl}/user/update`;
+  private deleteUserUrl: string = `${environment.baseUrl}/user/delete`;
 
   constructor(private http: HttpClient) { }
 
   async signUpUser(email: string, password: string, firstName: string, lastName: string) {
-    return await this.signUpInternal(1,  // TODO: set this parameter dynamically
+    return await this.signUpInternal(1, // TODO: set this parameter dinamically
       email, password, firstName, lastName, 'USER');
   }
 
@@ -38,6 +40,11 @@ export class UserService {
     return await this.http.post<ApiResponse>(this.signUpUrl, body);
   }
 
+  async updateUser(update: UserUpdate) {
+    return await this.http
+      .put<ApiResponse>(this.updateUserUrl, { id, email, password, firstName, lastName });
+  }
+
   async login(email: string, password: string) {
     const body = {
       email,
@@ -54,6 +61,6 @@ export class UserService {
   async deleteUser(id: number) {
     let params = new HttpParams().set("id", id);
 
-    return await this.http.delete<ApiResponse>(this.deleteAdminUrl, { params });
+    return await this.http.delete<ApiResponse>(this.deleteUserUrl, { params });
   }
 }

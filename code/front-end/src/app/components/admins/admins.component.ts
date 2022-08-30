@@ -4,6 +4,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { isOkResponse } from 'src/service/dto/api';
 import { NotificationService } from 'src/service/notification/notification.service';
+import { UserUpdate } from 'src/service/user/dto/user-update';
 import { UserService } from 'src/service/user/user.service';
 
 
@@ -61,8 +62,8 @@ export class AdminsComponent implements OnInit {
           this.notificationService.showError(response.message);
         }
       },
-      error: (_) => {
-        this.notificationService.showError("Internal error fetching admins.");
+      error: (e) => {
+        this.notificationService.showError(e.error.message);
       },
     });
 
@@ -164,35 +165,40 @@ export class AdminsComponent implements OnInit {
 
 
   async updateAdmin() {
-    return;
-    /*
     if (this.selectedRows > 0) {
-      const rowsToUpdate = this.tenants.filter(row => row.isSelected);
+      const rowsToUpdate = this.admins.filter(row => row.isSelected);
       const isUpdating = (rowsToUpdate.length > 0 && rowsToUpdate[0].isBeingUpdated);
       if (isUpdating) {
-        let successResponses = 0;
-        for (let rowToUpdate of rowsToUpdate) {
-          await (await this.tenantService.updateTenant(rowToUpdate.tenantId, rowToUpdate.name)).subscribe({
+        for (let row of rowsToUpdate) {
+
+          const update: UserUpdate = {
+            id: row.id,
+            email: row.email,
+            password: '',
+            firstName: row.firstName,
+            lastName: row.lastName
+          }
+          await (await this.userService.updateUser(update)).subscribe({
             next: (response) => {
               if (isOkResponse(response)) {
-                this.notificationService.showInfoMessage("Tenant updated");
+                this.notificationService.showInfoMessage("Admin updated");
               } else {
                 this.notificationService.showError(response.message);
               }
             },
-            error: (_) => {
-              this.notificationService.showError("Internal error updating tenant.");
+            error: (e) => {
+              this.notificationService.showError(e.error.message);
             },
           });
         }
-        await this.refreshTenants();
+        await this.refreshAdmins();
       
       } else {
         rowsToUpdate.forEach(row => row.isBeingUpdated = true);
         this.isBeingUpdated = true;
       }
     }
-    */
+  
   }
 
 
@@ -210,8 +216,8 @@ export class AdminsComponent implements OnInit {
               this.notificationService.showError(response.message);
             }
           },
-          error: (_) => {
-            this.notificationService.showError("Internal error deleting admin.");
+          error: (e) => {
+            this.notificationService.showError(e.error.message);
           },
         });
       }
