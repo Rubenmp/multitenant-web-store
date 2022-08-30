@@ -17,17 +17,18 @@ export class UserService {
   constructor(private http: HttpClient) { }
 
   async signUpUser(email: string, password: string, firstName: string, lastName: string) {
-    return await this.signUpInternal(email, password, firstName, lastName, 'USER');
+    return await this.signUpInternal(1,  // TODO: set this parameter dynamically
+      email, password, firstName, lastName, 'USER');
   }
 
-  async signUpAdmin(email: string, password: string, firstName: string, lastName: string) {
-    return await this.signUpInternal(email, password, firstName, lastName, 'ADMIN');
+  async signUpAdmin(tenantId: number, email: string, password: string, firstName: string, lastName: string) {
+    return await this.signUpInternal(tenantId, email, password, firstName, lastName, 'ADMIN');
   }
 
-  private async signUpInternal(email: string, password: string, firstName: string, lastName: string, role: string) {
+  private async signUpInternal(tenantId: number, email: string, password: string, firstName: string, lastName: string, role: string) {
     const body = {
-      tenantId: 1, // TODO: set this parameter dynamically
-      role: "USER", // TODO: set this parameter dynamically
+      tenantId,
+      role,
       email,
       password,
       firstName,

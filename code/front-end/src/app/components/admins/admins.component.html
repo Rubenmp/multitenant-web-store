@@ -35,7 +35,7 @@
         <ng-container matColumnDef="tenantId">
             <th mat-header-cell *matHeaderCellDef>Tenant id</th>
             <td mat-cell *matCellDef="let admin">
-                <input matInput placeholder="Ex. 1" [(ngModel)]='adminToCreate.tenantId'>
+                <input matInput type="text" placeholder="Ex. 1" [(ngModel)]='adminToCreate.tenantId'>
             </td>
         </ng-container>
 
@@ -49,7 +49,7 @@
         <ng-container matColumnDef="password">
             <th mat-header-cell *matHeaderCellDef>Password</th>
             <td mat-cell *matCellDef="let admin">
-                <input matInput placeholder="Ex. *********" [(ngModel)]='adminToCreate.password'>
+                <input matInput type="password" placeholder="Ex. *********" [(ngModel)]='adminToCreate.password'>
             </td>
         </ng-container>
 

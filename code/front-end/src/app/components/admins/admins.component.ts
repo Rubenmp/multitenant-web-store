@@ -31,7 +31,6 @@ export class AdminsComponent implements OnInit {
 
   // Creation
   adminToCreate: AdminCreation = { tenantId: undefined, email: '', password: '', firstName: '', lastName: '' };
-  inputTenantName: string = '';
   isCreatingAdmin: boolean = false;
   displayedColumnsToCreate: string[] = ['tenantId', 'email', 'password', 'firstName', 'lastName'];
   dataSourceToCreate!: MatTableDataSource<AdminCreation>;
@@ -55,7 +54,6 @@ export class AdminsComponent implements OnInit {
           this.admins = response.data.map((t) => {
             return { id: t.id, tenantId: t.tenantId, email: t.email, firstName: t.firstName, lastName: t.lastName, isBeingUpdated: false, isSelected: false }
           });
-          console.log(this.admins);
 
           this.paginator.pageSize = 5;
           this.updateAdminsInTable(this.admins);
@@ -68,6 +66,7 @@ export class AdminsComponent implements OnInit {
       },
     });
 
+    this.isCreatingAdmin = false;
     this.isBeingUpdated = false;
     this.selectedRows = 0;
   }
@@ -125,20 +124,21 @@ export class AdminsComponent implements OnInit {
   // Tenants operations
   async createAdmin() {
     if (this.isCreatingAdmin) {
-      await (await this.userService.signUpAdmin(this.adminToCreate.email, this.adminToCreate.password, this.adminToCreate.firstName, this.adminToCreate.lastName)).subscribe({
-        next: async (response) => {
-          if (isOkResponse(response)) {
-            this.notificationService.showInfoMessage("Admin created with id " + response.data);
-            this.isCreatingAdmin = false;
-            await this.refreshAdmins();
-          } else {
-            this.notificationService.showError(response.message);
-          }
-        },
-        error: (_) => {
-          this.notificationService.showError("Internal error creating admin.");
-        },
-      });
+      if (this.adminToCreate.tenantId) {
+        await (await this.userService.signUpAdmin(this.adminToCreate.tenantId, this.adminToCreate.email, this.adminToCreate.password, this.adminToCreate.firstName, this.adminToCreate.lastName)).subscribe({
+          next: async (response) => {
+            if (isOkResponse(response)) {
+              this.notificationService.showInfoMessage("Admin created with id " + response.data);
+              await this.refreshAdmins();
+            } else {
+              this.notificationService.showError(response.message);
+            }
+          },
+          error: (e) => {
+            this.notificationService.showError(e.error.message);
+          },
+        });
+      }
 
     } else {
       this.isCreatingAdmin = true;
