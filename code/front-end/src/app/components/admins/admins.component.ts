@@ -121,7 +121,8 @@ export class AdminsComponent implements OnInit {
   }
 
   // Tenants operations
-  async createTenant() {
+  async createAdmin() {
+    return;
     if (this.isCreatingTenant) {
       await (await this.tenantService.createTenant(this.inputTenantName)).subscribe({
         next: async (response) => {
@@ -146,12 +147,13 @@ export class AdminsComponent implements OnInit {
   }
 
 
-  cancelTenantCreation() {
-    this.isCreatingTenant = false;
+  cancelAction() {
+    this.refreshTenants();
   }
 
 
-  async updateTenant() {
+  async updateAdmin() {
+    return;
     if (this.selectedRows > 0) {
       const rowsToUpdate = this.tenants.filter(row => row.isSelected);
       const isUpdating = (rowsToUpdate.length > 0 && rowsToUpdate[0].isBeingUpdated);
@@ -181,7 +183,8 @@ export class AdminsComponent implements OnInit {
   }
 
 
-  async deleteSelectedTenant() {
+  async deleteSelectedAdmin() {
+    return;
     if (this.selectedRows > 0) {
       const selectedTenantIds = this.tenants.filter(row => row.isSelected).map(tenant => tenant.tenantId);
 

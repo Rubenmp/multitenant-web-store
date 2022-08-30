@@ -1,17 +1,17 @@
-<h1 id="tenants_title">Tenants</h1>
+<h1 id="admins_title">Admins</h1>
 
 
-<button *ngIf="!isRowSelected()" (click)="createTenant()" mat-flat-button id="create_button" class="crud_button">
+<button *ngIf="!isRowSelected()" (click)="createAdmin()" mat-flat-button id="create_button" class="crud_button">
     Create
 </button>
-<button *ngIf="isRowSelected()" (click)="updateTenant()" mat-flat-button id="update_button" class="crud_button">
+<button *ngIf="isRowSelected()" (click)="updateAdmin()" mat-flat-button id="update_button" class="crud_button">
     Update
 </button>
-<button *ngIf="isRowSelected() && !isBeingUpdated" (click)="deleteSelectedTenant()" mat-flat-button id="delete_button"
+<button *ngIf="isRowSelected() && !isBeingUpdated" (click)="deleteSelectedAdmin()" mat-flat-button id="delete_button"
     class="crud_button">
     Delete
 </button>
-<button *ngIf="isCreatingTenant" (click)="cancelTenantCreation()" mat-flat-button id="cancel_button"
+<button *ngIf="isCreatingTenant" (click)="cancelAction()" mat-flat-button id="cancel_button"
     class="crud_button">
     Cancel
 </button>

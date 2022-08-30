@@ -143,8 +143,8 @@ export class TenantsComponent implements OnInit {
   }
 
 
-  cancelTenantCreation() {
-    this.isCreatingTenant = false;
+  async cancelAction() {
+    await this.refreshTenants();
   }
 
 
