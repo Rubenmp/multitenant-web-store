@@ -106,7 +106,10 @@ public class UserService {
     }
 
     private User checkUserToUpdate(final UserUpdateDto userUpdateDto) throws MWSException {
-        requireNotNull(userUpdateDto.getId(), "User id is required.");
+        if (userUpdateDto.getId() == null) {
+            throw new MWSException("User id is required.");
+        }
+
         checkUserEmail(userUpdateDto.getEmail());
         checkUserPassword(userUpdateDto.getPassword());
         checkUserFirstName(userUpdateDto.getFirstName());
