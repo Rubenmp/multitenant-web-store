@@ -4,6 +4,9 @@ import com.mws.back_end.account.model.entity.Tenant;
 import com.mws.back_end.framework.database.GenericDaoImpl;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.List;
 
 import static com.mws.back_end.account.model.entity.Tenant.TENANT_COLUMN_NAME;
@@ -27,9 +30,17 @@ public class TenantDao extends GenericDaoImpl<Tenant, Long> {
     }
 
     public List<Tenant> findByActive(final Boolean active) {
-        final DBSearch dbSearch = new DBSearch();
-        dbSearch.setActive(active);
-        return find(dbSearch);
+        final CriteriaQuery<Tenant> criteriaQuery = getCriteriaBuilder().createQuery(Tenant.class);
+        final Root<Tenant> root = criteriaQuery.from(Tenant.class);
+        Predicate predicate = getCriteriaBuilder().conjunction();
+
+        if (active != null) {
+            predicate = getCriteriaBuilder().and(predicate, root.get(DB_COLUMN_ACTIVE).in(List.of(active)));
+        }
+
+        criteriaQuery.where(predicate);
+
+        return entityManager.createQuery(criteriaQuery).getResultList();
     }
 }
 

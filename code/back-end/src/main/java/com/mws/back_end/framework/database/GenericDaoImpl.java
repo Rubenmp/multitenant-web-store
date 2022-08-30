@@ -244,7 +244,7 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
         return query.getResultList();
     }
 
-    private CriteriaBuilder getCriteriaBuilder() {
+    protected CriteriaBuilder getCriteriaBuilder() {
         return entityManager.getCriteriaBuilder();
     }
 
