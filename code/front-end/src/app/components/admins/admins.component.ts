@@ -4,13 +4,11 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { isOkResponse } from 'src/service/dto/api';
 import { NotificationService } from 'src/service/notification/notification.service';
-import { TenantService } from 'src/service/tenant/tenant.service';
 import { UserService } from 'src/service/user/user.service';
 
 
 type AdminRow = { id: number, tenantId: number, email: string, firstName: string, lastName: string, isBeingUpdated: boolean, isSelected: boolean }
-type TenantRow = { tenantId: number, name: string, active: boolean, isBeingUpdated: boolean, isSelected: boolean }
-type TenantCreation = { name: string }
+type AdminCreation = { tenantId?: number, email: string, password: string, firstName: string, lastName: string }
 
 
 @Component({
@@ -19,8 +17,6 @@ type TenantCreation = { name: string }
   styleUrls: ['./admins.component.scss']
 })
 export class AdminsComponent implements OnInit {
-
-  tenants: TenantRow[] = []
   admins: AdminRow[] = []
 
   displayedColumns: string[] = ['id', 'tenantId', 'email', 'firstName', 'lastName'];
@@ -34,18 +30,17 @@ export class AdminsComponent implements OnInit {
   sort!: MatSort;
 
   // Creation
-  tenantToCreate: TenantCreation[] = [];
+  adminToCreate: AdminCreation = { tenantId: undefined, email: '', password: '', firstName: '', lastName: '' };
   inputTenantName: string = '';
-  isCreatingTenant: boolean = false;
-  displayedColumnsToCreate: string[] = ['name'];
-  dataSourceToCreate!: MatTableDataSource<TenantCreation>;
+  isCreatingAdmin: boolean = false;
+  displayedColumnsToCreate: string[] = ['tenantId', 'email', 'password', 'firstName', 'lastName'];
+  dataSourceToCreate!: MatTableDataSource<AdminCreation>;
 
   // Update/delete
   selectedRows: number = 0;
   isBeingUpdated: boolean = false;
 
-  constructor(private tenantService: TenantService,
-    private userService: UserService,
+  constructor(private userService: UserService,
     private notificationService: NotificationService) { }
 
 
@@ -110,7 +105,7 @@ export class AdminsComponent implements OnInit {
     return filterValue.trim().toLowerCase();
   }
 
-  clickRow(row: TenantRow) {
+  clickRow(row: AdminRow) {
     if (this.isBeingUpdated) {
       return;
     }
@@ -129,28 +124,27 @@ export class AdminsComponent implements OnInit {
 
   // Tenants operations
   async createAdmin() {
-    return;
-    /*if (this.isCreatingTenant) {
-      await (await this.tenantService.createTenant(this.inputTenantName)).subscribe({
+    if (this.isCreatingAdmin) {
+      await (await this.userService.signUpAdmin(this.adminToCreate.email, this.adminToCreate.password, this.adminToCreate.firstName, this.adminToCreate.lastName)).subscribe({
         next: async (response) => {
           if (isOkResponse(response)) {
-            this.notificationService.showInfoMessage("Tenant created with id " + response.data);
-            this.isCreatingTenant = false;
-            await this.refreshTenants();
+            this.notificationService.showInfoMessage("Admin created with id " + response.data);
+            this.isCreatingAdmin = false;
+            await this.refreshAdmins();
           } else {
             this.notificationService.showError(response.message);
           }
         },
         error: (_) => {
-          this.notificationService.showError("Internal error creating tenant.");
+          this.notificationService.showError("Internal error creating admin.");
         },
       });
 
     } else {
-      this.isCreatingTenant = true;
-      this.tenantToCreate = [{ name: '' }]
-      this.dataSourceToCreate = new MatTableDataSource(this.tenantToCreate);
-    }*/
+      this.isCreatingAdmin = true;
+      this.adminToCreate = { tenantId: undefined, email: '', password: '', firstName: '', lastName: '' }
+      this.dataSourceToCreate = new MatTableDataSource([this.adminToCreate]);
+    }
   }
 
 

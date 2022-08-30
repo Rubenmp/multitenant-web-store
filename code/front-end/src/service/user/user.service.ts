@@ -16,10 +16,18 @@ export class UserService {
 
   constructor(private http: HttpClient) { }
 
-  async signUp(email: string, password: string, firstName: string, lastName: string) {
+  async signUpUser(email: string, password: string, firstName: string, lastName: string) {
+    return await this.signUpInternal(email, password, firstName, lastName, 'USER');
+  }
+
+  async signUpAdmin(email: string, password: string, firstName: string, lastName: string) {
+    return await this.signUpInternal(email, password, firstName, lastName, 'ADMIN');
+  }
+
+  private async signUpInternal(email: string, password: string, firstName: string, lastName: string, role: string) {
     const body = {
       tenantId: 1, // TODO: set this parameter dynamically
-      role: "USER",
+      role: "USER", // TODO: set this parameter dynamically
       email,
       password,
       firstName,

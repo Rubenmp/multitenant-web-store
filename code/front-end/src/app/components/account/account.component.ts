@@ -56,7 +56,7 @@ export class AccountComponent implements OnInit {
   }
 
   async signUp() {
-    await (await this.userService.signUp(this.inputEmail, this.inputPassword, this.inputFirstName, this.inputLastName)).subscribe({
+    await (await this.userService.signUpUser(this.inputEmail, this.inputPassword, this.inputFirstName, this.inputLastName)).subscribe({
       next: (response) => {
         if (isOkResponse(response)) {
           this.notificationService.showInfoMessage("Successful sign up");
