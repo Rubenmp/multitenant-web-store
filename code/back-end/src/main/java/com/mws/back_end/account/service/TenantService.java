@@ -67,7 +67,8 @@ public class TenantService {
     }
 
     public TenantDto getTenant(final Long tenantId) {
-        return toDto(tenantDao.findWeak(tenantId));
+        final Tenant tenant = tenantDao.findWeak(tenantId);
+        return tenant == null ? null : toDto(tenant);
     }
 
     public List<TenantDto> listTenants(final Boolean active) {
