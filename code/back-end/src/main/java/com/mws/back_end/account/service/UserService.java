@@ -4,6 +4,7 @@ import com.mws.back_end.account.interfaces.user.dto.*;
 import com.mws.back_end.account.model.dao.UserDao;
 import com.mws.back_end.account.model.entity.User;
 import com.mws.back_end.account.model.entity.UserRole;
+import com.mws.back_end.account.service.security.JwtCipher;
 import com.mws.back_end.account.service.security.JwtService;
 import com.mws.back_end.framework.exception.EntityPersistenceException;
 import com.mws.back_end.framework.exception.MWSException;
@@ -16,6 +17,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 import static com.mws.back_end.account.interfaces.user.dto.UserDto.toDto;
 import static com.mws.back_end.framework.utils.ExceptionUtils.require;
@@ -38,6 +41,9 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtCipher jwtCipher;
 
     public Long createUser(final UserCreationDto userCreationDto) throws MWSException {
         requireNotNull(userCreationDto, "User info must be provided");
@@ -187,5 +193,17 @@ public class UserService {
                 .role(UserRoleDto.of(loggedUser.getRole()))
                 .token(token)
                 .build();
+    }
+
+    public List<UserDto> getAllAdmins() throws MWSException {
+        checkSuperPermissions();
+        return userDao.fetchAllAdmins().stream().map(UserDto::toDto).toList();
+    }
+
+    private void checkSuperPermissions() throws MWSException {
+        final UserRoleDto currentUserRole = jwtCipher.getCurrentUserRole();
+        if (!UserRoleDto.SUPER.equals(currentUserRole)) {
+            throw new MWSException("Not allowed.");
+        }
     }
 }

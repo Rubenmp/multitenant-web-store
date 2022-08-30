@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class IntegrationTestConfig extends TestUtils {
     protected static final Long TENANT_ID = 1L;
     protected static final Long USER_ID = 1L;
+    protected static final Long ADMIN_ID = 2L;
     protected static final Long PRODUCT_ID = 1L;
     protected static final String USER_EMAIL = "user@mwstest.com";
     protected static final String USER_ADMIN_EMAIL = "admin@mwstest.com";

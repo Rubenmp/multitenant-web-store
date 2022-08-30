@@ -1,19 +1,31 @@
 package com.mws.back_end.account.interfaces.user;
 
-import com.mws.back_end.account.interfaces.user.dto.*;
+import com.mws.back_end.account.interfaces.user.dto.LoginRequest;
+import com.mws.back_end.account.interfaces.user.dto.UserAuthenticationResponse;
+import com.mws.back_end.account.interfaces.user.dto.UserCreationDto;
+import com.mws.back_end.account.interfaces.user.dto.UserDto;
+import com.mws.back_end.account.interfaces.user.dto.UserUpdateDto;
 import com.mws.back_end.account.service.UserService;
 import com.mws.back_end.framework.dto.WebResult;
 import com.mws.back_end.framework.exception.MWSException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.mws.back_end.framework.dto.WebResult.newWebResult;
 import static com.mws.back_end.framework.dto.WebResult.success;
 import static com.mws.back_end.framework.dto.WebResultCode.ERROR_AUTH;
 import static com.mws.back_end.framework.dto.WebResultCode.ERROR_INVALID_PARAMETER;
+import static com.mws.back_end.framework.dto.WebResultCode.ERROR_MISSING_MANDATORY_PARAMETER;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -23,6 +35,7 @@ public class UserInterface {
     public static final String CREATE_USER_URL = BASE_USER_URL + "/" + "create";
     public static final String UPDATE_USER_URL = BASE_USER_URL + "/" + "update";
     public static final String GET_USER_URL = BASE_USER_URL + "/" + "get";
+    public static final String FILTER_USERS_URL = BASE_USER_URL + "/" + "filter";
     public static final String LOGIN_USER_URL = BASE_USER_URL + "/" + "login";
 
     @Autowired
@@ -72,6 +85,16 @@ public class UserInterface {
         }
 
         return new ResponseEntity<>(success(authResponse), OK);
+    }
+
+    @GetMapping(FILTER_USERS_URL)
+    public ResponseEntity<WebResult<ArrayList<UserDto>>> listAdmins() {
+        try {
+            final ArrayList<UserDto> admins = new ArrayList<>(userService.getAllAdmins());
+            return new ResponseEntity<>(success(admins), OK);
+        } catch (MWSException e) {
+            return new ResponseEntity<>(newWebResult(ERROR_AUTH, "Invalid authentication"), BAD_REQUEST);
+        }
     }
 
 }

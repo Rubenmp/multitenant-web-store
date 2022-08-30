@@ -66,6 +66,7 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
         private Collection<Id> ids;
         private Boolean active;
         private Integer maxResults;
+        private boolean tenantFilter = true;
     }
 
     @Override

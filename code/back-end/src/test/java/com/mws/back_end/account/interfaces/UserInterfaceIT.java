@@ -1,7 +1,12 @@
 package com.mws.back_end.account.interfaces;
 
 
-import com.mws.back_end.account.interfaces.user.dto.*;
+import com.mws.back_end.account.interfaces.user.dto.LoginRequest;
+import com.mws.back_end.account.interfaces.user.dto.UserAuthenticationResponse;
+import com.mws.back_end.account.interfaces.user.dto.UserCreationDto;
+import com.mws.back_end.account.interfaces.user.dto.UserDto;
+import com.mws.back_end.account.interfaces.user.dto.UserRoleDto;
+import com.mws.back_end.account.interfaces.user.dto.UserUpdateDto;
 import com.mws.back_end.account.service.security.JwtCipher;
 import com.mws.back_end.framework.IntegrationTestConfig;
 import com.mws.back_end.framework.dto.WebResult;
@@ -19,13 +24,21 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.io.Serializable;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Optional;
 
-import static com.mws.back_end.account.interfaces.user.UserInterface.*;
+import static com.mws.back_end.account.interfaces.user.UserInterface.CREATE_USER_URL;
+import static com.mws.back_end.account.interfaces.user.UserInterface.FILTER_USERS_URL;
+import static com.mws.back_end.account.interfaces.user.UserInterface.GET_USER_URL;
+import static com.mws.back_end.account.interfaces.user.UserInterface.LOGIN_USER_URL;
+import static com.mws.back_end.account.interfaces.user.UserInterface.UPDATE_USER_URL;
 import static com.mws.back_end.framework.IntegrationTestConfig.TEST_PROFILE;
 import static com.mws.back_end.framework.dto.WebResultCode.ERROR_AUTH;
 import static com.mws.back_end.framework.dto.WebResultCode.SUCCESS;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ActiveProfiles(TEST_PROFILE)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -259,5 +272,23 @@ class UserInterfaceIT extends IntegrationTestConfig {
         assertEquals(SUCCESS, result.getCode(), "Result code");
         assertNotNull(result.getData(), "Data not null");
         assertEquals(USER_ID, result.getData().getId(), "User id");
+    }
+
+
+    @Test
+    void listAdmins_notEmpty() {
+        final URI uri = getUri(FILTER_USERS_URL);
+
+        final ResponseEntity<String> response = restTemplate.exchange(
+                uri,
+                HttpMethod.GET,
+                createSuperHttpEntity(),
+                String.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status");
+        final WebResult<ArrayList<UserDto>> result = toWebResultWithList(response, UserDto.class);
+        assertEquals(SUCCESS, result.getCode(), "Result code");
+        assertNotNull(result.getData(), "Data not null");
+        assertTrue(result.getData().stream().map(UserDto::getId).anyMatch(ADMIN_ID::equals), "Admin id");
     }
 }
