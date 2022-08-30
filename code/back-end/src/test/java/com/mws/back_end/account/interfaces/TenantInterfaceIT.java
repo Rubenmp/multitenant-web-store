@@ -1,6 +1,7 @@
 package com.mws.back_end.account.interfaces;
 
 
+import com.mws.back_end.account.interfaces.tenant.tenant.TenantCreationDto;
 import com.mws.back_end.account.interfaces.tenant.tenant.TenantDto;
 import com.mws.back_end.account.interfaces.tenant.tenant.TenantUpdateDto;
 import com.mws.back_end.framework.IntegrationTestConfig;
@@ -19,10 +20,17 @@ import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
 
-import static com.mws.back_end.account.interfaces.tenant.TenantInterface.*;
+import static com.mws.back_end.account.interfaces.tenant.TenantInterface.CREATE_TENANT_URL;
+import static com.mws.back_end.account.interfaces.tenant.TenantInterface.DELETE_TENANT_URL;
+import static com.mws.back_end.account.interfaces.tenant.TenantInterface.LIST_TENANTS_URL;
+import static com.mws.back_end.account.interfaces.tenant.TenantInterface.UPDATE_TENANT_URL;
 import static com.mws.back_end.framework.IntegrationTestConfig.TEST_PROFILE;
 import static com.mws.back_end.framework.dto.WebResultCode.SUCCESS;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ActiveProfiles(TEST_PROFILE)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -31,8 +39,10 @@ class TenantInterfaceIT extends IntegrationTestConfig {
 
     @Test
     void createTenant_happyPath_success() {
-        final URI uri = getUri(CREATE_TENANT_URL, Pair.of("name", "New tenant"));
-        final HttpEntity<String> httpRequest = createSuperHttpEntity();
+        final TenantCreationDto creationDto = new TenantCreationDto();
+        creationDto.setName("New tenant");
+        final URI uri = getUri(CREATE_TENANT_URL);
+        final HttpEntity<String> httpRequest = createSuperHttpEntity(toJson(creationDto));
 
         final ResponseEntity<String> response = restTemplate.exchange(
                 uri,
@@ -54,12 +64,15 @@ class TenantInterfaceIT extends IntegrationTestConfig {
 
     @Test
     void createTenant_repeatedName_badRequest() {
-        final URI uri = getUri(CREATE_TENANT_URL, Pair.of("name", "MWS Tenant"));
+        final TenantCreationDto creationDto = new TenantCreationDto();
+        creationDto.setName("MWS Tenant");
+        final URI uri = getUri(CREATE_TENANT_URL);
+        final HttpEntity<String> httpRequest = createSuperHttpEntity(toJson(creationDto));
 
         final ResponseEntity<String> response = restTemplate.exchange(
                 uri,
                 HttpMethod.POST,
-                createSuperHttpEntity(),
+                httpRequest,
                 String.class);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode(), "Response status");
@@ -72,12 +85,15 @@ class TenantInterfaceIT extends IntegrationTestConfig {
 
     @Test
     void updateTenant_happyPath_success() {
-        final URI uri = getUri(CREATE_TENANT_URL, Pair.of("name", "Tenant to update"));
+        final TenantCreationDto creationDto = new TenantCreationDto();
+        creationDto.setName("Tenant to update");
+        final URI uri = getUri(CREATE_TENANT_URL);
+        final HttpEntity<String> httpRequest = createSuperHttpEntity(toJson(creationDto));
 
         final ResponseEntity<String> response = restTemplate.exchange(
                 uri,
                 HttpMethod.POST,
-                createSuperHttpEntity(),
+                httpRequest,
                 String.class);
 
         final Long createdTenantId = checkTenantWasCreated(response);
