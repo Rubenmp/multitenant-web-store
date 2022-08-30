@@ -110,8 +110,15 @@ public class UserService {
             throw new MWSException("User id is required.");
         }
 
+        final User currentUser = userDao.findWeak(userUpdateDto.getId());
+        if (currentUser== null) {
+            throw new MWSException("User id is invalid.");
+        }
         checkUserEmail(userUpdateDto.getEmail());
-        checkUserPassword(userUpdateDto.getPassword());
+
+        if (!StringUtils.isEmpty(userUpdateDto.getPassword())) {
+            checkUserPassword(userUpdateDto.getPassword());
+        }
         checkUserFirstName(userUpdateDto.getFirstName());
         checkUserLastName(userUpdateDto.getLastName());
 
@@ -161,7 +168,9 @@ public class UserService {
         }
 
         user.setEmail(userUpdateDto.getEmail());
-        user.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
+        if (!StringUtils.isEmpty(userUpdateDto.getPassword())) {
+            user.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
+        }
         user.setFirstName(userUpdateDto.getFirstName());
         user.setLastName(userUpdateDto.getLastName());
 
