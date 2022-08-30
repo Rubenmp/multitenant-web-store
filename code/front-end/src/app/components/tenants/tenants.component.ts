@@ -28,13 +28,15 @@ export class TenantsComponent implements OnInit {
   filterById: string = "";
   filterByProductName: string = "";
 
+  selectedRowIndex: any = -1;
+
 
   constructor(private tenantService: TenantService,
     private notificationService: NotificationService) { }
 
 
   async ngOnInit(): Promise<void> {
-    
+
     await (await this.tenantService.listTenants()).subscribe({
       next: (response) => {
         if (isOkResponse(response)) {
@@ -80,5 +82,17 @@ export class TenantsComponent implements OnInit {
   private getFilterValue(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     return filterValue.trim().toLowerCase();
+  }
+
+  clickRow(row: any) {
+    if (this.selectedRowIndex === row.id) {
+      this.selectedRowIndex = -1;
+    } else {
+      this.selectedRowIndex = row.id;
+    }
+  }
+
+  isRowSelected() {
+    return (this.selectedRowIndex !== -1);
   }
 }
