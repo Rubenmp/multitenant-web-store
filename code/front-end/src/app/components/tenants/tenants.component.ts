@@ -6,7 +6,7 @@ import { isOkResponse } from 'src/service/dto/api';
 import { NotificationService } from 'src/service/notification/notification.service';
 import { TenantService } from 'src/service/tenant/tenant.service';
 
-type TenantRow = { tenantId: number, name: string, active: boolean, isUpdated: boolean }
+type TenantRow = { tenantId: number, name: string, active: boolean, isUpdated: boolean, isSelected: boolean }
 type TenantCreation = { name: string }
 
 @Component({
@@ -29,12 +29,13 @@ export class TenantsComponent implements OnInit {
 
   // Creation
   tenantToCreate: TenantCreation[] = [];
-  inputTenantName: string = '';/*  */
-  selectedRowIndex: number = -1;
+  inputTenantName: string = '';
   isCreatingTenant: boolean = false;
   displayedColumnsToCreate: string[] = ['name'];
   dataSourceToCreate!: MatTableDataSource<TenantCreation>;
 
+  // Update/delete
+  selectedRows: number = 0;
 
   constructor(private tenantService: TenantService,
     private notificationService: NotificationService) { }
@@ -50,7 +51,7 @@ export class TenantsComponent implements OnInit {
       next: (response) => {
         if (isOkResponse(response)) {
           this.tenants = response.data.map((t) => {
-            return { tenantId: t.tenantId, name: t.name, active: t.active, isUpdated: false }
+            return { tenantId: t.tenantId, name: t.name, active: t.active, isUpdated: false, isSelected: false }
           });
           this.paginator.pageSize = 5;
           this.updateTenantsInTable(this.tenants);
@@ -95,31 +96,29 @@ export class TenantsComponent implements OnInit {
     return filterValue.trim().toLowerCase();
   }
 
-  clickRow(row: any) {
-    if (this.selectedRowIndex === row.id) {
-      this.selectedRowIndex = -1;
+  clickRow(row: TenantRow) {
+    if (row.isSelected) {
+      row.isSelected = false;
+      this.selectedRows -= 1;
     } else {
-      this.selectedRowIndex = row.id;
-    }
+      row.isSelected = true;
+      this.selectedRows += 1;
+    }   
   }
 
   isRowSelected() {
-    return (this.selectedRowIndex !== -1);
+    return this.selectedRows > 0;
   }
 
   // Tenants operations
   async createTenant() {
-    console.log("createTenant");
-    console.log(this.inputTenantName);
     if (this.isCreatingTenant) {
       await (await this.tenantService.createTenant(this.inputTenantName)).subscribe({
-        next: (response) => {
-          console.log("response")
-          console.log(response);
+        next: async (response) => {
           if (isOkResponse(response)) {
             this.notificationService.showInfoMessage("Tenant created with id " + response.data);
             this.isCreatingTenant = false;
-            this.refreshTenants();
+            await this.refreshTenants();
           } else {
             this.notificationService.showError(response.message);
           }
@@ -139,5 +138,27 @@ export class TenantsComponent implements OnInit {
 
   cancelTenantCreation() {
     this.isCreatingTenant = false;
+  }
+
+  async deleteSelectedTenant() {
+    if (this.selectedRows > 0) {
+      const selectedTenantIds = this.tenants.filter(row => row.isSelected).map(tenant => tenant.tenantId);
+
+      for (let selectedTenantId of selectedTenantIds) {
+        await (await this.tenantService.delete(selectedTenantId)).subscribe({
+          next: async (response) => {
+            if (isOkResponse(response)) {
+              this.notificationService.showInfoMessage("Tenant deleted");
+              await this.refreshTenants();
+            } else {
+              this.notificationService.showError(response.message);
+            }
+          },
+          error: (_) => {
+            this.notificationService.showError("Internal error deleting tenant.");
+          },
+        });
+      }
+    }
   }
 }

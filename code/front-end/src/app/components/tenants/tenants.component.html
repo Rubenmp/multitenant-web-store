@@ -5,7 +5,9 @@
     Create
 </button>
 <button *ngIf="isRowSelected()" mat-flat-button id="update_button" class="crud_button">Update</button>
-<button *ngIf="isRowSelected()" mat-flat-button id="delete_button" class="crud_button">Delete</button>
+<button *ngIf="isRowSelected()" (click)="deleteSelectedTenant()" mat-flat-button id="delete_button" class="crud_button">
+    Delete
+</button>
 <button *ngIf="isCreatingTenant" (click)="cancelTenantCreation()" mat-flat-button id="cancel_button" class="crud_button">
     Cancel
 </button>
@@ -58,7 +60,7 @@
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-            [ngClass]="{'highlight': selectedRowIndex == row.id}" (click)="clickRow(row)"></tr>
+            [ngClass]="{'highlight': row.isSelected}" (click)="clickRow(row)"></tr>
 
     </table>
     <mat-paginator [pageSizeOptions]="[5, 10, 25]" aria-label="Select page"></mat-paginator>
