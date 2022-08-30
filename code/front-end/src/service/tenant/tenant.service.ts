@@ -9,6 +9,7 @@ import { ListTenantsResponse } from './dto/tenant';
 })
 export class TenantService {
   private createTenantUrl: string = `${environment.baseUrl}/tenant/create`;
+  private updateTenantUrl: string = `${environment.baseUrl}/tenant/update`;
   private listTenantsUrl: string = `${environment.baseUrl}/tenant/list`;
   private deleteTenantUrl: string = `${environment.baseUrl}/tenant/delete`;
 
@@ -18,6 +19,13 @@ export class TenantService {
     return await this.http
       .post<ApiResponse>(this.createTenantUrl, { name });
   }
+
+
+  async updateTenant(id: number, name: string) {
+    return await this.http
+      .put<ApiResponse>(this.updateTenantUrl, { id, name });
+  }
+
 
   async listTenants() {
     return await this.http.get<ListTenantsResponse>(this.listTenantsUrl);

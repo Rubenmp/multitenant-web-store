@@ -6,7 +6,7 @@ import { isOkResponse } from 'src/service/dto/api';
 import { NotificationService } from 'src/service/notification/notification.service';
 import { TenantService } from 'src/service/tenant/tenant.service';
 
-type TenantRow = { tenantId: number, name: string, active: boolean, isUpdated: boolean, isSelected: boolean }
+type TenantRow = { tenantId: number, name: string, active: boolean, isBeingUpdated: boolean, isSelected: boolean }
 type TenantCreation = { name: string }
 
 @Component({
@@ -36,6 +36,7 @@ export class TenantsComponent implements OnInit {
 
   // Update/delete
   selectedRows: number = 0;
+  isBeingUpdated: boolean = false;
 
   constructor(private tenantService: TenantService,
     private notificationService: NotificationService) { }
@@ -51,7 +52,7 @@ export class TenantsComponent implements OnInit {
       next: (response) => {
         if (isOkResponse(response)) {
           this.tenants = response.data.map((t) => {
-            return { tenantId: t.tenantId, name: t.name, active: t.active, isUpdated: false, isSelected: false }
+            return { tenantId: t.tenantId, name: t.name, active: t.active, isBeingUpdated: false, isSelected: false }
           });
           this.paginator.pageSize = 5;
           this.updateTenantsInTable(this.tenants);
@@ -63,6 +64,9 @@ export class TenantsComponent implements OnInit {
         this.notificationService.showError("Internal error fetching tenants.");
       },
     });
+
+    this.isBeingUpdated = false;
+    this.selectedRows = 0;
   }
 
   updateTenantsInTable(tenants: TenantRow[]) {
@@ -97,13 +101,16 @@ export class TenantsComponent implements OnInit {
   }
 
   clickRow(row: TenantRow) {
+    if (this.isBeingUpdated) {
+      return;
+    }
     if (row.isSelected) {
       row.isSelected = false;
       this.selectedRows -= 1;
     } else {
       row.isSelected = true;
       this.selectedRows += 1;
-    }   
+    }
   }
 
   isRowSelected() {
@@ -139,6 +146,37 @@ export class TenantsComponent implements OnInit {
   cancelTenantCreation() {
     this.isCreatingTenant = false;
   }
+
+
+  async updateTenant() {
+    if (this.selectedRows > 0) {
+      const rowsToUpdate = this.tenants.filter(row => row.isSelected);
+      const isUpdating = (rowsToUpdate.length > 0 && rowsToUpdate[0].isBeingUpdated);
+      if (isUpdating) {
+        let successResponses = 0;
+        for (let rowToUpdate of rowsToUpdate) {
+          await (await this.tenantService.updateTenant(rowToUpdate.tenantId, rowToUpdate.name)).subscribe({
+            next: (response) => {
+              if (isOkResponse(response)) {
+                this.notificationService.showInfoMessage("Tenant updated");
+              } else {
+                this.notificationService.showError(response.message);
+              }
+            },
+            error: (_) => {
+              this.notificationService.showError("Internal error updating tenant.");
+            },
+          });
+        }
+        await this.refreshTenants();
+      
+      } else {
+        rowsToUpdate.forEach(row => row.isBeingUpdated = true);
+        this.isBeingUpdated = true;
+      }
+    }
+  }
+
 
   async deleteSelectedTenant() {
     if (this.selectedRows > 0) {
