@@ -19,7 +19,8 @@ import static com.mws.back_end.framework.dto.WebResultCode.SUCCESS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class IntegrationTestConfig extends TestUtils {
-    protected static final Long TENANT_ID = 1L;
+    protected static final Long META_TENANT_ID = 1L;
+    protected static final Long TENANT_ID = 2L;
     protected static final Long USER_ID = 1L;
     protected static final Long ADMIN_ID = 2L;
     protected static final Long PRODUCT_ID = 1L;
@@ -68,6 +69,10 @@ public class IntegrationTestConfig extends TestUtils {
 
 
     protected LoginRequest newLoginRequest(final UserRoleDto role) {
+        final Long tenantId = UserRoleDto.SUPER.equals(role) ? META_TENANT_ID : TENANT_ID;
+        return newLoginRequest(role, tenantId);
+    }
+    private LoginRequest newLoginRequest(final UserRoleDto role, final Long tenantId) {
         final LoginRequest loginRequest = new LoginRequest();
         String email = USER_EMAIL;
         if (role == UserRoleDto.ADMIN) {
@@ -77,6 +82,7 @@ public class IntegrationTestConfig extends TestUtils {
         }
         loginRequest.setEmail(email);
         loginRequest.setPassword(USER_PASSWORD);
+        loginRequest.setTenantId(tenantId);
 
         return loginRequest;
     }

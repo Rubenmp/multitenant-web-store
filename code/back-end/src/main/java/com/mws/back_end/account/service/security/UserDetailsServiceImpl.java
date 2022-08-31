@@ -43,12 +43,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return singletonList(new SimpleGrantedAuthority("USER"));
     }
 
-    public Optional<UserDto> getUserByEmail(final String email) {
-        if (isEmpty(email)) {
+    public Optional<UserDto> getUserByEmail(final String email, final Long tenantId) {
+        if (isEmpty(email) || tenantId == null) {
             return Optional.empty();
         }
 
-        final User userOpt = userDao.findByEmail(email);
+        final User userOpt = userDao.findByEmail(email, tenantId);
         if (userOpt != null) {
             return Optional.of(toDto(userOpt));
         }

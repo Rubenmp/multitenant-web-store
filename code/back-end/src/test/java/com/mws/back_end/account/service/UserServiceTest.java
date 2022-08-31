@@ -294,7 +294,7 @@ class UserServiceTest extends TestUtils {
 
     private UserCreationDto getValidRegisterRequest(final UserRoleDto role) {
         final UserCreationDto registerRequest = new UserCreationDto();
-        registerRequest.setTenantId(1L);
+        registerRequest.setTenantId(TENANT_ID);
         registerRequest.setRole(role);
         registerRequest.setFirstName("New first name");
         registerRequest.setLastName("New last name");

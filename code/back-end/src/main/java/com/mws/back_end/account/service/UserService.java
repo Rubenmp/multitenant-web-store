@@ -1,6 +1,11 @@
 package com.mws.back_end.account.service;
 
-import com.mws.back_end.account.interfaces.user.dto.*;
+import com.mws.back_end.account.interfaces.user.dto.LoginRequest;
+import com.mws.back_end.account.interfaces.user.dto.UserAuthenticationResponse;
+import com.mws.back_end.account.interfaces.user.dto.UserCreationDto;
+import com.mws.back_end.account.interfaces.user.dto.UserDto;
+import com.mws.back_end.account.interfaces.user.dto.UserRoleDto;
+import com.mws.back_end.account.interfaces.user.dto.UserUpdateDto;
 import com.mws.back_end.account.model.dao.UserDao;
 import com.mws.back_end.account.model.entity.User;
 import com.mws.back_end.account.model.entity.UserRole;
@@ -111,7 +116,7 @@ public class UserService {
         }
 
         final User currentUser = userDao.findWeak(userUpdateDto.getId());
-        if (currentUser== null) {
+        if (currentUser == null) {
             throw new MWSException("User id is invalid.");
         }
         checkUserEmail(userUpdateDto.getEmail());
@@ -147,6 +152,7 @@ public class UserService {
             throw new MWSException("User password must contain at least 8 characters.");
         }
     }
+
     private void checkUserFirstName(final String firstName) throws MWSException {
         if (StringUtils.isEmpty(firstName)) {
             throw new MWSException("User first name cannot be blank.");
@@ -187,16 +193,23 @@ public class UserService {
 
     public UserAuthenticationResponse login(final LoginRequest loginRequest) throws MWSException {
         requireNotNull(loginRequest, "Login info must be provided");
+        requireNotNull(loginRequest.getTenantId(), "Login tenant must be provided");
+
+        final User user = userDao.findByEmail(loginRequest.getEmail(), loginRequest.getTenantId());
+        if (user == null) {
+            throw new MWSException("Invalid login");
+        }
         final Authentication authenticate;
         try {
-            authenticate = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+            UsernamePasswordAuthenticationToken authentication
+                    = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
+            authenticate = authenticationManager.authenticate(authentication);
         } catch (AuthenticationException e) {
             throw new MWSException(e.getMessage());
         }
 
         SecurityContextHolder.getContext().setAuthentication(authenticate);
-        final String token = jwtService.generateNewToken(authenticate);
+        final String token = jwtService.generateNewToken(authenticate, loginRequest.getTenantId());
         final User loggedUser = userDao.findWeak(jwtService.getUserId(token));
 
         return UserAuthenticationResponse.builder()
@@ -227,9 +240,9 @@ public class UserService {
     private void deleteUserChecks(final Long userId) throws MWSException {
         checkSuperPermissions();
         preventDeleteOwnUser(userId);
-        if (userDao.findWeak(userId) == null) {
+        /*if (userDao.findWeak(userId) == null) {
             throw new MWSException("Entity not found");
-        }
+        }*/
     }
 
     private void preventDeleteOwnUser(final Long userId) throws MWSException {

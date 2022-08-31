@@ -29,7 +29,18 @@ public class JwtService {
             throw new MWSException("Invalid authentication");
         }
 
-        return createToken(user.getUsername());
+        return createToken(user.getUsername(), null);
+    }
+
+    public String generateNewToken(final Authentication authentication, final Long tenantId) throws MWSException {
+        final User user;
+        try {
+            user = (User) authentication.getPrincipal();
+        } catch (Exception e) {
+            throw new MWSException("Invalid authentication");
+        }
+
+        return createToken(user.getUsername(), tenantId);
     }
 
     public Long getUserId(final String token) {
@@ -45,19 +56,20 @@ public class JwtService {
         }
 
         final Optional<String> emailOpt = jwtCipher.getLoginEmail(currentToken);
-        if (emailOpt.isEmpty()) {
+        final Long tenantId = jwtCipher.getTenantId(currentToken);
+        if (tenantId == null || emailOpt.isEmpty()) {
             throw new MWSException(INVALID_TOKEN_IN_HTTP_HEADERS);
         }
 
-        return createToken(emailOpt.get());
+        return createToken(emailOpt.get(), tenantId);
     }
 
     public UserRoleDto getCurrentUserRole() {
         return jwtCipher.getCurrentUserRole();
     }
 
-    private String createToken(final String loginEmail) {
-        final Optional<UserDto> userModelOpt = userDetailsServiceImpl.getUserByEmail(loginEmail);
+    private String createToken(final String loginEmail, final Long tenantId) {
+        final Optional<UserDto> userModelOpt = userDetailsServiceImpl.getUserByEmail(loginEmail, tenantId);
         if (userModelOpt.isEmpty()) {
             return null;
         }

@@ -62,6 +62,7 @@ class UserInterfaceIT extends IntegrationTestConfig {
         final LoginRequest loginRequest = new LoginRequest();
         loginRequest.setEmail(creationDto.getEmail());
         loginRequest.setPassword(creationDto.getPassword());
+        loginRequest.setTenantId(TENANT_ID);
         final ResponseEntity<String> loginResponse = restTemplate.exchange(
                 getUri(LOGIN_USER_URL),
                 HttpMethod.POST,
@@ -165,6 +166,7 @@ class UserInterfaceIT extends IntegrationTestConfig {
         final LoginRequest loginRequest = new LoginRequest();
         loginRequest.setEmail(updateRequest.getEmail());
         loginRequest.setPassword(updateRequest.getPassword());
+        loginRequest.setTenantId(TENANT_ID);
 
         return loginRequest;
     }

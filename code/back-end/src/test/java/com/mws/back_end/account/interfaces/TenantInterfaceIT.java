@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ActiveProfiles(TEST_PROFILE)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class TenantInterfaceIT extends IntegrationTestConfig {
-    protected static final Long DELETED_TENANT_ID = 2L;
+    protected static final Long DELETED_TENANT_ID = 3L;
 
     @Test
     void createTenant_happyPath_success() {
@@ -65,7 +65,7 @@ class TenantInterfaceIT extends IntegrationTestConfig {
     @Test
     void createTenant_repeatedName_badRequest() {
         final TenantCreationDto creationDto = new TenantCreationDto();
-        creationDto.setName("MWS Tenant");
+        creationDto.setName("Tenant");
         final URI uri = getUri(CREATE_TENANT_URL);
         final HttpEntity<String> httpRequest = createSuperHttpEntity(toJson(creationDto));
 
@@ -79,7 +79,7 @@ class TenantInterfaceIT extends IntegrationTestConfig {
 
         final WebResult<Long> result = toWebResult(response, Long.class);
         assertEquals(WebResultCode.ERROR_INVALID_PARAMETER, result.getCode(), "Result code");
-        assertEquals("Duplicate entry 'MWS Tenant'", result.getMessage(), "Result message");
+        assertEquals("Duplicate entry 'Tenant'", result.getMessage(), "Result message");
         assertNull(result.getData(), "Tenant id");
     }
 
