@@ -115,7 +115,13 @@ public class UserService {
             throw new MWSException("User id is required.");
         }
 
-        final User currentUser = userDao.findWeak(userUpdateDto.getId());
+        final User currentUser;
+        if (UserRoleDto.SUPER.equals(jwtCipher.getCurrentUserRole())) {
+            currentUser = userDao.findWithoutTenantFilter(userUpdateDto.getId());
+        } else {
+            currentUser = userDao.findWeak(userUpdateDto.getId());
+        }
+
         if (currentUser == null) {
             throw new MWSException("User id is invalid.");
         }
@@ -167,7 +173,7 @@ public class UserService {
 
     private User toUser(final UserUpdateDto userUpdateDto) {
         requireNotNull(userUpdateDto, "User info must be provided");
-        final User user = userDao.findWeak(userUpdateDto.getId());
+        final User user = userDao.findWithoutTenantFilter(userUpdateDto.getId());
 
         if (user == null) {
             return null;

@@ -74,7 +74,7 @@ public class TenantInterface {
         try {
             tenantService.deleteTenant(id);
         } catch (MWSException e) {
-            return new ResponseEntity<>(newWebResult(ERROR_INVALID_PARAMETER, "Invalid id"), BAD_REQUEST);
+            return new ResponseEntity<>(newWebResult(ERROR_INVALID_PARAMETER, e.getMessage()), BAD_REQUEST);
         }
 
         return new ResponseEntity<>(success(), OK);
