@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { ApiResponse } from '../dto/api';
+import { MWSRouterService } from '../router/mwsrouter.service';
 import { ListAdminsResponse } from './dto/user-response';
 import { UserUpdate } from './dto/user-update';
 
@@ -16,11 +17,10 @@ export class UserService {
   private updateUserUrl: string = `${environment.baseUrl}/user/update`;
   private deleteUserUrl: string = `${environment.baseUrl}/user/delete`;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private router: MWSRouterService) { }
 
   async signUpUser(email: string, password: string, firstName: string, lastName: string) {
-    return await this.signUpInternal(1, // TODO: set this parameter dinamically
-      email, password, firstName, lastName, 'USER');
+    return await this.signUpInternal(this.router.getTenantId(), email, password, firstName, lastName, 'USER');
   }
 
   async signUpAdmin(tenantId: number, email: string, password: string, firstName: string, lastName: string) {
@@ -47,6 +47,7 @@ export class UserService {
 
   async login(email: string, password: string) {
     const body = {
+      tenantId: this.router.getTenantId(),
       email,
       password
     }

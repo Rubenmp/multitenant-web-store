@@ -3,7 +3,7 @@ import { MatSidenav } from '@angular/material/sidenav';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { delay } from 'rxjs/operators';
 import { LocalStorageService } from 'src/service/local-storage/local-storage.service';
-import { Router } from '@angular/router';
+import { MWSRouterService } from 'src/service/router/mwsrouter.service';
 
 @Component({
   selector: 'app-root',
@@ -18,7 +18,7 @@ export class AppComponent {
 
   constructor(private observer: BreakpointObserver,
     private localStorageService: LocalStorageService,
-    private router: Router) { }
+    private router: MWSRouterService) { }
 
   ngAfterViewInit() {
     this.configureAutomaticSideNavHide();
@@ -62,6 +62,28 @@ export class AppComponent {
 
   logout(): void {
     this.localStorageService.clearStorage();
-    this.router.navigate(['/account'])
+    this.router.navigate('/account')
+  }
+
+
+  // Redirections
+  redirectToProductsSection() {
+    this.router.navigate('/products')
+  }
+
+  redirectToAdminsSection() {
+    this.router.navigate('/admins')
+  }
+
+  redirectToOrdersSection() {
+    this.router.navigate('/orders')
+  }
+
+  redirectToAccountSection() {
+    this.router.navigate('/account')
+  }
+
+  redirectToTenantsSection() {
+    this.router.navigate('/tenants')
   }
 }

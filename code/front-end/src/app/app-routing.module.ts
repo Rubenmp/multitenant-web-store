@@ -8,17 +8,20 @@ import { TenantsComponent } from './components/tenants/tenants.component';
 
 const routes: Routes = [
   { path: "", redirectTo: "/account", pathMatch: "full" },
-  {
-    path: 'products',
-    component: ProductsComponent,
+
+  { 
+    path: 'tenant/:tenant_id', 
+    children: [
+      { path: 'tenants', component: TenantsComponent },
+      { path: 'admins', component: AdminsComponent },
+      { path: 'account', component: AccountComponent },
+      { path: 'products', component: ProductsComponent },
+      { path: 'orders', component: OrdersComponent }
+    ]
   },
   {
     path: 'account',
     component: AccountComponent,
-  },
-  {
-    path: 'orders',
-    component: OrdersComponent,
   },
   {
     path: 'tenants',
@@ -34,4 +37,4 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

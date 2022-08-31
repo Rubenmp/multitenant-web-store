@@ -2,10 +2,10 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { isOkResponse } from 'src/service/dto/api';
 import { NotificationService } from 'src/service/notification/notification.service';
-import {Router} from "@angular/router"
 import { AuthenticationResponse } from 'src/service/user/dto/authentication-response';
 import { LocalStorageService } from 'src/service/local-storage/local-storage.service';
 import { UserService } from 'src/service/user/user.service';
+import { MWSRouterService } from 'src/service/router/mwsrouter.service';
 
 @Component({
   selector: 'app-account',
@@ -19,19 +19,25 @@ export class AccountComponent implements OnInit {
   inputLastName: string = ''
   inputEmail: string = ''
   inputPassword: string = ''
+  
+  tenantId: number | undefined;
 
   constructor(private userService: UserService,
     private notificationService: NotificationService,
-    private router: Router,
+    private router: MWSRouterService,
     private localStorageService: LocalStorageService) { }
 
   ngOnInit(): void {
     this.localStorageService.clearStorage();
   }
 
+  ngAfterViewInit(){
+    this.tenantId = this.router.storeTenantId();
+  }
+
 
   async login() {
-    await (await this.userService.login(this.inputEmail, this.inputPassword)).subscribe({
+      (await this.userService.login(this.inputEmail, this.inputPassword)).subscribe({
       next: (response) => {
         if (isOkResponse(response)) {
           this.afterLogin(response);
@@ -46,7 +52,12 @@ export class AccountComponent implements OnInit {
   }
 
   afterLogin(response: AuthenticationResponse) {
-    this.router.navigate(['/products'])
+    if (response.data.role === 'SUPER') {
+      this.router.navigate('/tenants');
+    }
+    else {
+      this.router.navigate('/products');
+    }
     this.localStorageService.clearStorage();
     this.localStorageService.saveUserInfo(response.data);
   }

@@ -27,27 +27,27 @@
 
     <mat-divider></mat-divider>
 
-    <button mat-button class="menu-button" routerLink="/account" *ngIf="!isUserLogged()">
+    <button mat-button class="menu-button" (click)="redirectToAccountSection()" *ngIf="!isUserLogged()">
       <mat-icon>person</mat-icon>
       <span>Account</span>
     </button>
 
-    <button mat-button class="menu-button" routerLink="/tenants" *ngIf="isUserLogged() && isSuperUser()">
+    <button mat-button class="menu-button" (click)="redirectToTenantsSection()" *ngIf="isUserLogged() && isSuperUser()">
       <mat-icon>account_balance</mat-icon>
       <span>Tenants</span>
     </button>
 
-    <button mat-button class="menu-button" routerLink="/admins" *ngIf="isUserLogged() && isSuperUser()">
+    <button mat-button class="menu-button" (click)="redirectToAdminsSection()" *ngIf="isUserLogged() && isSuperUser()">
       <mat-icon>supervisor_account</mat-icon>
       <span>Admins</span>
     </button>
     
-    <button mat-button class="menu-button" routerLink="/products" *ngIf="isUserLogged()">
+    <button mat-button class="menu-button" (click)="redirectToProductsSection()" *ngIf="isUserLogged() && !isSuperUser()">
       <mat-icon>shop</mat-icon>
       <span>Products</span>
     </button>
 
-    <button mat-button class="menu-button" routerLink="/orders" *ngIf="isUserLogged()">
+    <button mat-button class="menu-button" (click)="redirectToOrdersSection()" *ngIf="isUserLogged()">
       <mat-icon>assignment_turned_in</mat-icon>
       <span>Orders</span>
     </button>

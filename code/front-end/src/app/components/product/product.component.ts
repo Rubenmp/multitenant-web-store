@@ -17,7 +17,8 @@ export class ProductComponent implements OnInit {
   constructor(private orderService: OrderService,
     private notificationService: NotificationService) { }
 
-  ngOnInit(): void { }
+  ngOnInit(): void { 
+  }
 
   async order(): Promise<void> {
     if (!this.product) {
