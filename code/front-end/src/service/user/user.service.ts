@@ -42,7 +42,7 @@ export class UserService {
 
   async updateUser(update: UserUpdate) {
     return await this.http
-      .put<ApiResponse>(this.updateUserUrl, { id, email, password, firstName, lastName });
+      .put<ApiResponse>(this.updateUserUrl, update);
   }
 
   async login(email: string, password: string) {

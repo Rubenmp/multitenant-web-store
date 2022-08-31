@@ -170,7 +170,6 @@ export class AdminsComponent implements OnInit {
       const isUpdating = (rowsToUpdate.length > 0 && rowsToUpdate[0].isBeingUpdated);
       if (isUpdating) {
         for (let row of rowsToUpdate) {
-
           const update: UserUpdate = {
             id: row.id,
             email: row.email,

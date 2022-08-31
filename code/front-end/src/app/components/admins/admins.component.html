@@ -22,7 +22,7 @@
     <input matInput (keyup)="applyFilterById($event)" placeholder="Ex. 1" #input>
 </mat-form-field>
 
-<mat-form-field appearance="standard" style="width: 75px;">
+<mat-form-field appearance="standard" style="width: 100px; padding-left: 15px;">
     <mat-label>By tenant id</mat-label>
     <input matInput (keyup)="applyFilterByTenantId($event)" placeholder="Ex. 1" #input>
 </mat-form-field>
@@ -91,18 +91,34 @@
         </ng-container>
 
         <ng-container matColumnDef="email">
-            <th mat-header-cell *matHeaderCellDef> Email </th>
-            <td mat-cell *matCellDef="let admin"> {{admin.email}} </td>
+            <th mat-header-cell *matHeaderCellDef>Email</th>
+            <td mat-cell *matCellDef="let admin">
+                <input *ngIf="admin.isBeingUpdated" matInput type="text" [(ngModel)]='admin.email'>
+                <ng-container *ngIf="!admin.isBeingUpdated">
+                    {{admin.isBeingUpdated ? '' : admin.email}}
+                </ng-container>
+
+            </td>
         </ng-container>
 
         <ng-container matColumnDef="firstName">
             <th mat-header-cell *matHeaderCellDef> First Name </th>
-            <td mat-cell *matCellDef="let admin"> {{admin.firstName}} </td>
+            <td mat-cell *matCellDef="let admin">
+                <input *ngIf="admin.isBeingUpdated" matInput type="text" [(ngModel)]='admin.firstName'>
+                <ng-container *ngIf="!admin.isBeingUpdated">
+                    {{admin.isBeingUpdated ? '' : admin.firstName}}
+                </ng-container>
+            </td>
         </ng-container>
 
         <ng-container matColumnDef="lastName">
             <th mat-header-cell *matHeaderCellDef> Last Name </th>
-            <td mat-cell *matCellDef="let admin"> {{admin.lastName}} </td>
+            <td mat-cell *matCellDef="let admin">
+                <input *ngIf="admin.isBeingUpdated" matInput type="text" [(ngModel)]='admin.lastName'>
+                <ng-container *ngIf="!admin.isBeingUpdated">
+                    {{admin.isBeingUpdated ? '' : admin.lastName}}
+                </ng-container>
+            </td>
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
