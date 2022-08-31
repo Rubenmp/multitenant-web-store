@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 public class LoginRequest {
+    private Long tenantId;
     private String email;
     private String password;
 }
