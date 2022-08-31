@@ -82,6 +82,11 @@ public class TenantService {
             throw new MWSException("Entity not found");
         }
 
+        final Long loggedUserTenantId = jwtCipher.getCurrentTenantId();
+        if (loggedUserTenantId == null || loggedUserTenantId == tenantId) {
+            throw new MWSException("It is not possible to remove your tenant.");
+        }
+
         tenantDao.delete(tenantId);
     }
 

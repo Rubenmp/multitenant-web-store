@@ -16,7 +16,6 @@ INSERT INTO user(tenant_id, id, role, email, password, first_name, last_name, ac
 
 
 --- Product data
-------------------
 INSERT INTO product(tenant_id, id, name, image, description, active)
 VALUES (2,10,'Camara reflex','https://img.pccomponentes.com/articles/24/247581/a18.jpg', 'Esta cámara réflex digital es perfecta para mejorar tus capacidades fotográficas respecto a un smartphone o una cámara compacta.', true);
 INSERT INTO product(tenant_id, id, name, image, description, active)

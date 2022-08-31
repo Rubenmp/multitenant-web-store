@@ -43,7 +43,7 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
     protected EntityManager entityManager;
     private final Class<Entity> entityClass;
 
-    protected static final Long META_TENANT_ID = 1L;
+    protected static final Long META_TENANT_ID = 1L; // Tenant for the superuser to handle all the tenants.
     protected static final String DB_COLUMN_TENANT_ID = "tenantId";
     protected static final String DB_COLUMN_ID = "id";
     protected static final String DB_COLUMN_ACTIVE = "active";
