@@ -47,7 +47,7 @@
       <span>Products</span>
     </button>
 
-    <button mat-button class="menu-button" (click)="redirectToOrdersSection()" *ngIf="isUserLogged()">
+    <button mat-button class="menu-button" (click)="redirectToOrdersSection()" *ngIf="isUserLogged() && !isSuperUser()">
       <mat-icon>assignment_turned_in</mat-icon>
       <span>Orders</span>
     </button>
