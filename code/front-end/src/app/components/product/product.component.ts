@@ -29,7 +29,7 @@ export class ProductComponent implements OnInit {
     await (await this.orderService.orderProduct(this.product.id)).subscribe({
       next: (response) => {
         if (isOkResponse(response)) {
-          this.notificationService.showInfoMessage("Successful order (order id " + response.data + ")");
+          this.notificationService.showInfoMessage("Successful order (id " + response.data + ")");
         } else {
           this.notificationService.showError(response.message);
         }

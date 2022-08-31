@@ -11,13 +11,18 @@ export class MWSRouterService {
   constructor(private router: Router) { }
 
   storeTenantId(): number {
+    this.tenantId = this.getPathTenantId();
+    
+    return this.tenantId;
+  }
+
+  getPathTenantId(): number {
     const pathSplitted = this.router.url.split("/");
     const tenantIndex = pathSplitted.findIndex(x => x === "tenant");
     const pathTenantStr = (pathSplitted.length > tenantIndex && tenantIndex > -1) ? pathSplitted[tenantIndex+1] : '';
     const pathTenantInt = parseInt(pathTenantStr);
-    this.tenantId = (!pathTenantInt) ? this.META_TENANT_ID : pathTenantInt;
     
-    return this.tenantId;
+    return (!pathTenantInt) ? this.META_TENANT_ID : pathTenantInt;
   }
 
   getTenantId(): number {
@@ -25,7 +30,8 @@ export class MWSRouterService {
   }
 
   private getBaseUrl() {
-    return "/tenant/" + this.tenantId;
+    const tenantId = this.tenantId ? this.tenantId : this.getPathTenantId();
+    return "/tenant/" + tenantId;
   }
 
   navigate(command: any): Promise<boolean>{
