@@ -96,9 +96,7 @@ public class ProductService {
     }
 
     public void updateProduct(final ProductUpdateDto productUpdateDto) throws MWSException {
-        requireNotNull(productUpdateDto, "Product info must be provided.");
-        require(productUpdateDto.getName() != null && !productUpdateDto.getName().isBlank(), "Product name must be provided.");
-        checkProductPermissions();
+        checkProductUpdate(productUpdateDto);
 
         final Product productToUpdate = productDao.findWeak(productUpdateDto.getId());
         if (productToUpdate == null) {
@@ -118,6 +116,19 @@ public class ProductService {
         } catch (EntityPersistenceException e) {
             throw new MWSException(e.getMessage());
         }
+    }
+
+    private void checkProductUpdate(ProductUpdateDto productUpdateDto) throws MWSException {
+        if (productUpdateDto == null) {
+            throw new MWSException("Product info must be provided.");
+        } else if (productUpdateDto.getName() == null || productUpdateDto.getName().isBlank()) {
+            throw new MWSException("Product name must be provided.");
+        } else if (productUpdateDto.getImage() == null) {
+            throw new MWSException("Image must be provided.");
+        } else if (productUpdateDto.getDescription() == null) {
+            throw new MWSException("Description must be provided.");
+        }
+        checkProductPermissions();
     }
 
     public void deleteProduct(final long productId) throws MWSException {

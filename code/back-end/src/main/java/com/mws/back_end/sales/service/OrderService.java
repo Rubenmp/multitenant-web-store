@@ -1,6 +1,7 @@
 package com.mws.back_end.sales.service;
 
 import com.mws.back_end.account.interfaces.user.dto.UserRoleDto;
+import com.mws.back_end.account.model.entity.UserRole;
 import com.mws.back_end.account.service.security.JwtCipher;
 import com.mws.back_end.framework.exception.MWSException;
 import com.mws.back_end.product.interfaces.dto.ProductDto;
@@ -72,8 +73,18 @@ public class OrderService {
     public List<OrderDto> listOrders(final Long userId) throws MWSException {
         checkPermissionsToListOrders(userId);
 
+        final UserRoleDto currentUserRole = jwtCipher.getCurrentUserRole();
+        if (userId == null && UserRoleDto.ADMIN.equals(currentUserRole)) {
+            final List<Order> orders = orderDao.findAll();
+            return toDtos(orders);
+        }
+
         final Long requestedUser = userId == null ? jwtCipher.getCurrentUserId() : userId;
         final List<Order> orders = orderDao.findByUser(requestedUser);
+        return toDtos(orders);
+    }
+
+    private List<OrderDto> toDtos(final List<Order> orders) {
         final List<Long> productIds = orders.stream().map(Order::getProductId).toList();
         final Map<Long, ProductDto> productsMap =
                 productService.getProducts(productIds, null).stream().collect(Collectors.toMap(ProductDto::getId, p -> p, (prev, newP) -> prev));
