@@ -45,7 +45,6 @@ export class ProductsAdminComponent implements OnInit {
   isBeingUpdated: boolean = false;
 
 
-
   constructor(private productsService: ProductsService,
     private notificationService: NotificationService) {
   }
@@ -78,8 +77,8 @@ export class ProductsAdminComponent implements OnInit {
   }
 
 
-  updateProductsInTable(product: TableRow[]) {
-    this.dataSource = new MatTableDataSource(product);
+  updateProductsInTable(rows: TableRow[]) {
+    this.dataSource = new MatTableDataSource(rows);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
@@ -99,10 +98,9 @@ export class ProductsAdminComponent implements OnInit {
 
 
   private applyFilterInternal() {
-    /*
-    const newOrders = this.products.filter(o => o.product.name.toLowerCase().includes(this.filterByProductName))
+    const newRows = this.products.filter(o => o.name.toLowerCase().includes(this.filterByProductName))
       .filter(o => o.id.toLocaleString().includes(this.filterById));
-    this.updateProductsInTable(newOrders);*/
+    this.updateProductsInTable(newRows);
   }
 
   private getFilterValue(event: Event) {
@@ -111,15 +109,6 @@ export class ProductsAdminComponent implements OnInit {
   }
 
 
-
-
-
-
-
-
-
-
-  // TODO
   clickRow(row: TableRow) {
     if (this.isBeingUpdated) {
       return;
@@ -137,14 +126,15 @@ export class ProductsAdminComponent implements OnInit {
     return this.selectedRows > 0;
   }
 
-  // Tenants operations
+
+  // Operations
   async create() {
     if (this.isCreating) {
       const row = this.toCreate[0];
       await (await this.productsService.create(row.name, row.imageUrl, row.description)).subscribe({
         next: async (response) => {
           if (isOkResponse(response)) {
-            this.notificationService.showInfoMessage("Tenant created with id " + response.data);
+            this.notificationService.showInfoMessage("Product created with id " + response.data);
             
             this.fetchProducts();
           } else {
@@ -173,16 +163,16 @@ export class ProductsAdminComponent implements OnInit {
 
 
   async update() {
-    /*
     if (this.selectedRows > 0) {
       const rowsToUpdate = this.products.filter(row => row.isSelected);
       const isUpdating = (rowsToUpdate.length > 0 && rowsToUpdate[0].isBeingUpdated);
+
       if (isUpdating) {
         for (let rowToUpdate of rowsToUpdate) {
-          await (await this.productsService.updateTenant(rowToUpdate.tenantId, rowToUpdate.name)).subscribe({
+          await (await this.productsService.update(rowToUpdate.id, rowToUpdate.name, rowToUpdate.image, rowToUpdate.description)).subscribe({
             next: (response) => {
               if (isOkResponse(response)) {
-                this.notificationService.showInfoMessage("Tenant updated");
+                this.notificationService.showInfoMessage("Product updated");
               } else {
                 this.notificationService.showError(response.message);
               }
@@ -198,19 +188,19 @@ export class ProductsAdminComponent implements OnInit {
         rowsToUpdate.forEach(row => row.isBeingUpdated = true);
         this.isBeingUpdated = true;
       }
-    }*/
+    }
   }
 
 
   async deleteSelected() {
     if (this.selectedRows > 0) {
-      const selectedIds = this.products.filter(row => row.isSelected).map(tenant => tenant.id);
+      const selectedIds = this.products.filter(row => row.isSelected).map(r => r.id);
 
       for (let selectedId of selectedIds) {
         await (await this.productsService.delete(selectedId)).subscribe({
           next: async (response) => {
             if (isOkResponse(response)) {
-              this.notificationService.showInfoMessage("Product deleted");
+              this.notificationService.showInfoMessage("Product deleted.");
               await this.fetchProducts();
             } else {
               this.notificationService.showError(response.message);

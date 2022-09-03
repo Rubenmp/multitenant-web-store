@@ -21,9 +21,9 @@ export class ProductsService {
   }
 
 
-  async update(id: number, name: string) {
+  async update(id: number, name: string, image: string, description: string) {
     return await this.http
-      .put<ApiResponse>(this.updateUrl, { id, name });
+      .put<ApiResponse>(this.updateUrl, { id, name, image, description });
   }
 
   async delete(id: number) {
