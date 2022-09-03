@@ -246,9 +246,6 @@ public class UserService {
     private void deleteUserChecks(final Long userId) throws MWSException {
         checkSuperPermissions();
         preventDeleteOwnUser(userId);
-        /*if (userDao.findWeak(userId) == null) {
-            throw new MWSException("Entity not found");
-        }*/
     }
 
     private void preventDeleteOwnUser(final Long userId) throws MWSException {

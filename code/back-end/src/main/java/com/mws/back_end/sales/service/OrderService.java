@@ -72,13 +72,33 @@ public class OrderService {
     public List<OrderDto> listOrders(final Long userId) throws MWSException {
         checkPermissionsToListOrders(userId);
 
-        final Long requestedUser = userId == null ? jwtCipher.getCurrentUserId() : userId;
-        final List<Order> orders = orderDao.findByUser(requestedUser);
+        final Long requestedUser = getActualRequestedUserForListOrders(userId);
+        final List<Order> orders;
+        if (requestedUser != null) {
+            orders = orderDao.findByUser(requestedUser);
+        } else if (UserRoleDto.ADMIN.equals(jwtCipher.getCurrentUserRole())){
+            orders = orderDao.findAll();
+        } else {
+            orders = List.of();
+        }
         final List<Long> productIds = orders.stream().map(Order::getProductId).toList();
         final Map<Long, ProductDto> productsMap =
                 productService.getProducts(productIds, null).stream().collect(Collectors.toMap(ProductDto::getId, p -> p, (prev, newP) -> prev));
 
         return orders.stream().map(o -> toDto(o, productsMap)).filter(o -> o.getProduct() != null).toList();
+    }
+
+    private Long getActualRequestedUserForListOrders(final Long userId) {
+        if (userId == null) {
+            final UserRoleDto userRole = jwtCipher.getCurrentUserRole();
+            if (userRole != null && UserRoleDto.ADMIN.equals(userRole)) {
+                return null;
+            } else {
+                return jwtCipher.getCurrentUserId();
+            }
+        }
+
+        return userId;
     }
 
     private void checkPermissionsToListOrders(final Long requestedUserId) throws MWSException {

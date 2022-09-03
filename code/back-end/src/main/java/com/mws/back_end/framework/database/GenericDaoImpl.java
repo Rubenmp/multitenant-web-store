@@ -190,9 +190,11 @@ public abstract class GenericDaoImpl<Entity, Id> implements GenericDao<Entity, I
             predicate = getCriteriaBuilder().and(predicate, root.get(DB_COLUMN_ACTIVE).in(List.of(dbSearch.getActive())));
         }
 
-        final Long tenantId = jwtCipher.getCurrentTenantId();
-        if (tenantId != null && jwtCipher.jwtRestrictionsEnabled()) {
-            predicate = getCriteriaBuilder().and(predicate, getCriteriaBuilder().equal(root.get(DB_COLUMN_TENANT_ID), tenantId));
+        if (dbSearch.isTenantFilter()) {
+            final Long tenantId = jwtCipher.getCurrentTenantId();
+            if (tenantId != null && jwtCipher.jwtRestrictionsEnabled()) {
+                predicate = getCriteriaBuilder().and(predicate, getCriteriaBuilder().equal(root.get(DB_COLUMN_TENANT_ID), tenantId));
+            }
         }
         criteriaQuery.where(predicate);
 
