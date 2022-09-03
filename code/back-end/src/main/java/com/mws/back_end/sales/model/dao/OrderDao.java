@@ -24,15 +24,7 @@ public class OrderDao extends GenericDaoImpl<Order, Long> {
     }
 
     public List<Order> findByUser(final Long userId) {
-        if (userId == null) {
-            return null;
-        }
         return findBy(ORDER_COLUMN_USER_ID, String.valueOf(userId), null);
-    }
-
-    public List<Order> findAll() {
-        DBSearch search = new DBSearch();
-        return find(search);
     }
 }
 
