@@ -3,7 +3,6 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { isOkResponse } from 'src/service/dto/api';
-import { LocalStorageService } from 'src/service/local-storage/local-storage.service';
 import { NotificationService } from 'src/service/notification/notification.service';
 import { Order } from 'src/service/order/dto/orders';
 import { OrderService } from 'src/service/order/order.service';
@@ -17,7 +16,7 @@ import { OrderService } from 'src/service/order/order.service';
 export class OrdersComponent implements OnInit {
   orders: Order[] = []
 
-  displayedColumns: string[] = ['orderId', 'userId', 'productName', 'productImage', 'date'];
+  displayedColumns: string[] = ['orderId', 'productName', 'productImage', 'date', 'userId'];
   dataSource!: MatTableDataSource<Order>;
 
   @ViewChild(MatPaginator)
@@ -31,18 +30,14 @@ export class OrdersComponent implements OnInit {
 
 
   constructor(private orderService: OrderService,
-    private localStorageService: LocalStorageService,
-    private notificationService: NotificationService) { 
-      console.log("isAdmin");
-      console.log(this.isAdmin());
-    }
+    private notificationService: NotificationService) {
+  }
 
 
   async ngOnInit(): Promise<void> {
     await (await this.orderService.listOrders()).subscribe({
       next: (response) => {
         if (isOkResponse(response)) {
-          console.log(response.data);
           this.orders = response.data;
           this.paginator.pageSize = 5;
           this.updateOrdersInTable(this.orders);
@@ -56,9 +51,6 @@ export class OrdersComponent implements OnInit {
     });
   }
 
-  isAdmin(): boolean {
-    return this.localStorageService.getUserRole() == 'ADMIN';
-  }
 
   updateOrdersInTable(order: Order[]) {
     this.dataSource = new MatTableDataSource(order);

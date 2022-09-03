@@ -19,11 +19,6 @@
       <td mat-cell *matCellDef="let order"> {{order.id}} </td>
     </ng-container>
 
-    <ng-container matColumnDef="userId" *ngIf="false">
-      <th mat-header-cell *matHeaderCellDef> User id </th>
-      <td mat-cell *matCellDef="let order"> {{order.userId}} </td>
-    </ng-container>
-
     <ng-container matColumnDef="productName">
       <th mat-header-cell *matHeaderCellDef> Product name </th>
       <td mat-cell *matCellDef="let order"> {{order.product.name}} </td>
@@ -41,6 +36,11 @@
     <ng-container matColumnDef="date">
       <th mat-header-cell *matHeaderCellDef> Date </th>
       <td mat-cell *matCellDef="let order"> {{order.date | date:'MM/dd/yyyy h:mm a'}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="userId">
+      <th mat-header-cell *matHeaderCellDef> User id </th>
+      <td mat-cell *matCellDef="let order"> {{order.userId}} </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
