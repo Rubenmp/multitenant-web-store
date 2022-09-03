@@ -14,6 +14,7 @@ import com.mws.back_end.account.service.security.JwtService;
 import com.mws.back_end.framework.exception.EntityPersistenceException;
 import com.mws.back_end.framework.exception.MWSException;
 import com.mws.back_end.framework.utils.StringUtils;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -148,6 +149,8 @@ public class UserService {
     private void checkUserEmail(final String email) throws MWSException {
         if (StringUtils.isEmpty(email)) {
             throw new MWSException("User email is required.");
+        } else if (!EmailValidator.getInstance().isValid(email)) {
+            throw new MWSException("User email is not valid.");
         }
     }
 

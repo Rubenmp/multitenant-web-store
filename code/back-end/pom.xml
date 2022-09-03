@@ -89,6 +89,12 @@
 			<version>0.10.5</version>
 		</dependency>
 
+		<!-- Email validator -->
+		<dependency>
+			<groupId>commons-validator</groupId>
+			<artifactId>commons-validator</artifactId>
+			<version>1.7</version>
+		</dependency>
 	</dependencies>
 
 	<build>
