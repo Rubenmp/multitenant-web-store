@@ -8,8 +8,8 @@ import { Product } from 'src/service/product/dto/product';
 import { ProductsService } from 'src/service/product/products.service';
 
 
-type TenantRow = { tenantId: number, name: string, active: boolean, isBeingUpdated: boolean, isSelected: boolean }
-type TenantCreation = { name: string }
+type TableRow = { id: number, name: string, image: string, description: string, isBeingUpdated: boolean, isSelected: boolean }
+type RowCreation = { name: string }
 
 @Component({
   selector: 'app-products-admin',
@@ -32,11 +32,11 @@ export class ProductsAdminComponent implements OnInit {
   filterByProductName: string = "";
 
   // Creation
-  tenantToCreate: TenantCreation[] = [];
+  tenantToCreate: RowCreation[] = [];
   inputTenantName: string = '';
-  isCreatingTenant: boolean = false;
+  isCreating: boolean = false;
   displayedColumnsToCreate: string[] = ['name'];
-  dataSourceToCreate!: MatTableDataSource<TenantCreation>;
+  dataSourceToCreate!: MatTableDataSource<RowCreation>;
 
   // Update/delete
   selectedRows: number = 0;
@@ -68,7 +68,7 @@ export class ProductsAdminComponent implements OnInit {
       },
     });
 
-    this.isCreatingTenant = false;
+    this.isCreating = false;
     this.isBeingUpdated = false;
     this.selectedRows = 0;
   }
@@ -116,7 +116,7 @@ export class ProductsAdminComponent implements OnInit {
 
 
   // TODO
-  clickRow(row: TenantRow) {
+  clickRow(row: TableRow) {
     if (this.isBeingUpdated) {
       return;
     }
@@ -135,9 +135,9 @@ export class ProductsAdminComponent implements OnInit {
 
   // Tenants operations
   async create() {
-    /*
-    if (this.isCreatingTenant) {
-      await (await this.productsService.createTenant(this.inputTenantName)).subscribe({
+    
+    if (this.isCreating) {
+      await (await this.productsService.create(this.inputTenantName)).subscribe({
         next: async (response) => {
           if (isOkResponse(response)) {
             this.notificationService.showInfoMessage("Tenant created with id " + response.data);
@@ -153,11 +153,10 @@ export class ProductsAdminComponent implements OnInit {
       });
 
     } else {
-      this.isCreatingTenant = true;
+      this.isCreating = true;
       this.tenantToCreate = [{ name: '' }]
       this.dataSourceToCreate = new MatTableDataSource(this.tenantToCreate);
     }
-    */
   }
 
 

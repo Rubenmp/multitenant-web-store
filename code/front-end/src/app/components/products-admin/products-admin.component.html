@@ -9,7 +9,7 @@
     class="crud_button">
     Delete
 </button>
-<button *ngIf="isCreatingTenant" (click)="cancelAction()" mat-flat-button id="cancel_button"
+<button *ngIf="isCreating" (click)="cancelAction()" mat-flat-button id="cancel_button"
     class="crud_button">
     Cancel
 </button>
@@ -25,7 +25,24 @@
     <input matInput (keyup)="applyFilterByProductName($event)" placeholder="Ex. Camera" #input>
 </mat-form-field>
 
-<div class="mat-elevation-z8">
+
+
+<div class="mat-elevation-z8" *ngIf="isCreating">
+    <table mat-table class="mat-elevation-z8" id="product_creation" [dataSource]="dataSourceToCreate">
+
+        <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Tenant name</th>
+            <td mat-cell *matCellDef="let tenant">
+                <input matInput placeholder="Ex. E-commerce" [(ngModel)]='inputTenantName'>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumnsToCreate"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumnsToCreate;"></tr>
+    </table>
+</div>
+
+<div class="mat-elevation-z8" *ngIf="!isCreating">
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" id="product_list">
         <ng-container matColumnDef="id">
             <th mat-header-cell *matHeaderCellDef> Id </th>
