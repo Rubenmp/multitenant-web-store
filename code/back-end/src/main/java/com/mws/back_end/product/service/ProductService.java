@@ -38,8 +38,13 @@ public class ProductService {
     }
 
     private void checkProductCreation(final ProductCreationDto productCreationDto) throws MWSException {
-        requireNotNull(productCreationDto, "Product info must be provided");
-        require(productCreationDto.getName() != null && !productCreationDto.getName().isBlank(), "Product name must be provided.");
+        if (productCreationDto == null) {
+            throw new MWSException("Product info must be provided");
+        }
+
+        if (productCreationDto.getName() == null || productCreationDto.getName().isBlank()) {
+            throw new MWSException("Product name must be provided.");
+        }
         checkProductPermissions();
     }
 
