@@ -27,7 +27,7 @@ And an order history is stored. Each client will have access to its own orders, 
 A Colored Petri Net (CPN), a mathematical model of the system, is included to extract conclusions about their properties.
 It is possible to detect the effective conflicts of a system and adapt the design for better scalability (or even better, elasticity).
 Modeling reactive systems with CPNs have several advantages explained in the dissertation.
-Here is the final CPN model of the MW-Store:
+Here is the final CPN model of the MW-Store shown with CPN Tools interface:
 ![MWS CPN](resources/mws_cpn_secure_net.png)
 
 The implications of mathematical models of programs are huge.
