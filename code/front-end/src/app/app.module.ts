@@ -34,6 +34,7 @@ import { HttpTokenInterceptor } from './http-token.interceptor';
 import { OrdersComponent } from './components/orders/orders.component';
 import { TenantsComponent } from './components/tenants/tenants.component';
 import { AdminsComponent } from './components/admins/admins.component';
+import { ProductsAdminComponent } from './components/products-admin/products-admin.component';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,8 @@ import { AdminsComponent } from './components/admins/admins.component';
     AccountComponent,
     OrdersComponent,
     TenantsComponent,
-    AdminsComponent
+    AdminsComponent,
+    ProductsAdminComponent
   ],
   imports: [
     BrowserModule,

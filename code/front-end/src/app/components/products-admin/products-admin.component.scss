@@ -1,0 +1,27 @@
+@import '../../../styles.scss';
+
+
+#filter_title {
+    color: var(--main-color);
+    position: relative;
+    margin: 0 0 0 0px;
+    padding-right: 25px;
+}
+
+#product_list {
+    width: 100%;
+}
+
+
+.product-image {
+    width: 60px;
+    min-height: 60px;
+    max-height: auto;
+    margin: 1px;
+    padding: 1px;
+
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+}
