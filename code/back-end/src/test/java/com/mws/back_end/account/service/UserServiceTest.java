@@ -7,6 +7,7 @@ import com.mws.back_end.account.interfaces.user.dto.UserUpdateDto;
 import com.mws.back_end.account.model.dao.UserDao;
 import com.mws.back_end.account.model.entity.User;
 import com.mws.back_end.account.model.entity.UserRole;
+import com.mws.back_end.account.service.security.JwtCipher;
 import com.mws.back_end.account.service.security.JwtService;
 import com.mws.back_end.framework.TestUtils;
 import com.mws.back_end.framework.exception.MWSException;
@@ -17,7 +18,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -30,6 +33,9 @@ class UserServiceTest extends TestUtils {
 
     @Mock
     private JwtService jwtService;
+
+    @Mock
+    private JwtCipher jwtCipher;
 
     @Mock
     private TenantService tenantService;
@@ -309,6 +315,7 @@ class UserServiceTest extends TestUtils {
     void updateUser_happyPathForUser_success() {
         final UserUpdateDto updateDto = getUpdateRequest();
         when(userDao.findWeak(updateDto.getId())).thenReturn(userWithRole(UserRole.USER));
+        when(userDao.findWithoutTenantFilter(updateDto.getId())).thenReturn(userWithRole(UserRole.USER));
 
         try {
             userService.updateUser(updateDto);
@@ -363,6 +370,7 @@ class UserServiceTest extends TestUtils {
     void updateUser_happyPathForAdmin_success() {
         final UserUpdateDto updateDto = getUpdateRequest();
         when(userDao.findWeak(updateDto.getId())).thenReturn(userWithRole(UserRole.ADMIN));
+        when(userDao.findWithoutTenantFilter(updateDto.getId())).thenReturn(userWithRole(UserRole.USER));
 
         try {
             userService.updateUser(updateDto);
