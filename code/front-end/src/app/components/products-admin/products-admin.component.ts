@@ -9,7 +9,7 @@ import { ProductsService } from 'src/service/product/products.service';
 
 
 type TableRow = { id: number, name: string, image: string, description: string, isBeingUpdated: boolean, isSelected: boolean }
-type RowCreation = { name: string }
+type RowCreation = { name: string, imageUrl: string, description: string }
 
 @Component({
   selector: 'app-products-admin',
@@ -32,10 +32,12 @@ export class ProductsAdminComponent implements OnInit {
   filterByProductName: string = "";
 
   // Creation
-  tenantToCreate: RowCreation[] = [];
-  inputTenantName: string = '';
+  toCreate: RowCreation[] = [];
+  inputName: string = '';
+  inputImageUrl: string = '';
+  inputDescription: string = '';
   isCreating: boolean = false;
-  displayedColumnsToCreate: string[] = ['name'];
+  displayedColumnsToCreate: string[] = ['name', 'imageUrl', 'description'];
   dataSourceToCreate!: MatTableDataSource<RowCreation>;
 
   // Update/delete
@@ -135,9 +137,9 @@ export class ProductsAdminComponent implements OnInit {
 
   // Tenants operations
   async create() {
-    
     if (this.isCreating) {
-      await (await this.productsService.create(this.inputTenantName)).subscribe({
+      const row = this.toCreate[0];
+      await (await this.productsService.create(row.name, row.imageUrl, row.description)).subscribe({
         next: async (response) => {
           if (isOkResponse(response)) {
             this.notificationService.showInfoMessage("Tenant created with id " + response.data);
@@ -154,8 +156,8 @@ export class ProductsAdminComponent implements OnInit {
 
     } else {
       this.isCreating = true;
-      this.tenantToCreate = [{ name: '' }]
-      this.dataSourceToCreate = new MatTableDataSource(this.tenantToCreate);
+      this.toCreate = [{ name: '', imageUrl: '', description: '' }]
+      this.dataSourceToCreate = new MatTableDataSource(this.toCreate);
     }
   }
 

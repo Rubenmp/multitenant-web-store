@@ -15,9 +15,9 @@ export class ProductsService {
 
   constructor(private http: HttpClient) { }
 
-  async create(name: string) {
+  async create(name: string, image: string, description: string) {
     return await this.http
-      .post<ApiResponse>(this.createUrl, { name });
+      .post<ApiResponse>(this.createUrl, { name, image, description });
   }
 
 
