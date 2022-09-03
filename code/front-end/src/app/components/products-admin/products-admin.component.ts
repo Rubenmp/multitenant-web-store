@@ -17,10 +17,10 @@ type RowCreation = { name: string, imageUrl: string, description: string }
   styleUrls: ['./products-admin.component.scss']
 })
 export class ProductsAdminComponent implements OnInit {
-  products: Product[] = []
+  products: TableRow[] = []
 
   displayedColumns: string[] = ['id', 'name', 'image', 'description'];
-  dataSource!: MatTableDataSource<Product>;
+  dataSource!: MatTableDataSource<TableRow>;
 
   @ViewChild(MatPaginator)
   paginator!: MatPaginator;
@@ -59,7 +59,9 @@ export class ProductsAdminComponent implements OnInit {
     await (await this.productsService.list()).subscribe({
       next: (response) => {
         if (isOkResponse(response)) {
-          this.products = response.data;
+          this.products = response.data.map((t) => {
+            return { id: t.id, name: t.name, image: t.image, description: t.description, isBeingUpdated: false, isSelected: false }
+          });
           this.updateProductsInTable(this.products);
         } else {
           this.notificationService.showError(response.message);
@@ -76,7 +78,7 @@ export class ProductsAdminComponent implements OnInit {
   }
 
 
-  updateProductsInTable(product: Product[]) {
+  updateProductsInTable(product: TableRow[]) {
     this.dataSource = new MatTableDataSource(product);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
@@ -200,15 +202,15 @@ export class ProductsAdminComponent implements OnInit {
   }
 
 
-  async deleteSelected() {/*
+  async deleteSelected() {
     if (this.selectedRows > 0) {
-      const selectedTenantIds = this.products.filter(row => row.isSelected).map(tenant => tenant.tenantId);
+      const selectedIds = this.products.filter(row => row.isSelected).map(tenant => tenant.id);
 
-      for (let selectedTenantId of selectedTenantIds) {
-        await (await this.productsService.delete(selectedTenantId)).subscribe({
+      for (let selectedId of selectedIds) {
+        await (await this.productsService.delete(selectedId)).subscribe({
           next: async (response) => {
             if (isOkResponse(response)) {
-              this.notificationService.showInfoMessage("Tenant deleted");
+              this.notificationService.showInfoMessage("Product deleted");
               await this.fetchProducts();
             } else {
               this.notificationService.showError(response.message);
@@ -219,7 +221,7 @@ export class ProductsAdminComponent implements OnInit {
           },
         });
       }
-    }*/
+    }
   }
 
 }
