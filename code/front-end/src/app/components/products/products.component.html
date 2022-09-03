@@ -1,17 +1,16 @@
 <h1 id="products_title">Products</h1>
 <div class="products_start"></div>
 
-<app-products-admin>
 
-</app-products-admin>
+<app-products-admin *ngIf="isAdmin()"></app-products-admin>
 
-<div *ngIf="false">
-<div id="products_flexbox" fxFlex fxLayout="column" fxLayoutGap="10px">
-    <div fxLayout="row wrap">
-        <div *ngFor="let p of getProducts()" fxFlex="32.5" fxFlex.md="50" fxFlex.sm="75" fxFlex.xs="100"
-            fxLayout="column" style="margin: 5px;">
-            <app-product [product]=p></app-product>
+<div *ngIf="!isAdmin()">
+    <div id="products_flexbox" fxFlex fxLayout="column" fxLayoutGap="10px">
+        <div fxLayout="row wrap">
+            <div *ngFor="let p of getProducts()" fxFlex="32.5" fxFlex.md="50" fxFlex.sm="75" fxFlex.xs="100"
+                fxLayout="column" style="margin: 5px;">
+                <app-product [product]=p></app-product>
+            </div>
         </div>
     </div>
-</div>
 </div>

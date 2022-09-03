@@ -4,7 +4,6 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { isOkResponse } from 'src/service/dto/api';
 import { NotificationService } from 'src/service/notification/notification.service';
-import { Product } from 'src/service/product/dto/product';
 import { ProductsService } from 'src/service/product/products.service';
 
 
@@ -33,9 +32,6 @@ export class ProductsAdminComponent implements OnInit {
 
   // Creation
   toCreate: RowCreation[] = [];
-  inputName: string = '';
-  inputImageUrl: string = '';
-  inputDescription: string = '';
   isCreating: boolean = false;
   displayedColumnsToCreate: string[] = ['name', 'imageUrl', 'description'];
   dataSourceToCreate!: MatTableDataSource<RowCreation>;
