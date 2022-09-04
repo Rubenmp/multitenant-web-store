@@ -383,6 +383,7 @@ class UserServiceTest extends TestUtils {
     void updateUser_happyPathForSuper_success() {
         final UserUpdateDto updateDto = getUpdateRequest();
         when(userDao.findWeak(updateDto.getId())).thenReturn(userWithRole(UserRole.SUPER));
+        when(userDao.findWithoutTenantFilter(updateDto.getId())).thenReturn(userWithRole(UserRole.SUPER));
 
         try {
             userService.updateUser(updateDto);
