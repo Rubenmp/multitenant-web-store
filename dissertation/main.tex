@@ -618,8 +618,6 @@ Cryptography can be used as a security layer and there are two main approaches:
 \begin{itemize}
     \item Symmetric: only one key is created, using it for encryption and decryption of data \cite{multi-tenant-data-architecture}.
     \item Asymmetric (public‐key cryptography): Two linked keys are generated, the public key will encrypt, and the private key will decrypt the data.
-    Both keys are interchangeable.
-    It is theoretically possible to encrypt with the private key and decrypt with the public one. The term "private" is just a reference to differentiate both keys.
 \end{itemize}
 
 Asymmetric cryptography is slower than symmetric cryptography and could not fit in applications where performance is considered.
@@ -888,7 +886,7 @@ Concurrent systems are a subset of reactive systems, there are sequential reacti
     \item $\Sigma$ is a set of states. 
     The state represents the value of the system variables at a precise moment.
     \item $T$ are the transitions of the system. A transition, $t\in T$, is a function
-    $$t:\Sigma\rightarrow 2^{\Sigma} \hspace{1cm} (2^{\Sigma} \text{ represents all the possible subsets of } \Sigma),$$
+    $$t:\Sigma\rightarrow \mathcal{P}(\Sigma) \hspace{1cm} (\mathcal{P}(\Sigma) \text{ represents all the possible subsets of } \Sigma),$$
     from a state $s\in\Sigma$ to a subset of $\Sigma$, $t(s)$.
     The subset $t(s)$ is called the successors of $s$.
     \item $\Sigma_0$ are the possible initial states of the system, $\Sigma_0 \subseteq \Sigma$.
@@ -925,16 +923,18 @@ The first approach to study these systems are Petri Nets.
     \item $T := \{t_1,\ ...\ ,\ t_m\}$ are the transitions (second kind of node) transforming the values of the places.
     \newline
     \newline
-    The arcs of the Petri Net are defined in the set $A$,
-    $$A \subseteq \{T\times P\} \cup \{P\times T\}.$$
-    As a consequence, the arcs only connect places with transitions (and vice versa).
-    Arcs between two places or two transitions are not allowed.
-    \item $I(t_j) := \{p : (p, t_j) \in A\}$ input function (or preset), it is the set of input places for a transition.
-    \item $O(t_j) := \{p : (t_j,p) \in A\}$ output function (or post-set), it is the set of output places for a transition.
+    The arcs of a Petri Net connect places with transitions (and vice versa).
+    Connections between two places or two transitions are not allowed.
+    These arcs are defined using the functions $I, O: T -> Bag(P)$. $Bag(P)$ is the multiset of $P$, representing all the possible subsets of elements of $P$.
+    This definition allows having several arcs from one place to one transition since the multi-set allows several identical items.
+     The values returned by the functions $I, O$ depend on the specific Petri Net.
+    \item $I(t): T -> Bag(P)$ input function (or preset), it is the set of input places for a transition.
+    \item $O(t): T -> Bag(P)$ output function (or post-set), it is the set of output places for a transition.
     \newline
     \newline
     A transition $t\in T$ is considered a fork when $|O(t)| > 1$, when $|I(t)| > 1$ it is considered a join.
-    Respectively, for places, a place $p\in P$ is considered a collector when $|I(p)| > 1$, when $|O(p)| > 1$ it is considered a distributor.
+    Respectively, for places, a place $p\in P$ is considered a collector when
+    $|\{ t : p\in O(t) \}| > 1$, when $|\{ t : p\in I(t) \}| > 1$ it is considered a distributor.
 \end{itemize}}
 
 \begin{figure}[H]
@@ -966,7 +966,7 @@ The Figure \ref{fig:petri-net-example} represents a pure regular Petri Net.
 To study the executions in Petri Nets, we need to define the marks stored in their places.
 Intuitively, these marks will describe the state of the net at a given time.
 The mark distribution represents the number of marks for each place of the Petri Net at a given moment.
-A marking $M$ is represented as a vector, $M = (M_1, ..., M_{|P|})$, where each element $M_i\in\mathbb{N}_0^+$ represents the number of marks at place $p_i$.
+A marking $M$ is represented as a vector, $M = (M_1, ..., M_{|P|})$, where each element $M_i\in\mathbb{N}_0$ represents the number of marks at place $p_i$.
 Formally, the marking function is
 $$M: P \rightarrow \{0,\ 1,\ ...\ ,\ |P|\}$$
 $$M(p_i) := M_i,$$
@@ -1002,9 +1002,10 @@ An example of a graphical representation of a Marked Petri Net is shown in Figur
 
 Now, some definitions are required to describe the executions in Marked Petri Nets.
 The multiplicity, 
-$$n: P\times T \rightarrow \mathbb{N}_0^+$$
-$$n(p, t) := | [ x : x\in O(p) \ \wedge \ x=t ] |$$
+$$n: P\times T \rightarrow \mathbb{N}_0$$
+$$n(p, t) := | [ x\in I(t) : x=p ] |$$
 is the number of arcs from one place to a transition.
+It is possible to create an equivalent definition to define the arcs' multiplicity from a transition to a place.
 There is an essential property of transitions related to multiplicity:
 $$t\in T \text{ is enabled } \hspace{1cm} \Longleftrightarrow \hspace{1cm} \forall p\in I(t)\hspace{0.5cm} M(p) \geq n(p, t).$$
 
@@ -1501,7 +1502,7 @@ $$D\cdot Y^T = 0 \implies
 \definition{Fundamental conservative component set}{ is the linear span
 $\mathcal{Y} := \{Y_1,\ ... \ ,\ Y_n\}$
 with fewer elements able to generate any conservative component.
-$$Y = \sum_{Y_i\in\mathcal{Y}} k_i\cdot Y_i \hspace{1cm} k_i\in\mathbb{N}_0^+,$$
+$$Y = \sum_{Y_i\in\mathcal{Y}} k_i\cdot Y_i \hspace{1cm} k_i\in\mathbb{N}_0,$$
 and the elements $Y_i$ are called elemental components.}
 
 \
@@ -2974,6 +2975,20 @@ The possible combinations of distributed replicated systems: PC/EC, PC/EL, PA/EL
 Other authors consider that the relationship between availability and consistency should be a continuum, from weak to strong, with eventual consistency in the middle \cite{trade-offs-fault-tolerant-distributed-computing-databases}.
 
 
+\newpage
+
+\section{Conclusions}
+Multi-tenancy is a convenient paradigm with several advantages like cost savings and easier client extensibility.
+There are other disadvantages, like the interdependency created between tenants.
+Huge loads in one tenant might reduce the Quality of Service for all the tenants.
+This interdependency creates strong incentives to consider scalability as a dynamic property called elasticity.
+
+Petri Nets allow us to model any program.
+The implications of this modelling are huge.
+Some properties deducible from CPNs are resource availability, system liveness, security and elasticity to make the system more robust under extreme workloads.
+
+In conclusion, being aware of these concepts help to design better software architectures.
+This project shows another example of how the combination of computer sciences and mathematics helps to solve real-world problems.
 
 
 \begin{comment}
